@@ -15,7 +15,8 @@ package org.greatlogic.gxttestbed.client;
 import java.util.Random;
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.user.client.ui.RootPanel;
-import com.sencha.gxt.widget.core.client.button.TextButton;
+import com.sencha.gxt.data.shared.ListStore;
+import com.sencha.gxt.data.shared.ModelKeyProvider;
 import com.sencha.gxt.widget.core.client.info.DefaultInfoConfig;
 import com.sencha.gxt.widget.core.client.info.Info;
 import com.sencha.gxt.widget.core.client.info.InfoConfig;
@@ -56,8 +57,16 @@ public static void info(final int seconds, final String message) {
 //--------------------------------------------------------------------------------------------------
 @Override
 public void onModuleLoad() {
-  final TextButton button = new TextButton("hey");
-  RootPanel.get().add(button);
+  final ListStore<PetType> petTypeStore = new ListStore<PetType>(new ModelKeyProvider<PetType>() {
+    @Override
+    public String getKey(final PetType petType) {
+      return Integer.toString(petType.getPetTypeId());
+    }
+  });
+  final PetGridWidget petGrid = new PetGridWidget(petTypeStore);
+  RootPanel.get().add(petGrid);
+  TestData.loadPetTypeTestData(petTypeStore);
+  TestData.loadPetTestData(petGrid.getListStore(), petTypeStore);
 }
 //--------------------------------------------------------------------------------------------------
 }

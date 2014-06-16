@@ -504,6 +504,7 @@ private void resizeColumnToFit(final int columnIndex) {
     for (final Store<Pet>.Record record : _petStore.getModifiedRecords()) {
       final int width = textMetrics.getWidth(record.getValue(columnConfig.getValueProvider()) //
                                                    .toString()) + 12;
+      // TODO: use the same logic as the unmodified values (e.g., check for dates)
       maxWidth = width > maxWidth ? width : maxWidth;
     }
   }

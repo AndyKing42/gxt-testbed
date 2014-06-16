@@ -13,14 +13,12 @@ package org.greatlogic.gxttestbed.client;
  * the License.
  */
 import java.math.BigDecimal;
-import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.TreeMap;
-import org.greatlogic.gxttestbed.client.AbstractGridEditingExample.Light;
 import com.google.gwt.cell.client.DateCell;
 import com.google.gwt.cell.client.TextCell;
 import com.google.gwt.core.client.Scheduler;
@@ -43,10 +41,10 @@ import com.sencha.gxt.core.client.IdentityValueProvider;
 import com.sencha.gxt.core.client.ValueProvider;
 import com.sencha.gxt.core.client.util.TextMetrics;
 import com.sencha.gxt.data.shared.Converter;
+import com.sencha.gxt.data.shared.LabelProvider;
 import com.sencha.gxt.data.shared.ListStore;
 import com.sencha.gxt.data.shared.ModelKeyProvider;
 import com.sencha.gxt.data.shared.Store;
-import com.sencha.gxt.data.shared.StringLabelProvider;
 import com.sencha.gxt.widget.core.client.ContentPanel;
 import com.sencha.gxt.widget.core.client.Dialog.PredefinedButton;
 import com.sencha.gxt.widget.core.client.box.AlertMessageBox;
@@ -83,6 +81,7 @@ import com.sencha.gxt.widget.core.client.menu.MenuItem;
 
 public class PetGridWidget implements IsWidget {
 //--------------------------------------------------------------------------------------------------
+private final Cache                           _cache;
 private final HashSet<ColumnConfig<Pet, ?>>   _checkBoxSet;
 private TreeMap<String, ColumnConfig<Pet, ?>> _columnConfigMap;
 private ContentPanel                          _contentPanel;
@@ -91,9 +90,10 @@ protected ListStore<Pet>                      _petStore;
 private ListStore<PetType>                    _petTypeStore;
 private GridSelectionModel<Pet>               _selectionModel;
 //--------------------------------------------------------------------------------------------------
-protected PetGridWidget(final ListStore<PetType> petTypeStore) {
+protected PetGridWidget(final Cache cache) {
   super();
-  _petTypeStore = petTypeStore;
+  _cache = cache;
+  _petTypeStore = _cache.getPetTypeStore();
   _petStore = new ListStore<Pet>(new ModelKeyProvider<Pet>() {
     @Override
     public String getKey(final Pet pet) {
@@ -366,81 +366,43 @@ private void createEditors() {
 }
 //--------------------------------------------------------------------------------------------------
 private void createEditorsPetType(final GridEditing<Pet> gridEditing) {
-  final SimpleComboBox<Light> comboBox =
-                                         new SimpleComboBox<Light>(new StringLabelProvider<Light>());
-  comboBox.setClearValueOnParseError(false);
-  comboBox.setPropertyEditor(new PropertyEditor<Light>() {
+  final LabelProvider<PetType> labelProvider = new LabelProvider<PetType>() {
     @Override
-    public Light parse(final CharSequence text) throws ParseException {
-      return Light.parseString(text.toString());
+    public String getLabel(final PetType petType) {
+      return petType == null ? "" : petType.getPetTypeShortDesc();
+    }
+  };
+  final SimpleComboBox<PetType> comboBox = new SimpleComboBox<PetType>(labelProvider);
+  comboBox.setClearValueOnParseError(false);
+  comboBox.setPropertyEditor(new PropertyEditor<PetType>() {
+    @Override
+    public PetType parse(final CharSequence petTypeShortDesc) {
+      return _cache.findPetTypeUsingShortDesc(petTypeShortDesc);
     }
     @Override
-    public String render(final Light object) {
-      return object == null ? Light.SUNNY.toString() : object.toString();
+    public String render(final PetType petType) {
+      return petType == null ? "" : petType.getPetTypeShortDesc();
     }
   });
   comboBox.setTriggerAction(TriggerAction.ALL);
-  comboBox.add(Light.SUNNY);
-  comboBox.add(Light.MOSTLYSUNNY);
-  comboBox.add(Light.SUNORSHADE);
-  comboBox.add(Light.MOSTLYSHADY);
-  comboBox.add(Light.SHADE);
-  // combo.setForceSelection(true);
-  final Converter<String, Light> converter = new Converter<String, Light>() {
+  for (int petTypeIndex = 0; petTypeIndex < _petTypeStore.size(); ++petTypeIndex) {
+    comboBox.add(_petTypeStore.get(petTypeIndex));
+  }
+  comboBox.setForceSelection(true);
+  final Converter<String, PetType> converter = new Converter<String, PetType>() {
     @Override
-    public String convertFieldValue(final Light object) {
-      return object == null ? "" : object.toString();
+    public String convertFieldValue(final PetType petType) {
+      return petType == null ? "" : petType.getPetTypeShortDesc();
     }
     @Override
-    public Light convertModelValue(final String object) {
-      try {
-        return Light.parseString(object);
-      }
-      catch (final ParseException e) {
-        return null;
-      }
+    public PetType convertModelValue(final String petTypeShortDesc) {
+      final PetType result = _cache.findPetTypeUsingShortDesc(petTypeShortDesc);
+      return result;
     }
   };
   gridEditing.addEditor((ColumnConfig<Pet, String>)(_columnConfigMap.get("Pet.PetType")),
                         converter, comboBox);
 }
-//--------------------------------------------------------------------------------------------------
-//@SuppressWarnings("unchecked")
-//private void createEditorsForeignKeyCombobox(final GridEditing<Pet> gridEditing,
-//                                             final GLGridColumnDef gridColumnDef) {
-//  final IGLColumn column = gridColumnDef.getColumn();
-//  final IGLLookupListStoreKey lookupListStoreKey = gridColumnDef.getLookupListStoreKey();
-//  final ListStore<Pet> lookupListStore = getLookupListStore(lookupListStoreKey);
-//  if (lookupListStore == null) {
-//    GLUtil.info(10, "Lookup list store not found for column:" + column + " key" +
-//                    lookupListStoreKey);
-//    return;
-//  }
-//  final LabelProvider<Pet> labelProvider = new LabelProvider<Pet>() {
-//    @Override
-//    public String getLabel(final Pet record) {
-//      try {
-//        return record.asString(column.getParentDisplayColumn());
-//      }
-//      catch (final GLInvalidFieldOrColumnException e) {
-//        return "???";
-//      }
-//    }
-//  };
-//  final ComboBox<Pet> comboBox = new ComboBox<Pet>(lookupListStore, labelProvider);
-//  final Converter<String, Pet> converter = new Converter<String, Pet>() {
-//    @Override
-//    public Pet convertModelValue(final String displayValue) {
-//      return getRecordForLookupValue(lookupListStoreKey, displayValue);
-//    }
-//    @Override
-//    public String convertFieldValue(final Pet record) {
-//      return "Cat";
-//    }
-//  };
-//  gridEditing.addEditor((ColumnConfig<Pet, String>)gridColumnDef.getColumnConfig(), converter,
-//                        comboBox);
-//}
 //--------------------------------------------------------------------------------------------------
 private void createGrid() {
   createCheckBoxSelectionModel();

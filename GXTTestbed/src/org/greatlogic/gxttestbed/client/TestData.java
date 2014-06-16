@@ -22,7 +22,7 @@ private static final String[] PetNamesAndSex = new String[] {"Angel,F", "Ashley,
     "Taz,M", "Thomas,M", "Tinkerbell,F", "Toby,M", "Tommy,M", "Tucker,M", "Winston,M", "Ziggy,M",
     "Zoe,F", "Zoey,F"                        };
 @SuppressWarnings("deprecation")
-public static void loadPetTestData(final ListStore<Pet> listStore,
+public static void loadPetTestData(final ListStore<Pet> listStore, final int maxNumberOfPets,
                                    final ListStore<PetType> petTypeListStore) {
   listStore.clear();
   int nextPetId = 1;
@@ -40,6 +40,9 @@ public static void loadPetTestData(final ListStore<Pet> listStore,
                             GXTTestbed.getRandomInt(2) == 0, intakeDate, fosterDate, //
                             new BigDecimal(GXTTestbed.getRandomInt(3000, 10000) / 100.0));
     listStore.add(pet);
+    if (nextPetId >= maxNumberOfPets) {
+      break;
+    }
     ++nextPetId;
   }
 }

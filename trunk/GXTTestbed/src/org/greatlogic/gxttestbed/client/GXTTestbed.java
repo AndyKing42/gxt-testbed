@@ -16,7 +16,6 @@ import java.util.Random;
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.user.client.ui.RootPanel;
 import com.sencha.gxt.data.shared.ListStore;
-import com.sencha.gxt.data.shared.ModelKeyProvider;
 import com.sencha.gxt.widget.core.client.info.DefaultInfoConfig;
 import com.sencha.gxt.widget.core.client.info.Info;
 import com.sencha.gxt.widget.core.client.info.InfoConfig;
@@ -57,16 +56,12 @@ public static void info(final int seconds, final String message) {
 //--------------------------------------------------------------------------------------------------
 @Override
 public void onModuleLoad() {
-  final ListStore<PetType> petTypeStore = new ListStore<PetType>(new ModelKeyProvider<PetType>() {
-    @Override
-    public String getKey(final PetType petType) {
-      return Integer.toString(petType.getPetTypeId());
-    }
-  });
-  final PetGridWidget petGrid = new PetGridWidget(petTypeStore);
-  RootPanel.get().add(petGrid);
+  final Cache cache = Cache.getCurrentCache();
+  final ListStore<PetType> petTypeStore = cache.getPetTypeStore();
   TestData.loadPetTypeTestData(petTypeStore);
-  TestData.loadPetTestData(petGrid.getListStore(), petTypeStore);
+  final PetGridWidget petGrid = new PetGridWidget(cache);
+  RootPanel.get().add(petGrid);
+  TestData.loadPetTestData(petGrid.getListStore(), 20, petTypeStore);
 }
 //--------------------------------------------------------------------------------------------------
 }

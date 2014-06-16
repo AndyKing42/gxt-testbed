@@ -100,6 +100,8 @@ public static ValueProvider<Pet, String> getPetTypeValueProvider(final ListStore
     public void setValue(final Pet pet, final String value) {
       final PetType petType = petTypeStore.findModelWithKey(value);
       pet._petTypeId = petType == null ? 0 : petType.getPetTypeId();
+      GXTTestbed.info(10, "getPetTypeValueProvider.setValue:" + value + " _petTypeId:" +
+                          pet._petTypeId);
     }
   };
 }

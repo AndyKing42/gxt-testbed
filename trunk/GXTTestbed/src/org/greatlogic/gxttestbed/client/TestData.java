@@ -1,9 +1,26 @@
 package org.greatlogic.gxttestbed.client;
-
-import java.math.BigDecimal;
-import java.util.Date;
-import com.google.gwt.user.datepicker.client.CalendarUtil;
-import com.sencha.gxt.data.shared.ListStore;
+/*
+ * Copyright 2006-2014 Andy King (GreatLogic.com)
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
+ * in compliance with the License. You may obtain a copy of the License at
+ * 
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software distributed under the License
+ * is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
+ * or implied. See the License for the specific language governing permissions and limitations under
+ * the License.
+ */
+import java.util.ArrayList;
+import org.greatlogic.gxttestbed.client.glgwt.GLListStore;
+import org.greatlogic.gxttestbed.client.glgwt.GLRecord;
+import org.greatlogic.gxttestbed.client.glgwt.GLRecordDef;
+import org.greatlogic.gxttestbed.client.glgwt.GLUtil;
+import org.greatlogic.gxttestbed.client.glgwt.IGLColumn;
+import org.greatlogic.gxttestbed.shared.IDBEnums.EGXTExamplesTable;
+import org.greatlogic.gxttestbed.shared.IDBEnums.Pet;
+import org.greatlogic.gxttestbed.shared.IDBEnums.PetType;
 
 public class TestData {
 //--------------------------------------------------------------------------------------------------
@@ -12,51 +29,59 @@ private static final String[] PetNamesAndSex = new String[] {"Angel,F", "Ashley,
     "Calvin,M", "Cassie,F", "Champ,M", "Chelsea,F", "Chester,M", "Cleopatra,F", "Cody,M",
     "Cookie,F", "Cooper,M", "Dexter,M", "Diesel,M", "Dixie,F", "Duke,M", "Duncan,M", "Dusty,M",
     "Emily,F", "Emma,F", "Felix,M", "Female,F", "Fred,M", "Grace,F", "Guinness,M", "Haley,F",
-    "Harry,M", "Hunter,M", "Isabella,F", "Jack,M", "Jasmine,F", "Joey,M", "Junior,M", "Kitty,F",
-    "Kobe,M", "Leo,M", "Loki,U", "Lucy,F", "Maddie,F", "Mandy,F", "Marley,M", "Max,M", "Maximus,M",
-    "Maxwell,M", "Maya,F", "Merlin,M", "Mia,F", "Mickey,M", "Mikey,M", "Millie,F", "Milo,U",
-    "Misty,F", "Mocha,U", "Moose,M", "Morgan,U", "Murphy,M", "Nala,U", "Nikki,F", "Olivia,F",
-    "Oreo,U", "Pebbles,F", "Penny,F", "Rex,M", "Roxie,F", "Rufus,M", "Sabrina,F", "Sadie,F",
-    "Sam,U", "Samantha,F", "Sarah,F", "Sassy,U", "Scooter,M", "Sebastian,M", "Sheba,F", "Simba,M",
-    "Snowball,U", "Socks,U", "Sophia,F", "Sophie,F", "Spencer,M", "Sunny,F", "Sylvester,M",
-    "Taz,M", "Thomas,M", "Tinkerbell,F", "Toby,M", "Tommy,M", "Tucker,M", "Winston,M", "Ziggy,M",
-    "Zoe,F", "Zoey,F"                        };
-@SuppressWarnings("deprecation")
-public static void loadPetTestData(final Cache cache, final ListStore<Pet> listStore,
-                                   final int maxNumberOfPets,
-                                   final ListStore<PetType> petTypeListStore) {
+    "Harry,M", "Hunter,M", "Invisible Pink Unicorn,U", "Isabella,F", "Jack,M", "Jasmine,F",
+    "Joey,M", "Junior,M", "Kitty,F", "Kobe,M", "Leo,M", "Loki,U", "Lucy,F", "Maddie,F", "Mandy,F",
+    "Marley,M", "Max,M", "Maximus,M", "Maxwell,M", "Maya,F", "Merlin,M", "Mia,F", "Mickey,M",
+    "Mikey,M", "Millie,F", "Milo,U", "Misty,F", "Mocha,U", "Moose,M", "Morgan,U", "Murphy,M",
+    "Nala,U", "Nikki,F", "Olivia,F", "Oreo,U", "Pebbles,F", "Penny,F", "Rex,M", "Roxie,F",
+    "Rufus,M", "Sabrina,F", "Sadie,F", "Sam,U", "Samantha,F", "Sarah,F", "Sassy,U", "Scooter,M",
+    "Sebastian,M", "Sheba,F", "Simba,M", "Snowball,U", "Socks,U", "Sophia,F", "Sophie,F",
+    "Spencer,M", "Sunny,F", "Sylvester,M", "Taz,M", "Thomas,M", "Tinkerbell,F", "Toby,M",
+    "Tommy,M", "Tucker,M", "Winston,M", "Ziggy,M", "Zoe,F", "Zoey,F"};
+public static void loadPetTestData(final GLListStore listStore) {
+  final IGLColumn[] columns = new IGLColumn[] {Pet.AdoptionFee, Pet.FosterDate, Pet.IntakeDate, //
+      Pet.PetId, Pet.PetName, Pet.PetTypeId, Pet.Sex, Pet.TrainedFlag};
+  final GLRecordDef recordDef = new GLRecordDef(EGXTExamplesTable.Pet, columns, Pet.PetId);
   listStore.clear();
   int nextPetId = 1;
   for (final String petNameAndSex : PetNamesAndSex) {
     final String[] nameAndSex = petNameAndSex.split(",");
-    final int petTypeId = GXTTestbed.getRandomInt(petTypeListStore.size()) + 1;
-    final int year = 2012 + GXTTestbed.getRandomInt(2) - 1900;
-    final int month = GXTTestbed.getRandomInt(12);
-    final int day = GXTTestbed.getRandomInt(1, 29);
-    final int hour = GXTTestbed.getRandomInt(8, 18);
-    final Date intakeDate = new Date(year, month, day, hour, 0);
-    final Date fosterDate = new Date(year, month, day);
-    CalendarUtil.addDaysToDate(fosterDate, GXTTestbed.getRandomInt(3, 60));
-    final Pet pet = new Pet(cache, nextPetId, nameAndSex[0], petTypeId, nameAndSex[1], //
-                            GXTTestbed.getRandomInt(2) == 0, intakeDate, fosterDate, //
-                            new BigDecimal(GXTTestbed.getRandomInt(3000, 10000) / 100.0));
-    listStore.add(pet);
-    if (nextPetId >= maxNumberOfPets) {
-      break;
-    }
+    final String intakeDate = GLUtil.dateAddDays("20130501", GLUtil.getRandomInt(365));
+    final int hour = 6 + GLUtil.getRandomInt(12);
+    final int minute = GLUtil.getRandomInt(4) * 15;
+    final String intakeTime = (hour < 10 ? "0" : "") + hour + (minute < 10 ? "0" : "") + minute;
+    final String fosterDate = GLUtil.dateAddDays(intakeDate, 60);
+    final ArrayList<Object> valueList = new ArrayList<Object>(columns.length);
+    valueList.add(GLUtil.getRandomInt(3000, 10000) / 100.0);
+    valueList.add(fosterDate);
+    valueList.add(intakeDate + intakeTime);
+    valueList.add(nextPetId);
+    valueList.add(nameAndSex[0]);
+    valueList.add(GLUtil.getRandomInt(PetTypes.length) + 1);
+    valueList.add(nameAndSex[1]);
+    valueList.add(GLUtil.getRandomInt(2) == 0 ? "Y" : "N");
+    final GLRecord record = new GLRecord(recordDef, valueList);
+    listStore.add(record);
     ++nextPetId;
   }
 }
 //--------------------------------------------------------------------------------------------------
-private static final String[] PetTypeDefs = new String[] {"Cat,Cat", "Dog,Dog",
-    "Hedgehog,Hedgehog", "Invisible Pink Unicorn,IPU"};
-public static void loadPetTypeTestData(final ListStore<PetType> listStore) {
+private static final String[] PetTypes = new String[] {"Cat,Cat", "Dog,Dog"};
+public static void loadPetTypeTestData(final GLListStore listStore) {
+  final IGLColumn[] columns = new IGLColumn[] {PetType.PetTypeShortDesc, PetType.PetTypeDesc, //
+      PetType.PetTypeId};
+  final GLRecordDef recordDef = new GLRecordDef(EGXTExamplesTable.PetType, columns, //
+                                                PetType.PetTypeId);
   listStore.clear();
   int nextPetTypeId = 1;
-  for (final String petTypeDef : PetTypeDefs) {
-    final String[] petTypeFields = petTypeDef.split(",");
-    final PetType petType = new PetType(nextPetTypeId, petTypeFields[0], petTypeFields[1]);
-    listStore.add(petType);
+  for (final String petType : PetTypes) {
+    final String[] petTypeFields = petType.split(",");
+    final ArrayList<Object> valueList = new ArrayList<Object>(columns.length);
+    valueList.add(petTypeFields[0]);
+    valueList.add(petTypeFields[1]);
+    valueList.add(nextPetTypeId);
+    final GLRecord record = new GLRecord(recordDef, valueList);
+    listStore.add(record);
     ++nextPetTypeId;
   }
 }

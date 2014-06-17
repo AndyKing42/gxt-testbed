@@ -2,7 +2,7 @@ package org.greatlogic.gxttestbed.client.archive;
 
 import com.sencha.gxt.data.shared.ModelKeyProvider;
 
-public class PetType {
+class PetType {
 //--------------------------------------------------------------------------------------------------
 private final String _petTypeDesc;
 private final int    _petTypeId;

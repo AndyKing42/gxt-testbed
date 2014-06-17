@@ -2,7 +2,7 @@ package org.greatlogic.gxttestbed.client.archive;
 
 import java.util.TreeMap;
 
-public class Cache {
+class Cache {
 //--------------------------------------------------------------------------------------------------
 private static Cache             _currentCache;
 

@@ -5,7 +5,7 @@ import java.math.RoundingMode;
 import java.util.Date;
 import com.sencha.gxt.core.client.ValueProvider;
 
-public class Pet {
+class Pet {
 //--------------------------------------------------------------------------------------------------
 private BigDecimal  _adoptionFee;
 private final Cache _cache;
@@ -101,8 +101,8 @@ public static ValueProvider<Pet, String> getPetTypeValueProvider() {
       final PetType petType = pet._cache.getPetTypeStore().findUsingShortDesc(value);
       pet._petTypeId = petType == null ? 0 : petType.getPetTypeId();
       if (pet._petName.equalsIgnoreCase("Bo")) {
-        GXTTestbed.info(10, "getPetTypeValueProvider.setValue-pet:" + pet + " Value:" + value +
-                            " _petTypeId:" + pet._petTypeId);
+        GXTTestbed_archive.info(10, "getPetTypeValueProvider.setValue-pet:" + pet + " Value:" +
+                                    value + " _petTypeId:" + pet._petTypeId);
       }
     }
   };

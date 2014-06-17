@@ -79,7 +79,7 @@ import com.sencha.gxt.widget.core.client.grid.editing.GridInlineEditing;
 import com.sencha.gxt.widget.core.client.menu.Item;
 import com.sencha.gxt.widget.core.client.menu.MenuItem;
 
-public class PetGridWidget implements IsWidget {
+class PetGridWidget implements IsWidget {
 //--------------------------------------------------------------------------------------------------
 private final Cache                           _cache;
 private final HashSet<ColumnConfig<Pet, ?>>   _checkBoxSet;

@@ -364,6 +364,7 @@ private void createEditors() {
                         dateField);
 }
 //--------------------------------------------------------------------------------------------------
+@SuppressWarnings("unchecked")
 private void createEditorsPetType(final GridEditing<Pet> gridEditing) {
   final LabelProvider<PetType> labelProvider = new LabelProvider<PetType>() {
     @Override
@@ -446,33 +447,38 @@ private void resizeColumnToFit(final int columnIndex) {
   if (_petStore.size() > 0) {
     textMetrics.bind(_grid.getView().getCell(1, 1));
     for (final Pet pet : _petStore.getAll()) {
-      final Object value = columnConfig.getValueProvider().getValue(pet);
-      if (value != null) {
-        String valueAsString;
-        if (columnConfig.getCell() instanceof DateCell) {
-          final DateCell dateCell = (DateCell)columnConfig.getCell();
-          final SafeHtmlBuilder sb = new SafeHtmlBuilder();
-          dateCell.render(null, (Date)value, sb);
-          valueAsString = sb.toSafeHtml().asString();
-        }
-        else {
-          valueAsString = value.toString();
-        }
-        final int width = textMetrics.getWidth(valueAsString) + 12;
-        maxWidth = width > maxWidth ? width : maxWidth;
-      }
+      maxWidth = resizeColumnToFitGetMaxWidth(textMetrics, maxWidth, columnConfig, //
+                                              columnConfig.getValueProvider().getValue(pet));
     }
     for (final Store<Pet>.Record record : _petStore.getModifiedRecords()) {
-      final int width = textMetrics.getWidth(record.getValue(columnConfig.getValueProvider()) //
-                                                   .toString()) + 12;
-      // TODO: use the same logic as the unmodified values (e.g., check for dates)
-      maxWidth = width > maxWidth ? width : maxWidth;
+      maxWidth = resizeColumnToFitGetMaxWidth(textMetrics, maxWidth, columnConfig, //
+                                              record.getValue(columnConfig.getValueProvider()));
     }
   }
   columnConfig.setWidth(maxWidth);
   if (_checkBoxSet.contains(columnConfig)) {
     centerCheckBox(columnConfig);
   }
+}
+//--------------------------------------------------------------------------------------------------
+private int resizeColumnToFitGetMaxWidth(final TextMetrics textMetrics, final int currentMaxWidth,
+                                         final ColumnConfig<Pet, ?> columnConfig, final Object value) {
+  int result = currentMaxWidth;
+  if (value != null) {
+    String valueAsString;
+    if (columnConfig.getCell() instanceof DateCell) {
+      final DateCell dateCell = (DateCell)columnConfig.getCell();
+      final SafeHtmlBuilder sb = new SafeHtmlBuilder();
+      dateCell.render(null, (Date)value, sb);
+      valueAsString = sb.toSafeHtml().asString();
+    }
+    else {
+      valueAsString = value.toString();
+    }
+    final int width = textMetrics.getWidth(valueAsString) + 12;
+    result = width > result ? width : result;
+  }
+  return result;
 }
 //--------------------------------------------------------------------------------------------------
 private void resizeNextColumn(final ProgressMessageBox messageBox, final int columnIndex,

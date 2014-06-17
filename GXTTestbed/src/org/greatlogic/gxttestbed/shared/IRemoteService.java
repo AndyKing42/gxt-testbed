@@ -3,7 +3,7 @@ package org.greatlogic.gxttestbed.shared;
 import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
 
-@RemoteServiceRelativePath("GXTExamplesRemoteServiceServlet")
+@RemoteServiceRelativePath("GXTTestbedRemoteServiceServlet")
 public interface IRemoteService extends RemoteService {
 //--------------------------------------------------------------------------------------------------
 void delete(final String deletes);

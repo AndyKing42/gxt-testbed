@@ -246,8 +246,7 @@ private ColumnModel<Pet> createColumnModel() {
   columnConfig = createColumnConfigString(Pet.getPetNameValueProvider(), 100, "Name", //
                                           HasHorizontalAlignment.ALIGN_LEFT);
   columnConfigList.add(columnConfig);
-  columnConfig = createColumnConfigForeignKey(Pet.getPetTypeValueProvider(_petTypeStore), 80, //
-                                              "Pet Type");
+  columnConfig = createColumnConfigForeignKey(Pet.getPetTypeValueProvider(), 80, "Pet Type");
   columnConfigList.add(columnConfig);
   columnConfig = createColumnConfigString(Pet.getSexValueProvider(), 40, "Sex", //
                                           HasHorizontalAlignment.ALIGN_CENTER);

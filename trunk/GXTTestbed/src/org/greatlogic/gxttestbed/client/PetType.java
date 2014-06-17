@@ -13,8 +13,6 @@ public static ModelKeyProvider<? super PetType> getModelKeyProvider() {
     @Override
     public String getKey(final PetType petType) {
       final int petTypeId = petType == null ? 0 : petType.getPetTypeId();
-      GXTTestbed.info(10, "PetType.getModelKeyProvider-petTypeId:" + petTypeId + " petType:" +
-                          petType);
       return Integer.toString(petTypeId);
     }
   };

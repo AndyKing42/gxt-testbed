@@ -1,14 +1,13 @@
 package org.greatlogic.gxttestbed.client;
 
 import java.util.TreeMap;
-import com.sencha.gxt.data.shared.ListStore;
 
 public class Cache {
 //--------------------------------------------------------------------------------------------------
 private static Cache             _currentCache;
 
 private TreeMap<String, PetType> _petTypeByShortDescMap;
-private ListStore<PetType>       _petTypeStore;
+private PetTypeStore             _petTypeStore;
 //--------------------------------------------------------------------------------------------------
 public static Cache getCurrentCache() {
   if (_currentCache == null) {
@@ -32,9 +31,9 @@ public PetType findPetTypeUsingShortDesc(final CharSequence petTypeShortDesc) {
   return _petTypeByShortDescMap.get(petTypeShortDesc);
 }
 //--------------------------------------------------------------------------------------------------
-public ListStore<PetType> getPetTypeStore() {
+public PetTypeStore getPetTypeStore() {
   if (_petTypeStore == null) {
-    _petTypeStore = new ListStore<PetType>(PetType.getModelKeyProvider());
+    _petTypeStore = new PetTypeStore(PetType.getModelKeyProvider());
   }
   return _petTypeStore;
 }

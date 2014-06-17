@@ -9,7 +9,7 @@ import org.greatlogic.gxttestbed.client.glgwt.GLSQL;
 import org.greatlogic.gxttestbed.client.glgwt.GLUtil;
 import org.greatlogic.gxttestbed.client.glgwt.IGLColumn;
 import org.greatlogic.gxttestbed.client.glgwt.IGLSQLSelectCallback;
-import org.greatlogic.gxttestbed.shared.IDBEnums.EGXTExamplesTable;
+import org.greatlogic.gxttestbed.shared.IDBEnums.EGXTTestbedTable;
 import org.greatlogic.gxttestbed.shared.IDBEnums.PetType;
 
 public class GXTTestbedCache {
@@ -52,8 +52,8 @@ private static void loadPetTypes() {
   _petTypeListStore = new GLListStore();
   try {
     final GLSQL petTypeSQL = GLSQL.select();
-    petTypeSQL.from(EGXTExamplesTable.PetType);
-    petTypeSQL.orderBy(EGXTExamplesTable.PetType, PetType.PetTypeShortDesc, true);
+    petTypeSQL.from(EGXTTestbedTable.PetType);
+    petTypeSQL.orderBy(EGXTTestbedTable.PetType, PetType.PetTypeShortDesc, true);
     petTypeSQL.execute(_petTypeListStore, new IGLSQLSelectCallback() {
       @Override
       public void onFailure(final Throwable t) {

@@ -1,7 +1,7 @@
 package org.greatlogic.gxttestbed.client.glgwt;
 
 import org.greatlogic.gxttestbed.client.glgwt.IGLEnums.EGLColumnDataType;
-import org.greatlogic.gxttestbed.shared.IDBEnums.EGXTExamplesTable;
+import org.greatlogic.gxttestbed.shared.IDBEnums.EGXTTestbedTable;
 /*
  * Copyright 2006-2014 Andy King (GreatLogic.com)
  * 
@@ -22,7 +22,7 @@ public EGLColumnDataType getDataType();
 public int getDefaultGridColumnWidth();
 public int getNumberOfDecimalPlaces();
 public IGLColumn getParentDisplayColumn();
-public EGXTExamplesTable getParentTable();
+public EGXTTestbedTable getParentTable();
 public String getTitle();
 //--------------------------------------------------------------------------------------------------
 }

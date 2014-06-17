@@ -3,7 +3,7 @@ package org.greatlogic.gxttestbed.server;
 import org.apache.commons.lang3.StringUtils;
 import org.greatlogic.gxttestbed.client.glgwt.IGLTable;
 import org.greatlogic.gxttestbed.shared.IRemoteService;
-import org.greatlogic.gxttestbed.shared.IDBEnums.EGXTExamplesTable;
+import org.greatlogic.gxttestbed.shared.IDBEnums.EGXTTestbedTable;
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 import com.greatlogic.glbase.gldb.GLDBException;
 import com.greatlogic.glbase.gldb.GLSQL;
@@ -13,7 +13,7 @@ import com.greatlogic.glbase.glxml.GLXML;
 import com.greatlogic.glbase.glxml.GLXMLException;
 
 @SuppressWarnings("serial")
-public class GXTExamplesRemoteServiceServlet extends RemoteServiceServlet implements IRemoteService {
+public class GXTTestbedRemoteServiceServlet extends RemoteServiceServlet implements IRemoteService {
 //--------------------------------------------------------------------------------------------------
 /**
  * Deletes any number of rows from any number of tables. The format for the "deletes" parameter is:
@@ -37,7 +37,7 @@ public void delete(final String deletes) {
       if (colonIndex > 0) {
         final int slashIndex = tableLine.indexOf('/', colonIndex + 2);
         if (slashIndex > 0 && slashIndex < tableLine.length() - 1) {
-          final IGLTable table = EGXTExamplesTable.valueOf(tableLine.substring(colonIndex + 1, //
+          final IGLTable table = EGXTTestbedTable.valueOf(tableLine.substring(colonIndex + 1, //
                                                                                slashIndex));
           final GLSQL deleteSQL = GLSQL.delete(table.toString());
           deleteSQL.whereAnd(0, table.getPrimaryKeyColumn().toString() + " in (" + //
@@ -133,7 +133,7 @@ public void update(final String updates) {
       if (colonIndex > 0) {
         final int slashIndex = row.indexOf('/', colonIndex);
         if (slashIndex > colonIndex + 1) {
-          final IGLTable table = EGXTExamplesTable.valueOf(row.substring(colonIndex + 1, //
+          final IGLTable table = EGXTTestbedTable.valueOf(row.substring(colonIndex + 1, //
                                                                          slashIndex));
           colonIndex = row.indexOf(':', slashIndex);
           if (colonIndex > slashIndex + 1 && colonIndex < row.length() - 1) {

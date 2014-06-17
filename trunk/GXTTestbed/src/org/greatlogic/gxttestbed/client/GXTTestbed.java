@@ -21,7 +21,7 @@ import org.greatlogic.gxttestbed.client.glgwt.IGLSQLSelectCallback;
 import org.greatlogic.gxttestbed.client.widget.GridWidgetManager;
 import org.greatlogic.gxttestbed.client.widget.MainLayoutWidget;
 import org.greatlogic.gxttestbed.client.widget.PetGridWidget;
-import org.greatlogic.gxttestbed.shared.IDBEnums.EGXTExamplesTable;
+import org.greatlogic.gxttestbed.shared.IDBEnums.EGXTTestbedTable;
 import org.greatlogic.gxttestbed.shared.IDBEnums.Pet;
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.user.client.rpc.AsyncCallback;
@@ -33,8 +33,8 @@ public class GXTTestbed implements EntryPoint {
 private void loadPets(final GLListStore petListStore) {
   try {
     final GLSQL petSQL = GLSQL.select();
-    petSQL.from(EGXTExamplesTable.Pet);
-    petSQL.orderBy(EGXTExamplesTable.Pet, Pet.PetName, true);
+    petSQL.from(EGXTTestbedTable.Pet);
+    petSQL.orderBy(EGXTTestbedTable.Pet, Pet.PetName, true);
     petSQL.execute(petListStore, new IGLSQLSelectCallback() {
       @Override
       public void onFailure(final Throwable t) {

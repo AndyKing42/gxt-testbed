@@ -6,11 +6,11 @@ import org.greatlogic.gxttestbed.client.glgwt.IGLEnums.EGLColumnDataType;
 
 public interface IDBEnums {
 //--------------------------------------------------------------------------------------------------
-public enum EGXTExamplesTable implements IGLTable {
+public enum EGXTTestbedTable implements IGLTable {
 Pet(IDBEnums.Pet.PetId),
 PetType(IDBEnums.PetType.PetTypeId);
 private final IGLColumn _primaryKeyColumn;
-private EGXTExamplesTable(final IGLColumn primaryKeyColumn) {
+private EGXTTestbedTable(final IGLColumn primaryKeyColumn) {
   _primaryKeyColumn = primaryKeyColumn;
 }
 @Override
@@ -32,8 +32,8 @@ public IGLColumn getParentDisplayColumn() {
   return PetType.PetTypeShortDesc;
 }
 @Override
-public EGXTExamplesTable getParentTable() {
-  return EGXTExamplesTable.PetType;
+public EGXTTestbedTable getParentTable() {
+  return EGXTTestbedTable.PetType;
 }
 },
 Sex(EGLColumnDataType.String, 0, "Sex", 50) {
@@ -79,7 +79,7 @@ public IGLColumn getParentDisplayColumn() {
   return null;
 }
 @Override
-public EGXTExamplesTable getParentTable() {
+public EGXTTestbedTable getParentTable() {
   return null;
 }
 @Override
@@ -124,7 +124,7 @@ public IGLColumn getParentDisplayColumn() {
   return null;
 }
 @Override
-public EGXTExamplesTable getParentTable() {
+public EGXTTestbedTable getParentTable() {
   return null;
 }
 @Override

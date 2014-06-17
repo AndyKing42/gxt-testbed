@@ -13,14 +13,13 @@ package org.greatlogic.gxttestbed.client.archive;
  * the License.
  */
 import java.util.Random;
-import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.user.client.ui.RootPanel;
 import com.sencha.gxt.data.shared.ListStore;
 import com.sencha.gxt.widget.core.client.info.DefaultInfoConfig;
 import com.sencha.gxt.widget.core.client.info.Info;
 import com.sencha.gxt.widget.core.client.info.InfoConfig;
 
-public class GXTTestbed implements EntryPoint {
+class GXTTestbed_archive {
 //--------------------------------------------------------------------------------------------------
 private static Random _random;
 //--------------------------------------------------------------------------------------------------
@@ -54,7 +53,6 @@ public static void info(final int seconds, final String message) {
   info.show(infoConfig);
 }
 //--------------------------------------------------------------------------------------------------
-@Override
 public void onModuleLoad() {
   final Cache cache = Cache.getCurrentCache();
   final ListStore<PetType> petTypeStore = cache.getPetTypeStore();

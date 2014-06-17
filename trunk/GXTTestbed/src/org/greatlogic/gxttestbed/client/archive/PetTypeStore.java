@@ -6,7 +6,7 @@ import java.util.TreeMap;
 import com.sencha.gxt.data.shared.ListStore;
 import com.sencha.gxt.data.shared.ModelKeyProvider;
 
-public class PetTypeStore extends ListStore<PetType> {
+class PetTypeStore extends ListStore<PetType> {
 //--------------------------------------------------------------------------------------------------
 private final TreeMap<Integer, PetType> _petTypeByIdMap;
 private final TreeMap<String, PetType>  _petTypeByShortDescMap;

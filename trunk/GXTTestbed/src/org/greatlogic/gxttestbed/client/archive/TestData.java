@@ -29,17 +29,17 @@ public static void loadPetTestData(final Cache cache, final ListStore<Pet> listS
   int nextPetId = 1;
   for (final String petNameAndSex : PetNamesAndSex) {
     final String[] nameAndSex = petNameAndSex.split(",");
-    final int petTypeId = GXTTestbed.getRandomInt(petTypeListStore.size()) + 1;
-    final int year = 2012 + GXTTestbed.getRandomInt(2) - 1900;
-    final int month = GXTTestbed.getRandomInt(12);
-    final int day = GXTTestbed.getRandomInt(1, 29);
-    final int hour = GXTTestbed.getRandomInt(8, 18);
+    final int petTypeId = GXTTestbed_archive.getRandomInt(petTypeListStore.size()) + 1;
+    final int year = 2012 + GXTTestbed_archive.getRandomInt(2) - 1900;
+    final int month = GXTTestbed_archive.getRandomInt(12);
+    final int day = GXTTestbed_archive.getRandomInt(1, 29);
+    final int hour = GXTTestbed_archive.getRandomInt(8, 18);
     final Date intakeDate = new Date(year, month, day, hour, 0);
     final Date fosterDate = new Date(year, month, day);
-    CalendarUtil.addDaysToDate(fosterDate, GXTTestbed.getRandomInt(3, 60));
+    CalendarUtil.addDaysToDate(fosterDate, GXTTestbed_archive.getRandomInt(3, 60));
     final Pet pet = new Pet(cache, nextPetId, nameAndSex[0], petTypeId, nameAndSex[1], //
-                            GXTTestbed.getRandomInt(2) == 0, intakeDate, fosterDate, //
-                            new BigDecimal(GXTTestbed.getRandomInt(3000, 10000) / 100.0));
+                            GXTTestbed_archive.getRandomInt(2) == 0, intakeDate, fosterDate, //
+                            new BigDecimal(GXTTestbed_archive.getRandomInt(3000, 10000) / 100.0));
     listStore.add(pet);
     if (nextPetId >= maxNumberOfPets) {
       break;

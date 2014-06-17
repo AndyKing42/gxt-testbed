@@ -61,7 +61,7 @@ public void onModuleLoad() {
   TestData.loadPetTypeTestData(petTypeStore);
   final PetGridWidget petGrid = new PetGridWidget(cache);
   RootPanel.get().add(petGrid);
-  TestData.loadPetTestData(petGrid.getListStore(), 20, petTypeStore);
+  TestData.loadPetTestData(cache, petGrid.getListStore(), 99999, petTypeStore);
 }
 //--------------------------------------------------------------------------------------------------
 }

@@ -22,7 +22,8 @@ private static final String[] PetNamesAndSex = new String[] {"Angel,F", "Ashley,
     "Taz,M", "Thomas,M", "Tinkerbell,F", "Toby,M", "Tommy,M", "Tucker,M", "Winston,M", "Ziggy,M",
     "Zoe,F", "Zoey,F"                        };
 @SuppressWarnings("deprecation")
-public static void loadPetTestData(final ListStore<Pet> listStore, final int maxNumberOfPets,
+public static void loadPetTestData(final Cache cache, final ListStore<Pet> listStore,
+                                   final int maxNumberOfPets,
                                    final ListStore<PetType> petTypeListStore) {
   listStore.clear();
   int nextPetId = 1;
@@ -36,7 +37,7 @@ public static void loadPetTestData(final ListStore<Pet> listStore, final int max
     final Date intakeDate = new Date(year, month, day, hour, 0);
     final Date fosterDate = new Date(year, month, day);
     CalendarUtil.addDaysToDate(fosterDate, GXTTestbed.getRandomInt(3, 60));
-    final Pet pet = new Pet(nextPetId, nameAndSex[0], petTypeId, nameAndSex[1], //
+    final Pet pet = new Pet(cache, nextPetId, nameAndSex[0], petTypeId, nameAndSex[1], //
                             GXTTestbed.getRandomInt(2) == 0, intakeDate, fosterDate, //
                             new BigDecimal(GXTTestbed.getRandomInt(3000, 10000) / 100.0));
     listStore.add(pet);

@@ -4,18 +4,18 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.Date;
 import com.sencha.gxt.core.client.ValueProvider;
-import com.sencha.gxt.data.shared.ListStore;
 
 public class Pet {
 //--------------------------------------------------------------------------------------------------
-private BigDecimal _adoptionFee;
-private Date       _fosterDate;
-private Date       _intakeDate;
-private final int  _petId;
-private String     _petName;
-private int        _petTypeId;
-private String     _sex;
-protected boolean  _trained;
+private BigDecimal  _adoptionFee;
+private final Cache _cache;
+private Date        _fosterDate;
+private Date        _intakeDate;
+private final int   _petId;
+private String      _petName;
+private int         _petTypeId;
+private String      _sex;
+protected boolean   _trained;
 //--------------------------------------------------------------------------------------------------
 public static ValueProvider<Pet, BigDecimal> getAdoptionFeeValueProvider() {
   return new ValueProvider<Pet, BigDecimal>() {
@@ -85,7 +85,7 @@ public static ValueProvider<Pet, String> getPetNameValueProvider() {
   };
 }
 //--------------------------------------------------------------------------------------------------
-public static ValueProvider<Pet, String> getPetTypeValueProvider(final ListStore<PetType> petTypeStore) {
+public static ValueProvider<Pet, String> getPetTypeValueProvider() {
   return new ValueProvider<Pet, String>() {
     @Override
     public String getPath() {
@@ -93,15 +93,17 @@ public static ValueProvider<Pet, String> getPetTypeValueProvider(final ListStore
     }
     @Override
     public String getValue(final Pet pet) {
-      final PetType petType = petTypeStore.findModelWithKey(Integer.toString(pet._petTypeId));
+      final PetType petType = pet._cache.getPetTypeStore().findUsingId(pet._petTypeId);
       return petType == null ? "???" : petType.getPetTypeShortDesc();
     }
     @Override
     public void setValue(final Pet pet, final String value) {
-      final PetType petType = petTypeStore.findModelWithKey(value);
+      final PetType petType = pet._cache.getPetTypeStore().findUsingShortDesc(value);
       pet._petTypeId = petType == null ? 0 : petType.getPetTypeId();
-      GXTTestbed.info(10, "getPetTypeValueProvider.setValue:" + value + " _petTypeId:" +
-                          pet._petTypeId);
+      if (pet._petName.equalsIgnoreCase("Bo")) {
+        GXTTestbed.info(10, "getPetTypeValueProvider.setValue-pet:" + pet + " Value:" + value +
+                            " _petTypeId:" + pet._petTypeId);
+      }
     }
   };
 }
@@ -140,9 +142,10 @@ public static ValueProvider<Pet, Boolean> getTrainedFlagValueProvider() {
   };
 }
 //--------------------------------------------------------------------------------------------------
-public Pet(final int petId, final String petName, final int petTypeId, final String sex,
-           final boolean trained, final Date intakeDate, final Date fosterDate,
+public Pet(final Cache cache, final int petId, final String petName, final int petTypeId,
+           final String sex, final boolean trained, final Date intakeDate, final Date fosterDate,
            final BigDecimal adoptionFee) {
+  _cache = cache;
   _petId = petId;
   _petName = petName;
   _petTypeId = petTypeId;
@@ -155,6 +158,11 @@ public Pet(final int petId, final String petName, final int petTypeId, final Str
 //--------------------------------------------------------------------------------------------------
 public int getPetId() {
   return _petId;
+}
+//--------------------------------------------------------------------------------------------------
+@Override
+public String toString() {
+  return "PetId:" + _petId + " PetName:" + _petName;
 }
 //--------------------------------------------------------------------------------------------------
 }

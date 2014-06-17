@@ -1,4 +1,4 @@
-package org.greatlogic.gxttestbed.client;
+package org.greatlogic.gxttestbed.client.archive;
 
 import java.util.Date;
 import com.google.gwt.i18n.client.DateTimeFormat;

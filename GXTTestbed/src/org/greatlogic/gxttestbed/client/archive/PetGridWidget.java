@@ -1,4 +1,4 @@
-package org.greatlogic.gxttestbed.client;
+package org.greatlogic.gxttestbed.client.archive;
 /*
  * Copyright 2006-2014 Andy King (GreatLogic.com)
  * 

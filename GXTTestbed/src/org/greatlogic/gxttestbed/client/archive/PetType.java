@@ -1,4 +1,4 @@
-package org.greatlogic.gxttestbed.client;
+package org.greatlogic.gxttestbed.client.archive;
 
 import com.sencha.gxt.data.shared.ModelKeyProvider;
 

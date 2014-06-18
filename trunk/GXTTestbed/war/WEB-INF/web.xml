@@ -5,7 +5,6 @@
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://java.sun.com/xml/ns/javaee 
               http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd">
-<!--
   <context-param>
     <param-name>ConfigFilename</param-name>
     <param-value>cfg/GXTTestbed.cfg</param-value>
@@ -21,7 +20,6 @@
     <servlet-name>GXTTestbedRemoteServiceServlet</servlet-name>
     <url-pattern>/gxttestbed/GXTTestbedRemoteServiceServlet</url-pattern>
   </servlet-mapping>
--->
   <welcome-file-list>
     <welcome-file>index.html</welcome-file>
   </welcome-file-list>

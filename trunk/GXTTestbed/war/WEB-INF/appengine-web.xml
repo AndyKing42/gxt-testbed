@@ -20,4 +20,5 @@
   </system-properties>
   <sessions-enabled>true</sessions-enabled>
   <async-session-persistence enabled="true"/>
+  <use-google-connector-j>true</use-google-connector-j>
 </appengine-web-app>

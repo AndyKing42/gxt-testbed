@@ -67,11 +67,6 @@ private void login() {
 //--------------------------------------------------------------------------------------------------
 @Override
 public void onModuleLoad() {
-  for (int i = 0; i < 1000000000; ++i) {
-    if (i == 12345678) {
-      GLUtil.info(10, "asdf");
-    }
-  }
   GLUtil.initialize();
   final MainLayoutWidget mainLayoutWidget = new MainLayoutWidget();
   final boolean loadTestData = false;

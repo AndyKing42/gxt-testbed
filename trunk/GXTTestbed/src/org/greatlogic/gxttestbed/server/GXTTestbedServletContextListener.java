@@ -47,7 +47,7 @@ public void contextInitialized(final ServletContextEvent event) {
     fapElement.addAttribute(EGLDBConfigAttribute.User, "andy");
     GLDBType.getDBType(EGLDBType.MySQL).setDriverManagerClassName("com.mysql.jdbc.GoogleDriver");
     fapElement.addAttribute(EGLDBConfigAttribute.ConnectionURL,
-                            "jdbc:google:mysql://your-project-id:your-instance-name/FosterAPet");
+                            "jdbc:google:mysql://gxt-testbed:foster-a-pet/FosterAPet");
   }
   else {
     fapElement.addAttribute(EGLDBConfigAttribute.Password, "andy");

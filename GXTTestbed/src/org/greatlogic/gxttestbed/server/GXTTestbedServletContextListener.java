@@ -3,6 +3,7 @@ package org.greatlogic.gxttestbed.server;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 import com.greatlogic.glbase.gllib.GLLog;
+import com.greatlogic.glbase.gllib.GLUtil;
 import com.greatlogic.glbase.gllib.IGLProgram;
 import com.greatlogic.glbase.glxml.GLXMLElement;
 
@@ -28,11 +29,13 @@ public void contextInitialized(final ServletContextEvent event) {
   //  }
   //  GLUtil.initializeProgram(new GXTTestbedProgram(), null, null, true, //
   //                           "<args ConfigFilename='" + configFilename + "'/>");
+  GLUtil.setUsingGAE(true);
   GLLog.initialize(true);
   final GLXMLElement logElement = new GLXMLElement("Log");
   logElement.addAttribute("Level", "Debug");
   logElement.addAttribute("LoggerName", "GXTTestbed");
   GLLog.setLoggingOptions(logElement, null, null);
+  //  GLDataSource.initialize(dsElement);
   GLLog.infoSummary("Context initialized");
 }
 //--------------------------------------------------------------------------------------------------

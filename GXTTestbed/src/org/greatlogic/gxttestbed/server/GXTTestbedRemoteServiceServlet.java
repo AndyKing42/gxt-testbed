@@ -2,6 +2,7 @@ package org.greatlogic.gxttestbed.server;
 
 import org.greatlogic.gxttestbed.shared.IRemoteService;
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
+import com.greatlogic.glbase.gllib.GLLog;
 
 @SuppressWarnings("serial")
 public class GXTTestbedRemoteServiceServlet extends RemoteServiceServlet implements IRemoteService {
@@ -71,7 +72,7 @@ public Integer login(final String loginName, final String password) {
 //--------------------------------------------------------------------------------------------------
 @Override
 public String select(final String xmlRequest) {
-  //  GLLog.debug(xmlRequest);
+  GLLog.debug(xmlRequest);
   //  final StringBuilder result = new StringBuilder();
   //  try {
   //    final GLXML xml = new GLXML(xmlRequest);

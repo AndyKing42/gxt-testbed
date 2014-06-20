@@ -43,18 +43,21 @@ public void contextInitialized(final ServletContextEvent event) {
   fapElement.addAttribute(EGLDBConfigAttribute.Name, "FosterAPet");
   fapElement.addAttribute(EGLDBConfigAttribute.Type, EGLDBType.MySQL.name());
   if (SystemProperty.environment.value() == SystemProperty.Environment.Value.Production) {
-    fapElement.addAttribute(EGLDBConfigAttribute.Password, "root");
-    fapElement.addAttribute(EGLDBConfigAttribute.User, "andy");
+    GLLog.debug("Production");
+    fapElement.addAttribute(EGLDBConfigAttribute.Password, "");
+    fapElement.addAttribute(EGLDBConfigAttribute.User, "root");
     GLDBType.getDBType(EGLDBType.MySQL).setDriverManagerClassName("com.mysql.jdbc.GoogleDriver");
     fapElement.addAttribute(EGLDBConfigAttribute.ConnectionURL,
-                            "jdbc:google:mysql://gxt-testbed:foster-a-pet/FosterAPet");
+                            "jdbc:google:mysql://gxt-testbed:foster-a-pet/fosterapet");
   }
   else {
+    GLLog.debug("Non-production");
     fapElement.addAttribute(EGLDBConfigAttribute.Password, "andy");
     fapElement.addAttribute(EGLDBConfigAttribute.ServerAddress, "localhost");
     fapElement.addAttribute(EGLDBConfigAttribute.User, "andy");
   }
   GLDataSource.initialize(dsElement);
+  GLLog.debug(dsElement.toString());
   GLLog.infoSummary("Context initialized");
 }
 //--------------------------------------------------------------------------------------------------

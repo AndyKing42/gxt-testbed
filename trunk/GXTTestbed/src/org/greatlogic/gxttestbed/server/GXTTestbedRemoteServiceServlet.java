@@ -1,8 +1,13 @@
 package org.greatlogic.gxttestbed.server;
 
+import org.apache.commons.lang3.StringUtils;
 import org.greatlogic.gxttestbed.shared.IRemoteService;
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
+import com.greatlogic.glbase.gldb.GLDBException;
+import com.greatlogic.glbase.gldb.GLSQL;
 import com.greatlogic.glbase.gllib.GLLog;
+import com.greatlogic.glbase.glxml.GLXML;
+import com.greatlogic.glbase.glxml.GLXMLException;
 
 @SuppressWarnings("serial")
 public class GXTTestbedRemoteServiceServlet extends RemoteServiceServlet implements IRemoteService {
@@ -73,34 +78,33 @@ public Integer login(final String loginName, final String password) {
 @Override
 public String select(final String xmlRequest) {
   GLLog.debug(xmlRequest);
-  //  final StringBuilder result = new StringBuilder();
-  //  try {
-  //    final GLXML xml = new GLXML(xmlRequest);
-  //    final GLSQL sql = GLSQL.selectUsingXML(xml);
-  //    sql.open();
-  //    try {
-  //      result.append(StringUtils.join(sql.getColumnNameIterable(), ',')).append('\n');
-  //      while (sql.next(false)) {
-  //        sql.getRowAsCSV(result);
-  //        result.append('\n');
-  //      }
-  //    }
-  //    finally {
-  //      sql.close();
-  //    }
-  //  }
-  //  catch (final GLDBException dbe) {
-  //    GLLog.major("Error executing 'select'", dbe);
-  //    result.setLength(0);
-  //    result.append("error");
-  //  }
-  //  catch (final GLXMLException xmle) {
-  //    GLLog.major("Error processing XML for 'select'", xmle);
-  //    result.setLength(0);
-  //    result.append("error");
-  //  }
-  //  return result.toString();
-  return "";
+  final StringBuilder result = new StringBuilder();
+  try {
+    final GLXML xml = new GLXML(xmlRequest);
+    final GLSQL sql = GLSQL.selectUsingXML(xml);
+    sql.open();
+    try {
+      result.append(StringUtils.join(sql.getColumnNameIterable(), ',')).append('\n');
+      while (sql.next(false)) {
+        sql.getRowAsCSV(result);
+        result.append('\n');
+      }
+    }
+    finally {
+      sql.close();
+    }
+  }
+  catch (final GLDBException dbe) {
+    GLLog.major("Error executing 'select'", dbe);
+    result.setLength(0);
+    result.append("error");
+  }
+  catch (final GLXMLException xmle) {
+    GLLog.major("Error processing XML for 'select'", xmle);
+    result.setLength(0);
+    result.append("error");
+  }
+  return result.toString();
 }
 //--------------------------------------------------------------------------------------------------
 /**

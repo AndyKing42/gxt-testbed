@@ -12,17 +12,27 @@ package org.greatlogic.gxttestbed.client.widget;
  * or implied. See the License for the specific language governing permissions and limitations under
  * the License.
  */
+import org.greatlogic.gxttestbed.client.glgwt.GLUtil;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
+import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.Widget;
 import com.sencha.gxt.widget.core.client.ContentPanel;
+import com.sencha.gxt.widget.core.client.Dialog.PredefinedButton;
+import com.sencha.gxt.widget.core.client.box.ConfirmMessageBox;
+import com.sencha.gxt.widget.core.client.button.TextButton;
+import com.sencha.gxt.widget.core.client.event.DialogHideEvent;
+import com.sencha.gxt.widget.core.client.event.DialogHideEvent.DialogHideHandler;
+import com.sencha.gxt.widget.core.client.event.SelectEvent;
 
 public class MainLayoutWidget extends Composite {
 //--------------------------------------------------------------------------------------------------
 @UiField
 ContentPanel centerPanel;
+@UiField
+TextButton   reloadTestDataButton;
 //==================================================================================================
 interface MainLayoutWidgetUiBinder extends UiBinder<Widget, MainLayoutWidget> { //
 }
@@ -35,6 +45,22 @@ public MainLayoutWidget() {
 //--------------------------------------------------------------------------------------------------
 public ContentPanel getCenterPanel() {
   return centerPanel;
+}
+//--------------------------------------------------------------------------------------------------
+@UiHandler({"reloadTestDataButton"})
+public void onReloadTestDataButtonClick(final SelectEvent event) {
+  final ConfirmMessageBox messageBox;
+  messageBox = new ConfirmMessageBox("Reload Test Data", //
+                                     "Are you sure you want to erase and reload all test data?");
+  messageBox.addDialogHideHandler(new DialogHideHandler() {
+    @Override
+    public void onDialogHide(final DialogHideEvent hideEvent) {
+      if (hideEvent.getHideButton() == PredefinedButton.YES) {
+        GLUtil.reloadTestData();
+      }
+    }
+  });
+  messageBox.show();
 }
 //--------------------------------------------------------------------------------------------------
 }

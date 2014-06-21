@@ -12,44 +12,19 @@ package org.greatlogic.gxttestbed.client;
  * or implied. See the License for the specific language governing permissions and limitations under
  * the License.
  */
-import org.greatlogic.gxttestbed.client.glgwt.GLDBException;
 import org.greatlogic.gxttestbed.client.glgwt.GLGridWidget;
 import org.greatlogic.gxttestbed.client.glgwt.GLListStore;
-import org.greatlogic.gxttestbed.client.glgwt.GLSQL;
 import org.greatlogic.gxttestbed.client.glgwt.GLUtil;
-import org.greatlogic.gxttestbed.client.glgwt.IGLSQLSelectCallback;
 import org.greatlogic.gxttestbed.client.widget.GridWidgetManager;
 import org.greatlogic.gxttestbed.client.widget.MainLayoutWidget;
 import org.greatlogic.gxttestbed.client.widget.PetGridWidget;
-import org.greatlogic.gxttestbed.shared.IDBEnums.EGXTTestbedTable;
-import org.greatlogic.gxttestbed.shared.IDBEnums.Pet;
+import org.greatlogic.gxttestbed.shared.TestData;
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.RootPanel;
 import com.sencha.gxt.widget.core.client.box.MessageBox;
 
 public class GXTTestbed implements EntryPoint {
-//--------------------------------------------------------------------------------------------------
-private void loadPets(final GLListStore petListStore) {
-  try {
-    final GLSQL petSQL = GLSQL.select();
-    petSQL.from(EGXTTestbedTable.Pet);
-    petSQL.orderBy(EGXTTestbedTable.Pet, Pet.PetName, true);
-    petSQL.execute(petListStore, new IGLSQLSelectCallback() {
-      @Override
-      public void onFailure(final Throwable t) {
-        GLUtil.info(30, "Pet loading failed: " + t.getMessage());
-      }
-      @Override
-      public void onSuccess(final GLListStore listStore) {
-        GLUtil.info(5, "Pets loaded successfully");
-      }
-    });
-  }
-  catch (final GLDBException dbe) {
-
-  }
-}
 //--------------------------------------------------------------------------------------------------
 private void login() {
   GLUtil.getRemoteService().login("name", "password", new AsyncCallback<Integer>() {
@@ -80,7 +55,7 @@ public void onModuleLoad() {
   }
   mainLayoutWidget.getCenterPanel().setWidget(gridWidget);
   RootPanel.get().add(mainLayoutWidget);
-  loadPets(petGrid.getListStore());
+  GXTTestbedCache.loadPets(petGrid.getListStore());
 }
 //--------------------------------------------------------------------------------------------------
 }

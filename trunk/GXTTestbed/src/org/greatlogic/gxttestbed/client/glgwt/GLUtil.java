@@ -15,10 +15,15 @@ package org.greatlogic.gxttestbed.client.glgwt;
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.Random;
+import org.greatlogic.gxttestbed.client.GXTTestbedCache;
+import org.greatlogic.gxttestbed.client.widget.GridWidgetManager;
+import org.greatlogic.gxttestbed.client.widget.PetGridWidget;
+import org.greatlogic.gxttestbed.shared.IGXTTestbedEnums.ETestDataOption;
 import org.greatlogic.gxttestbed.shared.IRemoteService;
 import org.greatlogic.gxttestbed.shared.IRemoteServiceAsync;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.i18n.client.DateTimeFormat;
+import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.datepicker.client.CalendarUtil;
 import com.sencha.gxt.widget.core.client.info.DefaultInfoConfig;
 import com.sencha.gxt.widget.core.client.info.Info;
@@ -153,6 +158,22 @@ public static void initialize() {
 //--------------------------------------------------------------------------------------------------
 public static boolean isBlank(final CharSequence s) {
   return s == null || s.toString().trim().length() == 0;
+}
+//--------------------------------------------------------------------------------------------------
+public static void reloadTestData() {
+  _remoteService.loadTestData(ETestDataOption.Reload.name(), new AsyncCallback<Void>() {
+    @Override
+    public void onFailure(final Throwable t) {
+      GLUtil.info(10, "Test data reload failed:" + t.getMessage());
+    }
+    @Override
+    public void onSuccess(final Void result) {
+      GLUtil.info(10, "Test data reload is complete");
+      final PetGridWidget petGrid = GridWidgetManager.getPetGrid("Main");
+      GXTTestbedCache.load();
+      GXTTestbedCache.loadPets(petGrid.getListStore());
+    }
+  });
 }
 //--------------------------------------------------------------------------------------------------
 /**

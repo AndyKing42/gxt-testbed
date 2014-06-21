@@ -87,7 +87,9 @@
     <container:BorderLayoutContainer borders='true'>
       <container:north layoutData='{northData}'>
         <gxt:ContentPanel headerVisible='false'>
-          <g:Label text='North'/>
+          <button:TextButton
+            ui:field='reloadTestDataButton'
+            text='Reload Test Data'/>
         </gxt:ContentPanel>
       </container:north>
       <container:west layoutData='{westData}'>

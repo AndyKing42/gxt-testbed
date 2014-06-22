@@ -214,7 +214,8 @@ private ColumnConfig<GLRecord, Date> createColumnConfigDateTime(final GLGridColu
 private ColumnConfig<GLRecord, String> createColumnConfigForeignKey(final GLGridColumnDef gridColumnDef,
                                                                     final IGLColumn column) {
   final ColumnConfig<GLRecord, String> result;
-  final ValueProvider<GLRecord, String> valueProvider = new GLForeignKeyValueProvider(column);
+  final ValueProvider<GLRecord, String> valueProvider;
+  valueProvider = new GLForeignKeyValueProvider(lookupTable, column);
   result = new ColumnConfig<GLRecord, String>(valueProvider, gridColumnDef.getWidth(), //
                                               column.getTitle());
   result.setHorizontalAlignment(gridColumnDef.getHorizontalAlignment());

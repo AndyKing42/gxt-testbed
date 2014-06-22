@@ -15,8 +15,9 @@ package org.greatlogic.gxttestbed.client.glgwt;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.Date;
-import java.util.TreeMap;
+import org.greatlogic.gxttestbed.client.GXTTestbedCache;
 import org.greatlogic.gxttestbed.shared.IGLColumn;
+import org.greatlogic.gxttestbed.shared.IGLTable;
 import com.google.gwt.i18n.client.DateTimeFormat;
 import com.sencha.gxt.core.client.ValueProvider;
 
@@ -120,35 +121,19 @@ public String getPath() {
 }
 //==================================================================================================
 public static class GLForeignKeyValueProvider implements ValueProvider<GLRecord, String> {
-private final TreeMap<Integer, String> _parentDisplayValueMap;
-private final IGLColumn                _column;
-public GLForeignKeyValueProvider(final IGLColumn column) {
+private final IGLColumn _column;
+private final IGLTable  _lookupTable;
+public GLForeignKeyValueProvider(final IGLTable lookupTable, final IGLColumn column) {
+  _lookupTable = lookupTable;
   _column = column;
-  _parentDisplayValueMap = new TreeMap<Integer, String>();
-  _parentDisplayValueMap.put(1, "Dog");
-  _parentDisplayValueMap.put(2, "Cat");
-  _parentDisplayValueMap.put(3, "Unicorn");
-  _parentDisplayValueMap.put(4, "FSM");
 }
 @Override
 public String getValue(final GLRecord record) {
-  String result;
-  try {
-    result = _parentDisplayValueMap.get(record.asInt(_column));
-    return result;
-  }
-  catch (final GLInvalidFieldOrColumnException ifoce) {
-    return "";
-  }
+  return GXTTestbedCache.lookupDisplayValue(_lookupTable, record.asInt(_column));
 }
 @Override
 public void setValue(final GLRecord record, final String value) {
-  try {
-    record.put(_column, value);
-  }
-  catch (final GLInvalidFieldOrColumnException ifoce) {
-    //
-  }
+  record.put(_column, GXTTestbedCache.lookupKeyValue(_lookupTable, value));
 }
 @Override
 public String getPath() {

@@ -52,11 +52,13 @@ private static void reloadPets() throws GLDBException {
     final String intakeDate = GLUtil.dateAddDays("20130501", GLUtil.getRandomInt(365));
     final int hour = 6 + GLUtil.getRandomInt(12);
     final int minute = GLUtil.getRandomInt(4) * 15;
-    final String intakeTime = (hour < 10 ? "0" : "") + hour + (minute < 10 ? "0" : "") + minute;
+    final String intakeTime = (hour < 10 ? "0" : "") + hour + (minute < 10 ? "0" : "") + //
+                              minute + "00";
     final String fosterDate = GLUtil.dateAddDays(intakeDate, 60);
     petSQL.setValue(Pet.AdoptionFee.name(), GLUtil.getRandomInt(3000, 10000) / 100.0);
     petSQL.setValue(Pet.FosterDate.name(), fosterDate);
     petSQL.setValue(Pet.IntakeDate.name(), intakeDate + intakeTime);
+    petSQL.setValue(Pet.NumberOfFosters.name(), GLUtil.getRandomInt(5));
     petSQL.setValue(Pet.PetId.name(), nextPetId);
     petSQL.setValue(Pet.PetName.name(), nameAndSex[0]);
     petSQL.setValue(Pet.PetTypeId.name(), GLUtil.getRandomInt(PetTypes.length) + 1);
@@ -67,7 +69,8 @@ private static void reloadPets() throws GLDBException {
   }
 }
 //--------------------------------------------------------------------------------------------------
-private static final String[] PetTypes = new String[] {"Cat,Cat", "Dog,Dog"};
+private static final String[] PetTypes = new String[] {"Cat,Cat", "Dog,Dog", "Hedgedog,Hedgehog",
+    "Invisible Pink Unicorn,IPU"       };
 private static void reloadPetTypes() throws GLDBException {
   truncate(EGXTTestbedTable.PetType);
   int nextPetTypeId = 1;

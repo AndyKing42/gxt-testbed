@@ -1,6 +1,6 @@
 <!DOCTYPE ui:UiBinder SYSTEM 'http://dl.google.com/gwt/DTD/xhtml.ent'>
 <ui:UiBinder
-  xmlns:g='urn:import:com.google.gwt.user.client.ui'
+  xmlns:gwt='urn:import:com.google.gwt.user.client.ui'
   xmlns:ui='urn:ui:com.google.gwt.uibinder'
   xmlns:button='urn:import:com.sencha.gxt.widget.core.client.button'
   xmlns:container='urn:import:com.sencha.gxt.widget.core.client.container'
@@ -87,14 +87,19 @@
     <container:BorderLayoutContainer borders='true'>
       <container:north layoutData='{northData}'>
         <gxt:ContentPanel headerVisible='false'>
-          <button:TextButton
-            ui:field='reloadTestDataButton'
-            text='Reload Test Data'/>
+          <gwt:VerticalPanel>
+            <button:TextButton
+              ui:field='recreateTablesButton'
+              text='Recreate Database Tables'/>
+            <button:TextButton
+              ui:field='reloadTestDataButton'
+              text='Reload Test Data'/>
+          </gwt:VerticalPanel>
         </gxt:ContentPanel>
       </container:north>
       <container:west layoutData='{westData}'>
         <gxt:ContentPanel headerVisible='false'>
-          <g:Label text='West'/>
+          <gwt:Label text='West'/>
         </gxt:ContentPanel>
       </container:west>
       <container:center>
@@ -104,12 +109,12 @@
       </container:center>
       <container:east layoutData='{eastData}'>
         <gxt:ContentPanel headerVisible='false'>
-          <g:Label text='East'/>
+          <gwt:Label text='East'/>
         </gxt:ContentPanel>
       </container:east>
       <container:south layoutData='{southData}'>
         <gxt:ContentPanel headerVisible='false'>
-          <g:Label text='South'/>
+          <gwt:Label text='South'/>
         </gxt:ContentPanel>
       </container:south>
     </container:BorderLayoutContainer>

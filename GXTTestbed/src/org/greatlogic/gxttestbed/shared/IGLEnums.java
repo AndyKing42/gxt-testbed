@@ -1,4 +1,4 @@
-package org.greatlogic.gxttestbed.client.glgwt;
+package org.greatlogic.gxttestbed.shared;
 /*
  * Copyright 2006-2014 Andy King (GreatLogic.com)
  * 

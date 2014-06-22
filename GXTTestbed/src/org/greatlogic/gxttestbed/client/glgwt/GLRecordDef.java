@@ -1,6 +1,8 @@
 package org.greatlogic.gxttestbed.client.glgwt;
 
 import java.util.TreeMap;
+import org.greatlogic.gxttestbed.shared.IGLColumn;
+import org.greatlogic.gxttestbed.shared.IGLTable;
 /**
  * Provides a mapping of field names to field indexes.
  */

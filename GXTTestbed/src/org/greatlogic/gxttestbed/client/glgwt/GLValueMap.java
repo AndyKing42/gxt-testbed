@@ -18,6 +18,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.TreeMap;
+import org.greatlogic.gxttestbed.shared.IGLColumn;
 /**
  * Instances of this class represent a map of keys to values. The benefit of using this class over
  * the Properties or a simple {@link Map} object are that the values can be accessed using

@@ -12,7 +12,7 @@ package org.greatlogic.gxttestbed.client.glgwt;
  * or implied. See the License for the specific language governing permissions and limitations under
  * the License.
  */
-import org.greatlogic.gxttestbed.client.glgwt.IGLEnums.EGLDBException;
+import org.greatlogic.gxttestbed.shared.IGLEnums.EGLDBException;
 
 public class GLDBException extends Exception {
 //--------------------------------------------------------------------------------------------------

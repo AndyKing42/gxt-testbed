@@ -16,6 +16,7 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.Date;
 import java.util.TreeMap;
+import org.greatlogic.gxttestbed.shared.IGLColumn;
 import com.google.gwt.i18n.client.DateTimeFormat;
 import com.sencha.gxt.core.client.ValueProvider;
 

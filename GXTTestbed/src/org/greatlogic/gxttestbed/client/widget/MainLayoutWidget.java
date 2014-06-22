@@ -32,6 +32,8 @@ public class MainLayoutWidget extends Composite {
 @UiField
 ContentPanel centerPanel;
 @UiField
+TextButton   recreateTablesButton;
+@UiField
 TextButton   reloadTestDataButton;
 //==================================================================================================
 interface MainLayoutWidgetUiBinder extends UiBinder<Widget, MainLayoutWidget> { //
@@ -45,6 +47,23 @@ public MainLayoutWidget() {
 //--------------------------------------------------------------------------------------------------
 public ContentPanel getCenterPanel() {
   return centerPanel;
+}
+//--------------------------------------------------------------------------------------------------
+@UiHandler({"recreateTablesButton"})
+public void onRecreateTablesButtonClick(final SelectEvent event) {
+  final ConfirmMessageBox messageBox;
+  messageBox = new ConfirmMessageBox("Recreate Database Tables", //
+                                     "Are you sure you want to drop and recreate the " //
+                                             + "database tables?");
+  messageBox.addDialogHideHandler(new DialogHideHandler() {
+    @Override
+    public void onDialogHide(final DialogHideEvent hideEvent) {
+      if (hideEvent.getHideButton() == PredefinedButton.YES) {
+        GLUtil.recreateTables();
+      }
+    }
+  });
+  messageBox.show();
 }
 //--------------------------------------------------------------------------------------------------
 @UiHandler({"reloadTestDataButton"})

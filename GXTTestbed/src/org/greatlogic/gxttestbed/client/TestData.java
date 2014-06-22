@@ -1,4 +1,4 @@
-package org.greatlogic.gxttestbed.shared;
+package org.greatlogic.gxttestbed.client;
 /*
  * Copyright 2006-2014 Andy King (GreatLogic.com)
  * 
@@ -13,16 +13,36 @@ package org.greatlogic.gxttestbed.shared;
  * the License.
  */
 import java.util.ArrayList;
+import java.util.List;
 import org.greatlogic.gxttestbed.client.glgwt.GLListStore;
 import org.greatlogic.gxttestbed.client.glgwt.GLRecord;
 import org.greatlogic.gxttestbed.client.glgwt.GLRecordDef;
 import org.greatlogic.gxttestbed.client.glgwt.GLUtil;
-import org.greatlogic.gxttestbed.client.glgwt.IGLColumn;
+import org.greatlogic.gxttestbed.shared.IGLColumn;
 import org.greatlogic.gxttestbed.shared.IDBEnums.EGXTTestbedTable;
 import org.greatlogic.gxttestbed.shared.IDBEnums.Pet;
 import org.greatlogic.gxttestbed.shared.IDBEnums.PetType;
 
 public class TestData {
+//--------------------------------------------------------------------------------------------------
+private static void addRecordToList(final GLListStore listStore, final List<GLRecord> recordList,
+                                    final GLRecord record) {
+  if (listStore == null) {
+    recordList.add(record);
+  }
+  else {
+    listStore.add(record);
+  }
+}
+//--------------------------------------------------------------------------------------------------
+private static void clearList(final GLListStore listStore, final List<GLRecord> recordList) {
+  if (listStore == null) {
+    recordList.clear();
+  }
+  else {
+    listStore.clear();
+  }
+}
 //--------------------------------------------------------------------------------------------------
 private static final String[] PetNamesAndSex = new String[] {"Angel,F", "Ashley,F", "Bandit,M",
     "Beau,M", "Bella,F", "Bo,M", "Boomer,M", "Bubba,M", "Buddy,M", "Buster,M", "Callie,F",
@@ -39,10 +59,16 @@ private static final String[] PetNamesAndSex = new String[] {"Angel,F", "Ashley,
     "Spencer,M", "Sunny,F", "Sylvester,M", "Taz,M", "Thomas,M", "Tinkerbell,F", "Toby,M",
     "Tommy,M", "Tucker,M", "Winston,M", "Ziggy,M", "Zoe,F", "Zoey,F"};
 public static void loadPetTestData(final GLListStore listStore) {
+  loadPetTestData(listStore, null);
+}
+public static void loadPetTestData(final List<GLRecord> recordList) {
+  loadPetTestData(null, recordList);
+}
+private static void loadPetTestData(final GLListStore listStore, final List<GLRecord> recordList) {
   final IGLColumn[] columns = new IGLColumn[] {Pet.AdoptionFee, Pet.FosterDate, Pet.IntakeDate, //
       Pet.PetId, Pet.PetName, Pet.PetTypeId, Pet.Sex, Pet.TrainedFlag};
   final GLRecordDef recordDef = new GLRecordDef(EGXTTestbedTable.Pet, columns, Pet.PetId);
-  listStore.clear();
+  clearList(listStore, recordList);
   int nextPetId = 1;
   for (final String petNameAndSex : PetNamesAndSex) {
     final String[] nameAndSex = petNameAndSex.split(",");
@@ -61,18 +87,24 @@ public static void loadPetTestData(final GLListStore listStore) {
     valueList.add(nameAndSex[1]);
     valueList.add(GLUtil.getRandomInt(2) == 0 ? "Y" : "N");
     final GLRecord record = new GLRecord(recordDef, valueList);
-    listStore.add(record);
+    addRecordToList(listStore, recordList, record);
     ++nextPetId;
   }
 }
 //--------------------------------------------------------------------------------------------------
 private static final String[] PetTypes = new String[] {"Cat,Cat", "Dog,Dog"};
 public static void loadPetTypeTestData(final GLListStore listStore) {
+  loadPetTypeTestData(listStore, null);
+}
+public static void loadPetTypeTestData(final List<GLRecord> recordList) {
+  loadPetTypeTestData(null, recordList);
+}
+private static void loadPetTypeTestData(final GLListStore listStore, final List<GLRecord> recordList) {
   final IGLColumn[] columns = new IGLColumn[] {PetType.PetTypeShortDesc, PetType.PetTypeDesc, //
       PetType.PetTypeId};
   final GLRecordDef recordDef = new GLRecordDef(EGXTTestbedTable.PetType, columns, //
                                                 PetType.PetTypeId);
-  listStore.clear();
+  clearList(listStore, recordList);
   int nextPetTypeId = 1;
   for (final String petType : PetTypes) {
     final String[] petTypeFields = petType.split(",");
@@ -81,7 +113,7 @@ public static void loadPetTypeTestData(final GLListStore listStore) {
     valueList.add(petTypeFields[1]);
     valueList.add(nextPetTypeId);
     final GLRecord record = new GLRecord(recordDef, valueList);
-    listStore.add(record);
+    addRecordToList(listStore, recordList, record);
     ++nextPetTypeId;
   }
 }

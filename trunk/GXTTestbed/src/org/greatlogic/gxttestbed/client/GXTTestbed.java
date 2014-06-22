@@ -18,7 +18,6 @@ import org.greatlogic.gxttestbed.client.glgwt.GLUtil;
 import org.greatlogic.gxttestbed.client.widget.GridWidgetManager;
 import org.greatlogic.gxttestbed.client.widget.MainLayoutWidget;
 import org.greatlogic.gxttestbed.client.widget.PetGridWidget;
-import org.greatlogic.gxttestbed.shared.TestData;
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.RootPanel;

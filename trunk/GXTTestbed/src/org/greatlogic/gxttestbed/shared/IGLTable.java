@@ -1,7 +1,6 @@
-package org.greatlogic.gxttestbed.client.glgwt;
+package org.greatlogic.gxttestbed.shared;
 
-import org.greatlogic.gxttestbed.client.glgwt.IGLEnums.EGLColumnDataType;
-import org.greatlogic.gxttestbed.shared.IDBEnums.EGXTTestbedTable;
+
 /*
  * Copyright 2006-2014 Andy King (GreatLogic.com)
  * 
@@ -15,14 +14,8 @@ import org.greatlogic.gxttestbed.shared.IDBEnums.EGXTTestbedTable;
  * or implied. See the License for the specific language governing permissions and limitations under
  * the License.
  */
-public interface IGLColumn {
+public interface IGLTable {
 //--------------------------------------------------------------------------------------------------
-public String[] getChoices();
-public EGLColumnDataType getDataType();
-public int getDefaultGridColumnWidth();
-public int getNumberOfDecimalPlaces();
-public IGLColumn getParentDisplayColumn();
-public EGXTTestbedTable getParentTable();
-public String getTitle();
+public IGLColumn getPrimaryKeyColumn();
 //--------------------------------------------------------------------------------------------------
 }

@@ -25,7 +25,8 @@ import org.greatlogic.gxttestbed.client.glgwt.GLValueProviderClasses.GLDateValue
 import org.greatlogic.gxttestbed.client.glgwt.GLValueProviderClasses.GLForeignKeyValueProvider;
 import org.greatlogic.gxttestbed.client.glgwt.GLValueProviderClasses.GLIntegerValueProvider;
 import org.greatlogic.gxttestbed.client.glgwt.GLValueProviderClasses.GLStringValueProvider;
-import org.greatlogic.gxttestbed.client.glgwt.IGLEnums.EGLColumnDataType;
+import org.greatlogic.gxttestbed.shared.IGLColumn;
+import org.greatlogic.gxttestbed.shared.IGLEnums.EGLColumnDataType;
 import com.google.gwt.cell.client.DateCell;
 import com.google.gwt.cell.client.TextCell;
 import com.google.gwt.core.client.Scheduler;

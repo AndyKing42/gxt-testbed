@@ -15,11 +15,13 @@ package org.greatlogic.gxttestbed.client.glgwt;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.TreeMap;
-import org.greatlogic.gxttestbed.client.glgwt.IGLEnums.EGLDBConj;
-import org.greatlogic.gxttestbed.client.glgwt.IGLEnums.EGLDBException;
-import org.greatlogic.gxttestbed.client.glgwt.IGLEnums.EGLDBOp;
-import org.greatlogic.gxttestbed.client.glgwt.IGLEnums.EGLJoinType;
-import org.greatlogic.gxttestbed.client.glgwt.IGLEnums.EGLSQLType;
+import org.greatlogic.gxttestbed.shared.IGLColumn;
+import org.greatlogic.gxttestbed.shared.IGLTable;
+import org.greatlogic.gxttestbed.shared.IGLEnums.EGLDBConj;
+import org.greatlogic.gxttestbed.shared.IGLEnums.EGLDBException;
+import org.greatlogic.gxttestbed.shared.IGLEnums.EGLDBOp;
+import org.greatlogic.gxttestbed.shared.IGLEnums.EGLJoinType;
+import org.greatlogic.gxttestbed.shared.IGLEnums.EGLSQLType;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
 public class GLSQL {

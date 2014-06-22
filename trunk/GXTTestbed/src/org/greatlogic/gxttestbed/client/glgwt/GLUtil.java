@@ -24,7 +24,6 @@ import org.greatlogic.gxttestbed.shared.IRemoteServiceAsync;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.user.client.rpc.AsyncCallback;
-import com.google.gwt.user.datepicker.client.CalendarUtil;
 import com.sencha.gxt.widget.core.client.info.DefaultInfoConfig;
 import com.sencha.gxt.widget.core.client.info.Info;
 import com.sencha.gxt.widget.core.client.info.InfoConfig;
@@ -40,9 +39,10 @@ static {
   _yyyymmddDateTimeFormat = DateTimeFormat.getFormat("yyyyMMdd");
 }
 //--------------------------------------------------------------------------------------------------
+@SuppressWarnings("deprecation")
 public static String dateAddDays(final String originalDate, final int numberOfDays) {
   final Date newDate = _yyyymmddDateTimeFormat.parseStrict(originalDate);
-  CalendarUtil.addDaysToDate(newDate, numberOfDays);
+  newDate.setDate(newDate.getDate() + numberOfDays);
   return _yyyymmddDateTimeFormat.format(newDate);
 }
 //--------------------------------------------------------------------------------------------------
@@ -158,6 +158,22 @@ public static void initialize() {
 //--------------------------------------------------------------------------------------------------
 public static boolean isBlank(final CharSequence s) {
   return s == null || s.toString().trim().length() == 0;
+}
+//--------------------------------------------------------------------------------------------------
+public static void recreateTables() {
+  _remoteService.recreateTables(new AsyncCallback<Void>() {
+    @Override
+    public void onFailure(final Throwable t) {
+      GLUtil.info(10, "Database table creation failed:" + t.getMessage());
+    }
+    @Override
+    public void onSuccess(final Void result) {
+      GLUtil.info(10, "Database table creation is complete");
+      final PetGridWidget petGrid = GridWidgetManager.getPetGrid("Main");
+      GXTTestbedCache.load();
+      GXTTestbedCache.loadPets(petGrid.getListStore());
+    }
+  });
 }
 //--------------------------------------------------------------------------------------------------
 public static void reloadTestData() {

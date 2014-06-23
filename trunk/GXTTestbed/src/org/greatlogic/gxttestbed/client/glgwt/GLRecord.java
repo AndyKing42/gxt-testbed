@@ -36,132 +36,124 @@ public GLRecord(final GLRecordDef recordDef, final ArrayList<Object> list) {
   _valueList = list == null ? new ArrayList<Object>(_recordDef.getNumberOfFields()) : list;
 }
 //--------------------------------------------------------------------------------------------------
-public boolean asBoolean(final IGLColumn column) throws GLInvalidFieldOrColumnException {
+public boolean asBoolean(final IGLColumn column) {
   return asBoolean(column, false);
 }
 //--------------------------------------------------------------------------------------------------
-public boolean asBoolean(final IGLColumn column, final boolean defaultValue)
-  throws GLInvalidFieldOrColumnException {
+public boolean asBoolean(final IGLColumn column, final boolean defaultValue) {
   return asBoolean(column.toString(), defaultValue);
 }
 //--------------------------------------------------------------------------------------------------
-public boolean asBoolean(final String fieldName) throws GLInvalidFieldOrColumnException {
+public boolean asBoolean(final String fieldName) {
   return asBoolean(fieldName, false);
 }
 //--------------------------------------------------------------------------------------------------
-public boolean asBoolean(final String fieldName, final boolean defaultValue)
-  throws GLInvalidFieldOrColumnException {
+public boolean asBoolean(final String fieldName, final boolean defaultValue) {
   return GLUtil.stringToBoolean(asString(fieldName), defaultValue);
 }
 //--------------------------------------------------------------------------------------------------
-public BigDecimal asDec(final IGLColumn column) throws GLInvalidFieldOrColumnException {
+public BigDecimal asDec(final IGLColumn column) {
   return asDec(column, BigDecimal.ZERO);
 }
 //--------------------------------------------------------------------------------------------------
-public BigDecimal asDec(final IGLColumn column, final BigDecimal defaultValue)
-  throws GLInvalidFieldOrColumnException {
+public BigDecimal asDec(final IGLColumn column, final BigDecimal defaultValue) {
   return asDec(column.toString(), defaultValue);
 }
 //--------------------------------------------------------------------------------------------------
-public BigDecimal asDec(final String fieldName) throws GLInvalidFieldOrColumnException {
+public BigDecimal asDec(final String fieldName) {
   return asDec(fieldName, BigDecimal.ZERO);
 }
 //--------------------------------------------------------------------------------------------------
-public BigDecimal asDec(final String fieldName, final BigDecimal defaultValue)
-  throws GLInvalidFieldOrColumnException {
+public BigDecimal asDec(final String fieldName, final BigDecimal defaultValue) {
   return GLUtil.stringToDec(asString(fieldName), defaultValue);
 }
 //--------------------------------------------------------------------------------------------------
-public double asDouble(final IGLColumn column) throws GLInvalidFieldOrColumnException {
+public double asDouble(final IGLColumn column) {
   return asDouble(column, 0);
 }
 //--------------------------------------------------------------------------------------------------
-public double asDouble(final IGLColumn column, final double defaultValue)
-  throws GLInvalidFieldOrColumnException {
+public double asDouble(final IGLColumn column, final double defaultValue) {
   return asDouble(column.toString(), defaultValue);
 }
 //--------------------------------------------------------------------------------------------------
-public double asDouble(final String fieldName) throws GLInvalidFieldOrColumnException {
+public double asDouble(final String fieldName) {
   return asDouble(fieldName, 0);
 }
 //--------------------------------------------------------------------------------------------------
-public double asDouble(final String fieldName, final double defaultValue)
-  throws GLInvalidFieldOrColumnException {
+public double asDouble(final String fieldName, final double defaultValue) {
   return GLUtil.stringToDouble(asString(fieldName), defaultValue);
 }
 //--------------------------------------------------------------------------------------------------
-public float asFloat(final IGLColumn column) throws GLInvalidFieldOrColumnException {
+public float asFloat(final IGLColumn column) {
   return asFloat(column, 0);
 }
 //--------------------------------------------------------------------------------------------------
-public float asFloat(final IGLColumn column, final float defaultValue)
-  throws GLInvalidFieldOrColumnException {
+public float asFloat(final IGLColumn column, final float defaultValue) {
   return asFloat(column.toString(), defaultValue);
 }
 //--------------------------------------------------------------------------------------------------
-public float asFloat(final String fieldName) throws GLInvalidFieldOrColumnException {
+public float asFloat(final String fieldName) {
   return asFloat(fieldName, 0);
 }
 //--------------------------------------------------------------------------------------------------
-public float asFloat(final String fieldName, final float defaultValue)
-  throws GLInvalidFieldOrColumnException {
+public float asFloat(final String fieldName, final float defaultValue) {
   return (float)asDouble(fieldName, defaultValue);
 }
 //--------------------------------------------------------------------------------------------------
-public int asInt(final IGLColumn column) throws GLInvalidFieldOrColumnException {
+public int asInt(final IGLColumn column) {
   return asInt(column, 0);
 }
 //--------------------------------------------------------------------------------------------------
-public int asInt(final IGLColumn column, final int defaultValue)
-  throws GLInvalidFieldOrColumnException {
+public int asInt(final IGLColumn column, final int defaultValue) {
   return asInt(column.toString(), defaultValue);
 }
 //--------------------------------------------------------------------------------------------------
-public int asInt(final String fieldName) throws GLInvalidFieldOrColumnException {
+public int asInt(final String fieldName) {
   return asInt(fieldName, 0);
 }
 //--------------------------------------------------------------------------------------------------
-public int asInt(final String fieldName, final int defaultValue)
-  throws GLInvalidFieldOrColumnException {
+public int asInt(final String fieldName, final int defaultValue) {
   return (int)asLong(fieldName, defaultValue);
 }
 //--------------------------------------------------------------------------------------------------
-public long asLong(final IGLColumn column) throws GLInvalidFieldOrColumnException {
+public long asLong(final IGLColumn column) {
   return asLong(column, 0);
 }
 //--------------------------------------------------------------------------------------------------
-public long asLong(final IGLColumn column, final long defaultValue)
-  throws GLInvalidFieldOrColumnException {
+public long asLong(final IGLColumn column, final long defaultValue) {
   return asLong(column.toString(), defaultValue);
 }
 //--------------------------------------------------------------------------------------------------
-public long asLong(final String fieldName) throws GLInvalidFieldOrColumnException {
+public long asLong(final String fieldName) {
   return asLong(fieldName, 0);
 }
 //--------------------------------------------------------------------------------------------------
-public long asLong(final String fieldName, final long defaultValue)
-  throws GLInvalidFieldOrColumnException {
+public long asLong(final String fieldName, final long defaultValue) {
   return GLUtil.stringToLong(asString(fieldName), defaultValue);
 }
 //--------------------------------------------------------------------------------------------------
-public Object asObject(final IGLColumn column) throws GLInvalidFieldOrColumnException {
+public Object asObject(final IGLColumn column) {
   return asObject(column.toString());
 }
 //--------------------------------------------------------------------------------------------------
-public Object asObject(final String fieldName) throws GLInvalidFieldOrColumnException {
-  return _valueList.get(_recordDef.getFieldIndex(fieldName));
+public Object asObject(final String fieldName) {
+  try {
+    return _valueList.get(_recordDef.getFieldIndex(fieldName));
+  }
+  catch (final Exception e) {
+    return null;
+  }
 }
 //--------------------------------------------------------------------------------------------------
-public String asString(final IGLColumn column) throws GLInvalidFieldOrColumnException {
+public String asString(final IGLColumn column) {
   return asString(column, "");
 }
 //--------------------------------------------------------------------------------------------------
-public String asString(final IGLColumn column, final String defaultValue)
-  throws GLInvalidFieldOrColumnException {
+public String asString(final IGLColumn column, final String defaultValue) {
   return asString(column.toString(), defaultValue);
 }
 //--------------------------------------------------------------------------------------------------
-public String asString(final String fieldName) throws GLInvalidFieldOrColumnException {
+public String asString(final String fieldName) {
   return asString(fieldName, "");
 }
 //--------------------------------------------------------------------------------------------------
@@ -174,10 +166,14 @@ public String asString(final String fieldName) throws GLInvalidFieldOrColumnExce
  * the specified field name.
  * @return A string representation of the requested value.
  */
-public String asString(final String fieldName, final String defaultValue)
-  throws GLInvalidFieldOrColumnException {
-  return GLUtil.formatObjectSpecial(_valueList.get(_recordDef.getFieldIndex(fieldName)),
-                                    defaultValue);
+public String asString(final String fieldName, final String defaultValue) {
+  try {
+    return GLUtil.formatObjectSpecial(_valueList.get(_recordDef.getFieldIndex(fieldName)),
+                                      defaultValue);
+  }
+  catch (final Exception e) {
+    return defaultValue;
+  }
 }
 //--------------------------------------------------------------------------------------------------
 public ArrayList<String> getChangedFieldNameList() {
@@ -187,39 +183,44 @@ public ArrayList<String> getChangedFieldNameList() {
   return _changedFieldNameList;
 }
 //--------------------------------------------------------------------------------------------------
-public String getKeyValueAsString() throws GLInvalidFieldOrColumnException {
-  return asString(_recordDef.getKeyFieldName());
-}
-//--------------------------------------------------------------------------------------------------
-public Object put(final String fieldName, final Object value)
-  throws GLInvalidFieldOrColumnException {
-  final int fieldIndex = _recordDef.getFieldIndex(fieldName);
-  return _valueList.set(fieldIndex, value);
+public String getKeyValueAsString() {
+  return asString(_recordDef.getTable().getPrimaryKeyColumn());
 }
 //--------------------------------------------------------------------------------------------------
 public GLRecordDef getRecordDef() {
   return _recordDef;
 }
 //--------------------------------------------------------------------------------------------------
-public Object put(final IGLColumn column, final Object value)
-  throws GLInvalidFieldOrColumnException {
+public Object put(final String fieldName, final Object value) {
+  int fieldIndex;
+  try {
+    fieldIndex = _recordDef.getFieldIndex(fieldName);
+    if (fieldIndex >= _valueList.size()) {
+      for (int i = _valueList.size(); i <= fieldIndex; ++i) {
+        _valueList.add("");
+      }
+    }
+  }
+  catch (final GLInvalidFieldOrColumnException ifoce) {
+    fieldIndex = _recordDef.addField(fieldName);
+    _valueList.add("");
+  }
+  return _valueList.set(fieldIndex, value);
+}
+//--------------------------------------------------------------------------------------------------
+public Object put(final IGLColumn column, final Object value) {
   return put(column.toString(), value);
 }
 //--------------------------------------------------------------------------------------------------
 @Override
 public String toString() {
   final StringBuilder sb = new StringBuilder(_valueList.size() * 20);
-  try {
-    boolean firstTime = true;
-    for (final Entry<String, Integer> fieldEntry : _recordDef.getFieldIndexByFieldNameMap()
-                                                             .entrySet()) {
-      final String fieldName = fieldEntry.getKey();
-      sb.append(firstTime ? "" : ";").append(fieldName).append(":").append(asString(fieldName));
-      firstTime = false;
-    }
-  }
-  catch (final GLInvalidFieldOrColumnException ifoce) {
-    // this should never happen
+  boolean firstTime = true;
+  for (final Entry<String, Integer> fieldEntry : _recordDef.getFieldIndexByFieldNameMap()
+                                                           .entrySet()) {
+    final String fieldName = fieldEntry.getKey();
+    sb.append(firstTime ? "" : ";").append(fieldName).append(":").append(asString(fieldName));
+    firstTime = false;
   }
   return sb.toString();
 }

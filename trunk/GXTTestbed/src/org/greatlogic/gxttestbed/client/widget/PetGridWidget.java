@@ -14,12 +14,13 @@ package org.greatlogic.gxttestbed.client.widget;
  */
 import org.greatlogic.gxttestbed.client.glgwt.GLGridColumnDef;
 import org.greatlogic.gxttestbed.client.glgwt.GLGridWidget;
+import org.greatlogic.gxttestbed.shared.IDBEnums.EGXTTestbedTable;
 import org.greatlogic.gxttestbed.shared.IDBEnums.Pet;
 
 public class PetGridWidget extends GLGridWidget {
 //--------------------------------------------------------------------------------------------------
 public PetGridWidget() {
-  super(null, "There are no pets");
+  super(EGXTTestbedTable.Pet, null, "There are no pets");
 }
 //--------------------------------------------------------------------------------------------------
 @Override

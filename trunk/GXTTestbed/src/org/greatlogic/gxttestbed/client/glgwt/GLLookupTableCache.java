@@ -41,12 +41,7 @@ public static String lookupDisplayValue(final IGLTable lookupTable, final int ke
     return "?";
   }
   final GLRecord record = keyToRecordMap.get(key);
-  try {
-    return record == null ? "?" : record.asString(lookupTable.getComboboxDisplayColumn());
-  }
-  catch (final GLInvalidFieldOrColumnException e) {
-    return "?";
-  }
+  return record == null ? "?" : record.asString(lookupTable.getComboboxDisplayColumn());
 }
 //--------------------------------------------------------------------------------------------------
 public static int lookupKeyValue(final IGLTable lookupTable, final String displayValue) {
@@ -54,12 +49,7 @@ public static int lookupKeyValue(final IGLTable lookupTable, final String displa
   if (record == null) {
     return 0;
   }
-  try {
-    return record.asInt(lookupTable.getPrimaryKeyColumn());
-  }
-  catch (final GLInvalidFieldOrColumnException e) {
-    return 0;
-  }
+  return record.asInt(lookupTable.getPrimaryKeyColumn());
 }
 //--------------------------------------------------------------------------------------------------
 public static GLRecord lookupRecord(final IGLTable lookupTable, final String displayValue) {
@@ -105,13 +95,8 @@ public static void reload(final IGLTable table, final boolean addToReloadList,
         keyToRecordMap.clear();
         for (int recordIndex = 0; recordIndex < listStore.size(); ++recordIndex) {
           final GLRecord record = listStore.get(recordIndex);
-          try {
-            displayValueToRecordMap.put(record.asString(table.getComboboxDisplayColumn()), record);
-            keyToRecordMap.put(record.asInt(table.getPrimaryKeyColumn()), record);
-          }
-          catch (final GLInvalidFieldOrColumnException ifoce) {
-            //
-          }
+          displayValueToRecordMap.put(record.asString(table.getComboboxDisplayColumn()), record);
+          keyToRecordMap.put(record.asInt(table.getPrimaryKeyColumn()), record);
         }
         GLUtil.info(5, "Reload of " + table + " was successful");
         if (cacheReloadCallback != null) {

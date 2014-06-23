@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.TreeMap;
 import org.greatlogic.gxttestbed.shared.IGLTable;
-import com.sencha.gxt.widget.core.client.form.ComboBox;
 
 public class GLLookupTableCache {
 //--------------------------------------------------------------------------------------------------
@@ -84,11 +83,12 @@ public static void reload(final IGLTable table, final boolean addToReloadList,
     _cachedTableList.add(table);
   }
   final GLListStore listStore = getListStore(table);
+  listStore.clear();
   try {
-    final GLSQL petTypeSQL = GLSQL.select();
-    petTypeSQL.from(table);
-    petTypeSQL.orderBy(table, table.getComboboxDisplayColumn(), true);
-    petTypeSQL.execute(listStore, new IGLSQLSelectCallback() {
+    final GLSQL sql = GLSQL.select();
+    sql.from(table);
+    sql.orderBy(table, table.getComboboxDisplayColumn(), true);
+    sql.execute(listStore, new IGLSQLSelectCallback() {
       @Override
       public void onFailure(final Throwable t) {
         GLUtil.info(30, table + " loading failed: " + t.getMessage());
@@ -103,7 +103,6 @@ public static void reload(final IGLTable table, final boolean addToReloadList,
         final TreeMap<Integer, GLRecord> keyToRecordMap = _keyToRecordMapByTableMap.get(table);
         displayValueToRecordMap.clear();
         keyToRecordMap.clear();
-        listStore.clear();
         for (int recordIndex = 0; recordIndex < listStore.size(); ++recordIndex) {
           final GLRecord record = listStore.get(recordIndex);
           try {
@@ -112,13 +111,6 @@ public static void reload(final IGLTable table, final boolean addToReloadList,
           }
           catch (final GLInvalidFieldOrColumnException ifoce) {
             //
-          }
-        }
-        if (listStore.getComboBoxSet() != null) {
-          for (final ComboBox<GLRecord> comboBox : listStore.getComboBoxSet()) {
-            comboBox.setStore(null);
-            comboBox.setStore(listStore);
-            comboBox.getListView().setStore(listStore);
           }
         }
         GLUtil.info(5, "Reload of " + table + " was successful");

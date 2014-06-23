@@ -50,8 +50,6 @@ import com.sencha.gxt.core.client.util.TextMetrics;
 import com.sencha.gxt.data.shared.Converter;
 import com.sencha.gxt.data.shared.LabelProvider;
 import com.sencha.gxt.data.shared.Store;
-import com.sencha.gxt.data.shared.event.StoreDataChangeEvent;
-import com.sencha.gxt.data.shared.event.StoreDataChangeEvent.StoreDataChangeHandler;
 import com.sencha.gxt.widget.core.client.ContentPanel;
 import com.sencha.gxt.widget.core.client.Dialog.PredefinedButton;
 import com.sencha.gxt.widget.core.client.box.AlertMessageBox;
@@ -217,8 +215,8 @@ private ColumnConfig<GLRecord, String> createColumnConfigForeignKey(final GLGrid
                                                                     final IGLTable lookupTable,
                                                                     final IGLColumn column) {
   final ColumnConfig<GLRecord, String> result;
-  final ValueProvider<GLRecord, String> valueProvider;
-  valueProvider = new GLForeignKeyValueProvider(lookupTable, column);
+  final ValueProvider<GLRecord, String> valueProvider = new GLForeignKeyValueProvider(lookupTable, //
+                                                                                      column);
   result = new ColumnConfig<GLRecord, String>(valueProvider, gridColumnDef.getWidth(), //
                                               column.getTitle());
   result.setHorizontalAlignment(gridColumnDef.getHorizontalAlignment());
@@ -462,13 +460,6 @@ private void createEditorsForeignKeyCombobox(final GridEditing<GLRecord> gridEdi
   };
   final ComboBox<GLRecord> comboBox = new ComboBox<GLRecord>(lookupListStore, labelProvider);
   comboBox.setForceSelection(true);
-  lookupListStore.addComboBox(comboBox);
-  lookupListStore.addStoreDataChangeHandler(new StoreDataChangeHandler<GLRecord>() {
-    @Override
-    public void onDataChange(final StoreDataChangeEvent<GLRecord> event) {
-      comboBox.setStore(lookupListStore);
-    }
-  });
   final Converter<String, GLRecord> converter = new Converter<String, GLRecord>() {
     @Override
     public GLRecord convertModelValue(final String displayValue) {
@@ -477,7 +468,7 @@ private void createEditorsForeignKeyCombobox(final GridEditing<GLRecord> gridEdi
     @Override
     public String convertFieldValue(final GLRecord record) {
       try {
-        return record.asString(parentTable.getComboboxDisplayColumn());
+        return record == null ? "" : record.asString(parentTable.getComboboxDisplayColumn());
       }
       catch (final GLInvalidFieldOrColumnException e) {
         return "?";

@@ -6,20 +6,20 @@ import com.greatlogic.glbase.gllib.GLGAE;
 import com.greatlogic.glbase.gllib.GLLog;
 import com.greatlogic.glbase.glxml.GLXMLElement;
 
-public class GLServletContextListener implements ServletContextListener {
+public abstract class GLServletContextListener implements ServletContextListener {
 //--------------------------------------------------------------------------------------------------
 @Override
 public void contextDestroyed(final ServletContextEvent event) {
   //
 }
 //--------------------------------------------------------------------------------------------------
-@Override
-public void contextInitialized(final ServletContextEvent event) {
+protected void initialize(final String loggerName) {
   GLGAE.setUsingGAE(true);
   GLLog.initialize(true);
   final GLXMLElement logElement = new GLXMLElement("Log");
   logElement.addAttribute("Level", "Debug");
-  logElement.addAttribute("LoggerName", "GXTTestbed");
+  logElement.addAttribute("LoggerName", loggerName);
+  GLLog.setLoggingOptions(logElement, null, null);
 }
 //--------------------------------------------------------------------------------------------------
 }

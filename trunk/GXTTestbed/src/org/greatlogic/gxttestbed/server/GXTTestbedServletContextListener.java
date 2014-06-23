@@ -14,7 +14,7 @@ public class GXTTestbedServletContextListener extends GLServletContextListener {
 //--------------------------------------------------------------------------------------------------
 @Override
 public void contextInitialized(final ServletContextEvent event) {
-  super.contextInitialized(event);
+  initialize("GXTTestbed");
   final GLXMLElement dsElement = new GLXMLElement("DataSources");
   final GLXMLElement fapElement = new GLXMLElement("FosterAPet", dsElement);
   fapElement.addAttribute(EGLDBConfigAttribute.Active, true);

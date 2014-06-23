@@ -5,11 +5,17 @@ import org.greatlogic.gxttestbed.shared.IGLEnums.EGLColumnDataType;
 public interface IDBEnums {
 //--------------------------------------------------------------------------------------------------
 public enum EGXTTestbedTable implements IGLTable {
-Pet(IDBEnums.Pet.PetId),
-PetType(IDBEnums.PetType.PetTypeId);
+Pet(IDBEnums.Pet.PetId, IDBEnums.Pet.PetName),
+PetType(IDBEnums.PetType.PetTypeId, IDBEnums.PetType.PetTypeShortDesc);
+private final IGLColumn _comboboxDisplayColumn;
 private final IGLColumn _primaryKeyColumn;
-private EGXTTestbedTable(final IGLColumn primaryKeyColumn) {
+private EGXTTestbedTable(final IGLColumn primaryKeyColumn, final IGLColumn comboboxDisplayColumn) {
   _primaryKeyColumn = primaryKeyColumn;
+  _comboboxDisplayColumn = comboboxDisplayColumn;
+}
+@Override
+public IGLColumn getComboboxDisplayColumn() {
+  return _comboboxDisplayColumn;
 }
 @Override
 public IGLColumn getPrimaryKeyColumn() {
@@ -26,11 +32,7 @@ PetId(EGLColumnDataType.Int, 0, "Id", 50),
 PetName(EGLColumnDataType.String, 0, "Pet Name", 80),
 PetTypeId(EGLColumnDataType.Int, 0, "Pet Type", 80) {
 @Override
-public IGLColumn getParentDisplayColumn() {
-  return PetType.PetTypeShortDesc;
-}
-@Override
-public EGXTTestbedTable getParentTable() {
+public IGLTable getParentTable() {
   return EGXTTestbedTable.PetType;
 }
 },
@@ -73,11 +75,7 @@ public int getNumberOfDecimalPlaces() {
   return _numberOfDecimalPlaces;
 }
 @Override
-public IGLColumn getParentDisplayColumn() {
-  return null;
-}
-@Override
-public EGXTTestbedTable getParentTable() {
+public IGLTable getParentTable() {
   return null;
 }
 @Override
@@ -118,11 +116,7 @@ public int getNumberOfDecimalPlaces() {
   return _numberOfDecimalPlaces;
 }
 @Override
-public IGLColumn getParentDisplayColumn() {
-  return null;
-}
-@Override
-public EGXTTestbedTable getParentTable() {
+public IGLTable getParentTable() {
   return null;
 }
 @Override

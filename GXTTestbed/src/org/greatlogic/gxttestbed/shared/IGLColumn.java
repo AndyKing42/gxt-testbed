@@ -1,6 +1,5 @@
 package org.greatlogic.gxttestbed.shared;
 
-import org.greatlogic.gxttestbed.shared.IDBEnums.EGXTTestbedTable;
 import org.greatlogic.gxttestbed.shared.IGLEnums.EGLColumnDataType;
 /*
  * Copyright 2006-2014 Andy King (GreatLogic.com)
@@ -21,8 +20,7 @@ public String[] getChoices();
 public EGLColumnDataType getDataType();
 public int getDefaultGridColumnWidth();
 public int getNumberOfDecimalPlaces();
-public IGLColumn getParentDisplayColumn();
-public EGXTTestbedTable getParentTable();
+public IGLTable getParentTable();
 public String getTitle();
 //--------------------------------------------------------------------------------------------------
 }

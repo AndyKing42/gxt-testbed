@@ -15,7 +15,6 @@ package org.greatlogic.gxttestbed.client.glgwt;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.Date;
-import org.greatlogic.gxttestbed.client.GXTTestbedCache;
 import org.greatlogic.gxttestbed.shared.IGLColumn;
 import org.greatlogic.gxttestbed.shared.IGLTable;
 import com.google.gwt.i18n.client.DateTimeFormat;
@@ -129,11 +128,21 @@ public GLForeignKeyValueProvider(final IGLTable lookupTable, final IGLColumn col
 }
 @Override
 public String getValue(final GLRecord record) {
-  return GXTTestbedCache.lookupDisplayValue(_lookupTable, record.asInt(_column));
+  try {
+    return GLLookupTableCache.lookupDisplayValue(_lookupTable, record.asInt(_column));
+  }
+  catch (final GLInvalidFieldOrColumnException e) {
+    return "?";
+  }
 }
 @Override
 public void setValue(final GLRecord record, final String value) {
-  record.put(_column, GXTTestbedCache.lookupKeyValue(_lookupTable, value));
+  try {
+    record.put(_column, GLLookupTableCache.lookupKeyValue(_lookupTable, value));
+  }
+  catch (final GLInvalidFieldOrColumnException e) {
+
+  }
 }
 @Override
 public String getPath() {

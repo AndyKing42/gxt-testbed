@@ -170,7 +170,7 @@ public static void recreateTables() {
     public void onSuccess(final Void result) {
       GLUtil.info(10, "Database table creation is complete");
       final PetGridWidget petGrid = GridWidgetManager.getPetGrid("Main");
-      GXTTestbedCache.load();
+      GLLookupTableCache.reload(null);
       GXTTestbedCache.loadPets(petGrid.getListStore());
     }
   });
@@ -186,7 +186,7 @@ public static void reloadTestData() {
     public void onSuccess(final Void result) {
       GLUtil.info(10, "Test data reload is complete");
       final PetGridWidget petGrid = GridWidgetManager.getPetGrid("Main");
-      GXTTestbedCache.load();
+      GLLookupTableCache.reload(null);
       GXTTestbedCache.loadPets(petGrid.getListStore());
     }
   });

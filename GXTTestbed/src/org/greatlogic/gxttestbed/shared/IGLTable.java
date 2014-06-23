@@ -1,6 +1,5 @@
 package org.greatlogic.gxttestbed.shared;
 
-
 /*
  * Copyright 2006-2014 Andy King (GreatLogic.com)
  * 
@@ -16,6 +15,7 @@ package org.greatlogic.gxttestbed.shared;
  */
 public interface IGLTable {
 //--------------------------------------------------------------------------------------------------
+public IGLColumn getComboboxDisplayColumn();
 public IGLColumn getPrimaryKeyColumn();
 //--------------------------------------------------------------------------------------------------
 }

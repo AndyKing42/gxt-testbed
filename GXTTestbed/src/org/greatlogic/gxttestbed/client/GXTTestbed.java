@@ -44,7 +44,6 @@ public void onModuleLoad() {
   GLUtil.initialize();
   final MainLayoutWidget mainLayoutWidget = new MainLayoutWidget();
   final boolean loadTestData = false;
-  GXTTestbedCache.load();
   final PetGridWidget petGrid = GridWidgetManager.getPetGrid("Main");
   final GLGridWidget gridWidget = petGrid;
   if (loadTestData) {

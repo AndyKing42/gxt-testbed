@@ -13,27 +13,16 @@ private ColumnConfig<GLRecord, ?>         _columnConfig;
 private int                               _columnIndex;
 private final String                      _header;
 private final HorizontalAlignmentConstant _horizontalAlignment;
-private final IGLLookupListStoreKey       _lookupListStoreKey;
 private final int                         _width;
 //--------------------------------------------------------------------------------------------------
 public GLGridColumnDef(final IGLColumn column) {
-  this(column, null, -1, null);
-}
-//--------------------------------------------------------------------------------------------------
-public GLGridColumnDef(final IGLColumn column, final IGLLookupListStoreKey lookupListStoreKey) {
-  this(column, null, -1, lookupListStoreKey);
+  this(column, null, -1);
 }
 //--------------------------------------------------------------------------------------------------
 public GLGridColumnDef(final IGLColumn column, final String header, final int width) {
-  this(column, header, width, null);
-}
-//--------------------------------------------------------------------------------------------------
-public GLGridColumnDef(final IGLColumn column, final String header, final int width,
-                       final IGLLookupListStoreKey lookupListStoreKey) {
   _column = column;
   _header = header == null ? _column.getTitle() : header;
   _width = width < 0 ? column.getDefaultGridColumnWidth() : width;
-  _lookupListStoreKey = lookupListStoreKey;
   final EGLColumnDataType dataType = _column.getDataType();
   if (dataType == EGLColumnDataType.Boolean) {
     _horizontalAlignment = HasHorizontalAlignment.ALIGN_CENTER;
@@ -64,10 +53,6 @@ public String getHeader() {
 //--------------------------------------------------------------------------------------------------
 public HorizontalAlignmentConstant getHorizontalAlignment() {
   return _horizontalAlignment;
-}
-//--------------------------------------------------------------------------------------------------
-public IGLLookupListStoreKey getLookupListStoreKey() {
-  return _lookupListStoreKey;
 }
 //--------------------------------------------------------------------------------------------------
 public int getWidth() {

@@ -16,12 +16,12 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.TreeMap;
 import org.greatlogic.gxttestbed.shared.glgwt.IGLColumn;
-import org.greatlogic.gxttestbed.shared.glgwt.IGLTable;
 import org.greatlogic.gxttestbed.shared.glgwt.IGLEnums.EGLDBConj;
 import org.greatlogic.gxttestbed.shared.glgwt.IGLEnums.EGLDBException;
 import org.greatlogic.gxttestbed.shared.glgwt.IGLEnums.EGLDBOp;
 import org.greatlogic.gxttestbed.shared.glgwt.IGLEnums.EGLJoinType;
 import org.greatlogic.gxttestbed.shared.glgwt.IGLEnums.EGLSQLType;
+import org.greatlogic.gxttestbed.shared.glgwt.IGLTable;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
 public class GLSQL {
@@ -35,7 +35,6 @@ private String                         _fromHint;
 private ArrayList<String>              _groupByList;
 private boolean                        _ignoreDuplicates;
 private ArrayList<GLJoinDef>           _joinDefList;
-private IGLColumn                      _keyColumn;
 private int                            _maxNumberOfRows;
 private String                         _orderByClause;
 private final EGLSQLType               _sqlType;
@@ -338,7 +337,8 @@ public void execute(final GLListStore listStore, final IGLSQLSelectCallback call
         boolean firstRow = true;
         for (final String row : selectRows) {
           if (firstRow) {
-            recordDef = new GLRecordDef(_table, row.split(","), _keyColumn);
+            recordDef = new GLRecordDef(_table, row.split(","));
+            listStore.setRecordDef(recordDef);
             firstRow = false;
           }
           else {
@@ -375,7 +375,6 @@ public GLSQL from(final IGLTable table) throws GLDBException {
 public GLSQL from(final IGLTable table, final String dataSourceName) throws GLDBException {
   ensureSQLTypeIn(EGLSQLType.Select);
   setTable(table, dataSourceName);
-  setKeyColumn(table.getPrimaryKeyColumn());
   return this;
 }
 //--------------------------------------------------------------------------------------------------
@@ -529,10 +528,6 @@ public GLSQL selectColumns(final Collection<String> columnCollection) {
     }
   }
   return this;
-}
-//--------------------------------------------------------------------------------------------------
-private void setKeyColumn(final IGLColumn keyColumn) {
-  _keyColumn = keyColumn;
 }
 //--------------------------------------------------------------------------------------------------
 /**

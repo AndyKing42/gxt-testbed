@@ -31,21 +31,11 @@ public GLBigDecimalValueProvider(final IGLColumn column, final int numberOfDecim
 }
 @Override
 public BigDecimal getValue(final GLRecord record) {
-  try {
-    return record.asDec(_column);
-  }
-  catch (final GLInvalidFieldOrColumnException ifoce) {
-    return BigDecimal.ZERO;
-  }
+  return record.asDec(_column);
 }
 @Override
 public void setValue(final GLRecord record, final BigDecimal value) {
-  try {
-    record.put(_column, value.setScale(_numberOfDecimalPlaces, RoundingMode.HALF_UP));
-  }
-  catch (final GLInvalidFieldOrColumnException ifoce) {
-    //
-  }
+  record.put(_column, value.setScale(_numberOfDecimalPlaces, RoundingMode.HALF_UP));
 }
 @Override
 public String getPath() {
@@ -60,21 +50,11 @@ public GLBooleanValueProvider(final IGLColumn column) {
 }
 @Override
 public Boolean getValue(final GLRecord record) {
-  try {
-    return record.asBoolean(_column);
-  }
-  catch (final GLInvalidFieldOrColumnException ifoce) {
-    return false;
-  }
+  return record.asBoolean(_column);
 }
 @Override
 public void setValue(final GLRecord record, final Boolean value) {
-  try {
-    record.put(_column, value);
-  }
-  catch (final GLInvalidFieldOrColumnException ifoce) {
-    //
-  }
+  record.put(_column, value);
 }
 @Override
 public String getPath() {
@@ -90,28 +70,18 @@ public GLDateValueProvider(final IGLColumn column) {
 @SuppressWarnings("deprecation")
 @Override
 public Date getValue(final GLRecord record) {
-  try {
-    final String date = record.asString(_column);
-    if (date.length() < 8) {
-      return null;
-    }
-    final int year = GLUtil.stringToInt(date.substring(0, 4));
-    final int month = GLUtil.stringToInt(date.substring(4, 6));
-    final int day = GLUtil.stringToInt(date.substring(6, 8));
-    return new Date(year - 1900, month - 1, day);
-  }
-  catch (final GLInvalidFieldOrColumnException ifoce) {
+  final String date = record.asString(_column);
+  if (date.length() < 8) {
     return null;
   }
+  final int year = GLUtil.stringToInt(date.substring(0, 4));
+  final int month = GLUtil.stringToInt(date.substring(4, 6));
+  final int day = GLUtil.stringToInt(date.substring(6, 8));
+  return new Date(year - 1900, month - 1, day);
 }
 @Override
 public void setValue(final GLRecord record, final Date value) {
-  try {
-    record.put(_column, DateTimeFormat.getFormat("yyyyMMdd").format(value));
-  }
-  catch (final GLInvalidFieldOrColumnException ifoce) {
-    //
-  }
+  record.put(_column, DateTimeFormat.getFormat("yyyyMMdd").format(value));
 }
 @Override
 public String getPath() {
@@ -128,21 +98,11 @@ public GLForeignKeyValueProvider(final IGLTable lookupTable, final IGLColumn col
 }
 @Override
 public String getValue(final GLRecord record) {
-  try {
-    return GLLookupTableCache.lookupDisplayValue(_lookupTable, record.asInt(_column));
-  }
-  catch (final GLInvalidFieldOrColumnException e) {
-    return "?";
-  }
+  return GLLookupTableCache.lookupDisplayValue(_lookupTable, record.asInt(_column));
 }
 @Override
 public void setValue(final GLRecord record, final String value) {
-  try {
-    record.put(_column, GLLookupTableCache.lookupKeyValue(_lookupTable, value));
-  }
-  catch (final GLInvalidFieldOrColumnException e) {
-
-  }
+  record.put(_column, GLLookupTableCache.lookupKeyValue(_lookupTable, value));
 }
 @Override
 public String getPath() {
@@ -157,21 +117,11 @@ public GLIntegerValueProvider(final IGLColumn column) {
 }
 @Override
 public Integer getValue(final GLRecord record) {
-  try {
-    return record.asInt(_column);
-  }
-  catch (final GLInvalidFieldOrColumnException ifoce) {
-    return 0;
-  }
+  return record.asInt(_column);
 }
 @Override
 public void setValue(final GLRecord record, final Integer value) {
-  try {
-    record.put(_column, value);
-  }
-  catch (final GLInvalidFieldOrColumnException ifoce) {
-    //
-  }
+  record.put(_column, value);
 }
 @Override
 public String getPath() {
@@ -186,21 +136,11 @@ public GLStringValueProvider(final IGLColumn column) {
 }
 @Override
 public String getValue(final GLRecord record) {
-  try {
-    return record.asString(_column);
-  }
-  catch (final GLInvalidFieldOrColumnException ifoce) {
-    return "";
-  }
+  return record.asString(_column);
 }
 @Override
 public void setValue(final GLRecord record, final String value) {
-  try {
-    record.put(_column, value);
-  }
-  catch (final GLInvalidFieldOrColumnException ifoce) {
-    //
-  }
+  record.put(_column, value);
 }
 @Override
 public String getPath() {

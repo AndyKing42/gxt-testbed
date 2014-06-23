@@ -26,8 +26,8 @@ import org.greatlogic.gxttestbed.client.glgwt.GLValueProviderClasses.GLForeignKe
 import org.greatlogic.gxttestbed.client.glgwt.GLValueProviderClasses.GLIntegerValueProvider;
 import org.greatlogic.gxttestbed.client.glgwt.GLValueProviderClasses.GLStringValueProvider;
 import org.greatlogic.gxttestbed.shared.glgwt.IGLColumn;
-import org.greatlogic.gxttestbed.shared.glgwt.IGLTable;
 import org.greatlogic.gxttestbed.shared.glgwt.IGLEnums.EGLColumnDataType;
+import org.greatlogic.gxttestbed.shared.glgwt.IGLTable;
 import com.google.gwt.cell.client.DateCell;
 import com.google.gwt.cell.client.TextCell;
 import com.google.gwt.core.client.Scheduler;
@@ -79,6 +79,7 @@ import com.sencha.gxt.widget.core.client.grid.CheckBoxSelectionModel;
 import com.sencha.gxt.widget.core.client.grid.ColumnConfig;
 import com.sencha.gxt.widget.core.client.grid.ColumnModel;
 import com.sencha.gxt.widget.core.client.grid.Grid;
+import com.sencha.gxt.widget.core.client.grid.Grid.GridCell;
 import com.sencha.gxt.widget.core.client.grid.GridSelectionModel;
 import com.sencha.gxt.widget.core.client.grid.GridView;
 import com.sencha.gxt.widget.core.client.grid.editing.GridEditing;
@@ -93,12 +94,15 @@ private ContentPanel                             _contentPanel;
 private Grid<GLRecord>                           _grid;
 protected ArrayList<GLGridColumnDef>             _gridColumnDefList;
 private TreeMap<String, GLGridColumnDef>         _gridColumnDefMap;
+private GridEditing<GLRecord>                    _gridEditing;
 protected GLListStore                            _listStore;
 private final String                             _noRowsMessage;
 private GridSelectionModel<GLRecord>             _selectionModel;
+private final IGLTable                           _table;
 //--------------------------------------------------------------------------------------------------
-protected GLGridWidget(final String headingText, final String noRowsMessage) {
+protected GLGridWidget(final IGLTable table, final String headingText, final String noRowsMessage) {
   super();
+  _table = table;
   _noRowsMessage = noRowsMessage == null ? "There are no results to display" : noRowsMessage;
   _listStore = new GLListStore();
   _checkBoxSet = new HashSet<ColumnConfig<GLRecord, ?>>();
@@ -318,7 +322,22 @@ private void createContentPanel(final String headingText) {
     _contentPanel.setHeadingText(headingText);
   }
   _contentPanel.setButtonAlign(BoxLayoutPack.START);
-  _contentPanel.addButton(new TextButton("Reset", new SelectHandler() {
+  createContentPanelButtons();
+}
+//--------------------------------------------------------------------------------------------------
+private void createContentPanelButtons() {
+  _contentPanel.addButton(new TextButton("New Pet", new SelectHandler() {
+    @Override
+    public void onSelect(final SelectEvent event) {
+      final GLRecord record = new GLRecord(_listStore.getRecordDef());
+      // TODO: get the id for the new record
+      _gridEditing.cancelEditing();
+      _listStore.add(0, record);
+      final int row = _listStore.indexOf(record);
+      _gridEditing.startEditing(new GridCell(row, 0));
+    }
+  }));
+  _contentPanel.addButton(new TextButton("Undo Changes", new SelectHandler() {
     @Override
     public void onSelect(final SelectEvent event) {
       _listStore.rejectChanges();
@@ -375,7 +394,7 @@ private TextButton createContentPanelDeleteButton() {
 //--------------------------------------------------------------------------------------------------
 @SuppressWarnings("unchecked")
 private void createEditors() {
-  final GridEditing<GLRecord> gridEditing = new GridInlineEditing<GLRecord>(_grid);
+  _gridEditing = new GridInlineEditing<GLRecord>(_grid);
   for (final GLGridColumnDef gridColumnDef : _gridColumnDefList) {
     final ColumnConfig<GLRecord, ?> columnConfig = gridColumnDef.getColumnConfig();
     final IGLColumn column = gridColumnDef.getColumn();
@@ -384,16 +403,16 @@ private void createEditors() {
         // no editor is needed - the checkbox can be changed in place
         break;
       case Currency:
-        gridEditing.addEditor((ColumnConfig<GLRecord, BigDecimal>)columnConfig,
-                              new BigDecimalField());
+        _gridEditing.addEditor((ColumnConfig<GLRecord, BigDecimal>)columnConfig,
+                               new BigDecimalField());
         break;
       case Date: {
         final DateTimeFormat dateTimeFormat = DateTimeFormat.getFormat("MM/dd/yyyy");
         final DateTimePropertyEditor propertyEditor = new DateTimePropertyEditor(dateTimeFormat);
         final DateField dateField = new DateField(propertyEditor);
         dateField.setClearValueOnParseError(false);
-        gridEditing.addEditor((ColumnConfig<GLRecord, Date>)columnConfig, dateField);
-        final IsField<Date> editor = gridEditing.getEditor(columnConfig);
+        _gridEditing.addEditor((ColumnConfig<GLRecord, Date>)columnConfig, dateField);
+        final IsField<Date> editor = _gridEditing.getEditor(columnConfig);
         if (editor == null) {
           GLUtil.initialize();
         }
@@ -416,31 +435,30 @@ private void createEditors() {
         final DateTimePropertyEditor propertyEditor = new DateTimePropertyEditor(dateTimeFormat);
         final DateField dateField = new DateField(propertyEditor);
         dateField.setClearValueOnParseError(false);
-        gridEditing.addEditor((ColumnConfig<GLRecord, Date>)columnConfig, dateField);
+        _gridEditing.addEditor((ColumnConfig<GLRecord, Date>)columnConfig, dateField);
         break;
       }
       case Decimal:
-        gridEditing.addEditor((ColumnConfig<GLRecord, BigDecimal>)columnConfig,
-                              new BigDecimalField());
+        _gridEditing.addEditor((ColumnConfig<GLRecord, BigDecimal>)columnConfig,
+                               new BigDecimalField());
         break;
       case Int:
         if (column.getParentTable() == null) {
-          gridEditing.addEditor((ColumnConfig<GLRecord, Integer>)columnConfig, new IntegerField());
+          _gridEditing.addEditor((ColumnConfig<GLRecord, Integer>)columnConfig, new IntegerField());
         }
         else {
-          createEditorsForeignKeyCombobox(gridEditing, gridColumnDef);
+          createEditorsForeignKeyCombobox(gridColumnDef);
         }
         break;
       case String:
-        gridEditing.addEditor((ColumnConfig<GLRecord, String>)columnConfig, new TextField());
+        _gridEditing.addEditor((ColumnConfig<GLRecord, String>)columnConfig, new TextField());
         break;
     }
   }
 }
 //--------------------------------------------------------------------------------------------------
 @SuppressWarnings("unchecked")
-private void createEditorsForeignKeyCombobox(final GridEditing<GLRecord> gridEditing,
-                                             final GLGridColumnDef gridColumnDef) {
+private void createEditorsForeignKeyCombobox(final GLGridColumnDef gridColumnDef) {
   final IGLColumn column = gridColumnDef.getColumn();
   final IGLTable parentTable = column.getParentTable();
   final GLListStore lookupListStore = GLLookupTableCache.getListStore(parentTable);
@@ -451,12 +469,7 @@ private void createEditorsForeignKeyCombobox(final GridEditing<GLRecord> gridEdi
   final LabelProvider<GLRecord> labelProvider = new LabelProvider<GLRecord>() {
     @Override
     public String getLabel(final GLRecord record) {
-      try {
-        return record.asString(parentTable.getComboboxDisplayColumn());
-      }
-      catch (final GLInvalidFieldOrColumnException e) {
-        return "???";
-      }
+      return record.asString(parentTable.getComboboxDisplayColumn());
     }
   };
   final ComboBox<GLRecord> comboBox = new ComboBox<GLRecord>(lookupListStore, labelProvider);
@@ -470,16 +483,11 @@ private void createEditorsForeignKeyCombobox(final GridEditing<GLRecord> gridEdi
     }
     @Override
     public String convertFieldValue(final GLRecord record) {
-      try {
-        return record == null ? "" : record.asString(parentTable.getComboboxDisplayColumn());
-      }
-      catch (final GLInvalidFieldOrColumnException e) {
-        return "?";
-      }
+      return record == null ? "" : record.asString(parentTable.getComboboxDisplayColumn());
     }
   };
-  gridEditing.addEditor((ColumnConfig<GLRecord, String>)gridColumnDef.getColumnConfig(), converter,
-                        comboBox);
+  _gridEditing.addEditor((ColumnConfig<GLRecord, String>)gridColumnDef.getColumnConfig(),
+                         converter, comboBox);
 }
 //--------------------------------------------------------------------------------------------------
 private void createGrid() {

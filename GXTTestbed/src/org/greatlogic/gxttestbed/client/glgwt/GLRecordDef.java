@@ -9,16 +9,26 @@ import org.greatlogic.gxttestbed.shared.glgwt.IGLTable;
 public class GLRecordDef {
 //--------------------------------------------------------------------------------------------------
 private final TreeMap<String, Integer> _fieldIndexByFieldNameMap; // field name -> field index
-private final String                   _keyFieldName;
 private final IGLTable                 _table;
 //--------------------------------------------------------------------------------------------------
-public GLRecordDef(final IGLTable table, final Object[] fieldNames, final Object keyFieldName) {
+/**
+ * Create a new record definition.
+ * @param table The table associated with this record definition.
+ * @param fieldNames This will be an array of field names or columns (IGLColumn).
+ */
+public GLRecordDef(final IGLTable table, final Object[] fieldNames) {
   _table = table;
   _fieldIndexByFieldNameMap = new TreeMap<String, Integer>(String.CASE_INSENSITIVE_ORDER);
-  for (int fieldNameIndex = 0; fieldNameIndex < fieldNames.length; ++fieldNameIndex) {
-    _fieldIndexByFieldNameMap.put(fieldNames[fieldNameIndex].toString(), fieldNameIndex);
+  if (fieldNames != null) {
+    for (int fieldNameIndex = 0; fieldNameIndex < fieldNames.length; ++fieldNameIndex) {
+      _fieldIndexByFieldNameMap.put(fieldNames[fieldNameIndex].toString(), fieldNameIndex);
+    }
   }
-  _keyFieldName = keyFieldName.toString();
+}
+//--------------------------------------------------------------------------------------------------
+public int addField(final Object fieldName) {
+  _fieldIndexByFieldNameMap.put(fieldName.toString(), _fieldIndexByFieldNameMap.size());
+  return _fieldIndexByFieldNameMap.size() - 1;
 }
 //--------------------------------------------------------------------------------------------------
 public int getFieldIndex(final IGLColumn column) throws GLInvalidFieldOrColumnException {
@@ -37,10 +47,6 @@ public TreeMap<String, Integer> getFieldIndexByFieldNameMap() {
   return _fieldIndexByFieldNameMap;
 }
 //--------------------------------------------------------------------------------------------------
-public String getKeyFieldName() {
-  return _keyFieldName;
-}
-//--------------------------------------------------------------------------------------------------
 public int getNumberOfFields() {
   return _fieldIndexByFieldNameMap.size();
 }
@@ -51,7 +57,7 @@ public IGLTable getTable() {
 //--------------------------------------------------------------------------------------------------
 @Override
 public String toString() {
-  return "Key:" + _keyFieldName + " Columns:" + _fieldIndexByFieldNameMap.keySet();
+  return "Table:" + _table + " Columns:" + _fieldIndexByFieldNameMap.keySet();
 }
 //--------------------------------------------------------------------------------------------------
 }

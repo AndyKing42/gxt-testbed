@@ -12,6 +12,8 @@ import com.sencha.gxt.data.shared.event.StoreUpdateEvent.StoreUpdateHandler;
  */
 public class GLListStore extends ListStore<GLRecord> {
 //--------------------------------------------------------------------------------------------------
+private GLRecordDef _recordDef;
+//--------------------------------------------------------------------------------------------------
 /**
  * Creates a new GLListStore.
  */
@@ -20,12 +22,7 @@ public GLListStore() {
     @Override
     public String getKey(final GLRecord record) {
       String result;
-      try {
-        result = record.getKeyValueAsString();
-      }
-      catch (final GLInvalidFieldOrColumnException ifoce) {
-        result = "***error***";
-      }
+      result = record.getKeyValueAsString();
       return result;
     }
   });
@@ -52,23 +49,12 @@ private void createStoreUpdateHandler() {
       final List<GLRecord> updatedRecordList = event.getItems();
       for (final GLRecord record : updatedRecordList) {
         sb.append("Table:").append(record.getRecordDef().getTable().toString()).append("/");
-        try {
-          sb.append(record.getKeyValueAsString());
-        }
-        catch (final GLInvalidFieldOrColumnException ifoce) {
-          // the key field doesn't exist
-          sb.append("???");
-        }
+        sb.append(record.getKeyValueAsString());
         sb.append(":");
         boolean firstField = true;
         for (final String fieldName : record.getChangedFieldNameList()) {
           sb.append(firstField ? "" : ";").append(fieldName).append("=");
-          try {
-            sb.append(record.asString(fieldName));
-          }
-          catch (final GLInvalidFieldOrColumnException ifoce) {
-            GLUtil.info(5, "Unknown column name:" + fieldName);
-          }
+          sb.append(record.asString(fieldName));
           sb.append("");
           firstField = false;
         }
@@ -92,6 +78,10 @@ private void createStoreUpdateHandler() {
   addStoreUpdateHandler(storeUpdateHandler);
 }
 //--------------------------------------------------------------------------------------------------
+public GLRecordDef getRecordDef() {
+  return _recordDef;
+}
+//--------------------------------------------------------------------------------------------------
 public void remove(final ArrayList<GLRecord> recordList) {
   for (final GLRecord record : recordList) {
     remove(record);
@@ -106,13 +96,7 @@ public void remove(final ArrayList<GLRecord> recordList) {
     else {
       sb.append(",");
     }
-    try {
-      sb.append(record.getKeyValueAsString());
-    }
-    catch (final GLInvalidFieldOrColumnException ifoce) {
-      // the key field doesn't exist
-      sb.append("???");
-    }
+    sb.append(record.getKeyValueAsString());
   }
   if (sb.length() > 0) {
     GLUtil.getRemoteService().delete(sb.toString(), new AsyncCallback<Void>() {
@@ -126,6 +110,10 @@ public void remove(final ArrayList<GLRecord> recordList) {
       }
     });
   }
+}
+//--------------------------------------------------------------------------------------------------
+public void setRecordDef(final GLRecordDef recordDef) {
+  _recordDef = recordDef;
 }
 //--------------------------------------------------------------------------------------------------
 @Override

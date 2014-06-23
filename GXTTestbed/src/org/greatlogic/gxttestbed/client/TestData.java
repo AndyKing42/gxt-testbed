@@ -18,10 +18,10 @@ import org.greatlogic.gxttestbed.client.glgwt.GLListStore;
 import org.greatlogic.gxttestbed.client.glgwt.GLRecord;
 import org.greatlogic.gxttestbed.client.glgwt.GLRecordDef;
 import org.greatlogic.gxttestbed.client.glgwt.GLUtil;
-import org.greatlogic.gxttestbed.shared.IGLColumn;
 import org.greatlogic.gxttestbed.shared.IDBEnums.EGXTTestbedTable;
 import org.greatlogic.gxttestbed.shared.IDBEnums.Pet;
 import org.greatlogic.gxttestbed.shared.IDBEnums.PetType;
+import org.greatlogic.gxttestbed.shared.glgwt.IGLColumn;
 
 public class TestData {
 //--------------------------------------------------------------------------------------------------

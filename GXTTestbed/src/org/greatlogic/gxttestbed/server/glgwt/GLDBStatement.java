@@ -1,15 +1,15 @@
-package org.greatlogic.gxttestbed.server;
+package org.greatlogic.gxttestbed.server.glgwt;
 
 import org.apache.commons.lang3.StringUtils;
-import org.greatlogic.gxttestbed.shared.IGLTable;
 import org.greatlogic.gxttestbed.shared.IDBEnums.EGXTTestbedTable;
+import org.greatlogic.gxttestbed.shared.glgwt.IGLTable;
 import com.greatlogic.glbase.gldb.GLDBException;
 import com.greatlogic.glbase.gldb.GLSQL;
 import com.greatlogic.glbase.gllib.GLLog;
 import com.greatlogic.glbase.glxml.GLXML;
 import com.greatlogic.glbase.glxml.GLXMLException;
 
-class DBStatement {
+class GLDBStatement {
 //--------------------------------------------------------------------------------------------------
 public static void delete(final String deletes) {
   GLLog.infoDetail("Delete:" + deletes);

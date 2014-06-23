@@ -3,7 +3,7 @@ package org.greatlogic.gxttestbed.client.glgwt;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.TreeMap;
-import org.greatlogic.gxttestbed.shared.IGLTable;
+import org.greatlogic.gxttestbed.shared.glgwt.IGLTable;
 
 public class GLLookupTableCache {
 //--------------------------------------------------------------------------------------------------

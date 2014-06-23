@@ -1,7 +1,7 @@
 package org.greatlogic.gxttestbed.client.glgwt;
 
-import org.greatlogic.gxttestbed.shared.IGLColumn;
-import org.greatlogic.gxttestbed.shared.IGLEnums.EGLColumnDataType;
+import org.greatlogic.gxttestbed.shared.glgwt.IGLColumn;
+import org.greatlogic.gxttestbed.shared.glgwt.IGLEnums.EGLColumnDataType;
 import com.google.gwt.user.client.ui.HasHorizontalAlignment;
 import com.google.gwt.user.client.ui.HasHorizontalAlignment.HorizontalAlignmentConstant;
 import com.sencha.gxt.widget.core.client.grid.ColumnConfig;

@@ -25,9 +25,9 @@ import org.greatlogic.gxttestbed.client.glgwt.GLValueProviderClasses.GLDateValue
 import org.greatlogic.gxttestbed.client.glgwt.GLValueProviderClasses.GLForeignKeyValueProvider;
 import org.greatlogic.gxttestbed.client.glgwt.GLValueProviderClasses.GLIntegerValueProvider;
 import org.greatlogic.gxttestbed.client.glgwt.GLValueProviderClasses.GLStringValueProvider;
-import org.greatlogic.gxttestbed.shared.IGLColumn;
-import org.greatlogic.gxttestbed.shared.IGLEnums.EGLColumnDataType;
-import org.greatlogic.gxttestbed.shared.IGLTable;
+import org.greatlogic.gxttestbed.shared.glgwt.IGLColumn;
+import org.greatlogic.gxttestbed.shared.glgwt.IGLTable;
+import org.greatlogic.gxttestbed.shared.glgwt.IGLEnums.EGLColumnDataType;
 import com.google.gwt.cell.client.DateCell;
 import com.google.gwt.cell.client.TextCell;
 import com.google.gwt.core.client.Scheduler;
@@ -44,6 +44,7 @@ import com.google.gwt.user.client.ui.IsWidget;
 import com.google.gwt.user.client.ui.Widget;
 import com.sencha.gxt.cell.core.client.NumberCell;
 import com.sencha.gxt.cell.core.client.form.CheckBoxCell;
+import com.sencha.gxt.cell.core.client.form.ComboBoxCell.TriggerAction;
 import com.sencha.gxt.core.client.IdentityValueProvider;
 import com.sencha.gxt.core.client.ValueProvider;
 import com.sencha.gxt.core.client.util.TextMetrics;
@@ -460,6 +461,8 @@ private void createEditorsForeignKeyCombobox(final GridEditing<GLRecord> gridEdi
   };
   final ComboBox<GLRecord> comboBox = new ComboBox<GLRecord>(lookupListStore, labelProvider);
   comboBox.setForceSelection(true);
+  comboBox.setTriggerAction(TriggerAction.ALL);
+  comboBox.setTypeAhead(true);
   final Converter<String, GLRecord> converter = new Converter<String, GLRecord>() {
     @Override
     public GLRecord convertModelValue(final String displayValue) {

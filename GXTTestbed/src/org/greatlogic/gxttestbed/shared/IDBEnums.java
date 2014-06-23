@@ -1,6 +1,8 @@
 package org.greatlogic.gxttestbed.shared;
 
-import org.greatlogic.gxttestbed.shared.IGLEnums.EGLColumnDataType;
+import org.greatlogic.gxttestbed.shared.glgwt.IGLColumn;
+import org.greatlogic.gxttestbed.shared.glgwt.IGLTable;
+import org.greatlogic.gxttestbed.shared.glgwt.IGLEnums.EGLColumnDataType;
 
 public interface IDBEnums {
 //--------------------------------------------------------------------------------------------------

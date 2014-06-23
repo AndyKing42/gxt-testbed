@@ -1,39 +1,20 @@
 package org.greatlogic.gxttestbed.server;
 
 import javax.servlet.ServletContextEvent;
-import javax.servlet.ServletContextListener;
+import org.greatlogic.gxttestbed.server.glgwt.GLServletContextListener;
 import com.google.appengine.api.utils.SystemProperty;
 import com.greatlogic.glbase.gldb.GLDBType;
 import com.greatlogic.glbase.gldb.GLDataSource;
 import com.greatlogic.glbase.gldb.IGLDBEnums.EGLDBConfigAttribute;
 import com.greatlogic.glbase.gldb.IGLDBEnums.EGLDBType;
-import com.greatlogic.glbase.gllib.GLGAE;
 import com.greatlogic.glbase.gllib.GLLog;
-import com.greatlogic.glbase.gllib.IGLProgram;
 import com.greatlogic.glbase.glxml.GLXMLElement;
 
-public class GXTTestbedServletContextListener implements ServletContextListener {
-//==================================================================================================
-private static class GXTTestbedProgram implements IGLProgram {
-@Override
-public boolean displayCommandLineHelp() {
-  return false;
-}
-}
-//==================================================================================================
-@Override
-public void contextDestroyed(final ServletContextEvent event) {
-  //
-}
+public class GXTTestbedServletContextListener extends GLServletContextListener {
 //--------------------------------------------------------------------------------------------------
 @Override
 public void contextInitialized(final ServletContextEvent event) {
-  GLGAE.setUsingGAE(true);
-  GLLog.initialize(true);
-  final GLXMLElement logElement = new GLXMLElement("Log");
-  logElement.addAttribute("Level", "Debug");
-  logElement.addAttribute("LoggerName", "GXTTestbed");
-  GLLog.setLoggingOptions(logElement, null, null);
+  super.contextInitialized(event);
   final GLXMLElement dsElement = new GLXMLElement("DataSources");
   final GLXMLElement fapElement = new GLXMLElement("FosterAPet", dsElement);
   fapElement.addAttribute(EGLDBConfigAttribute.Active, true);

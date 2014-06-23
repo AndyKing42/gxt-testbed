@@ -40,6 +40,7 @@ import com.google.gwt.i18n.client.NumberFormat;
 import com.google.gwt.safecss.shared.SafeStyles;
 import com.google.gwt.safecss.shared.SafeStylesUtils;
 import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
+import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.IsWidget;
 import com.google.gwt.user.client.ui.Widget;
 import com.sencha.gxt.cell.core.client.NumberCell;
@@ -330,11 +331,20 @@ private void createContentPanelButtons() {
     @Override
     public void onSelect(final SelectEvent event) {
       final GLRecord record = new GLRecord(_listStore.getRecordDef());
-      // TODO: get the id for the new record
-      _gridEditing.cancelEditing();
-      _listStore.add(0, record);
-      final int row = _listStore.indexOf(record);
-      _gridEditing.startEditing(new GridCell(row, 0));
+      GLUtil.getRemoteService().getNextId(_table.toString(), 1, new AsyncCallback<Integer>() {
+        @Override
+        public void onFailure(final Throwable caught) {
+          // TODO Auto-generated method stub
+        }
+        @Override
+        public void onSuccess(final Integer nextId) {
+          record.put(_table.getPrimaryKeyColumn(), nextId);
+          _gridEditing.cancelEditing();
+          _listStore.add(0, record);
+          final int row = _listStore.indexOf(record);
+          _gridEditing.startEditing(new GridCell(row, 0));
+        }
+      });
     }
   }));
   _contentPanel.addButton(new TextButton("Undo Changes", new SelectHandler() {

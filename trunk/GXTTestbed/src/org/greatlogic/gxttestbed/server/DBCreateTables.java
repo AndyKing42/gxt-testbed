@@ -1,19 +1,36 @@
 package org.greatlogic.gxttestbed.server;
 
+import java.util.Map;
+import org.greatlogic.gxttestbed.shared.IDBEnums.EGXTTestbedId;
 import org.greatlogic.gxttestbed.shared.IDBEnums.EGXTTestbedTable;
+import org.greatlogic.gxttestbed.shared.IDBEnums.NextId;
+import com.google.common.collect.Maps;
+import com.greatlogic.glbase.gldb.GLDBException;
 import com.greatlogic.glbase.gldb.GLDBUtil;
+import com.greatlogic.glbase.gldb.GLSQL;
 import com.greatlogic.glbase.gldb.GLSchemaLoader;
 import com.greatlogic.glbase.gldb.GLSchemaTable;
 import com.greatlogic.glbase.gllib.GLLog;
+import com.greatlogic.glbase.gllib.GLUtil;
 
 class DBCreateTables {
 //--------------------------------------------------------------------------------------------------
 public static void recreateTables() {
   try {
+    GLDBUtil.dropTable(null, EGXTTestbedTable.NextId.name());
     GLDBUtil.dropTable(null, EGXTTestbedTable.Pet.name());
     GLDBUtil.dropTable(null, EGXTTestbedTable.PetType.name());
     final String sql;
     sql = "" //
+          + "create table NextId\n" //
+          + "(\n" //
+          + "NextId          integer not null,\n" //
+          + "NextIdName      varchar(50) not null,\n" //
+          + "NextIdTableName varchar(50) null,\n" //
+          + "NextIdValue     integer not null,\n" //
+          + "constraint NextIdPK primary key (NextId)\n" //
+          + ")\n" //
+          + "go\n" //
           + "create table Pet\n" //
           + "(\n" //
           + "PetId           INTEGER NOT NULL,\n" //
@@ -50,9 +67,30 @@ public static void recreateTables() {
     for (final GLSchemaTable table : schemaLoader.getTables()) {
       table.executeSQL(null, true, true);
     }
+    addIds();
   }
   catch (final Exception e) {
     GLLog.major("Table creation failed", e);
+  }
+}
+//--------------------------------------------------------------------------------------------------
+public static void addIds() throws GLDBException {
+  for (final EGXTTestbedId id : EGXTTestbedId.values()) {
+    int nextIdValue = 0;
+    if (id.getTable() != null) {
+      final String primaryKeyColumnName = id.getTable().getPrimaryKeyColumn().toString();
+      final GLSQL sql = GLSQL.select();
+      sql.from(id.getTable().name());
+      final Map<String, String> maxMap = Maps.newHashMap();
+      sql.getAggregates(false, null, maxMap, null, primaryKeyColumnName);
+      nextIdValue = GLUtil.stringToInt(maxMap.get(primaryKeyColumnName));
+    }
+    final GLSQL nextIdSQL = GLSQL.insert(EGXTTestbedTable.NextId.name(), true);
+    nextIdSQL.setValue(NextId.NextId.name(), id.getNextId());
+    nextIdSQL.setValue(NextId.NextIdName.name(), id.getName());
+    nextIdSQL.setValue(NextId.NextIdTableName.name(), id.getTable().name());
+    nextIdSQL.setValue(NextId.NextIdValue.name(), nextIdValue + 100);
+    nextIdSQL.execute(false);
   }
 }
 //--------------------------------------------------------------------------------------------------

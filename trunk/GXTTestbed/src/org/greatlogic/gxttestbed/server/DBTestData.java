@@ -1,9 +1,12 @@
 package org.greatlogic.gxttestbed.server;
 
+import java.util.List;
+import org.greatlogic.gxttestbed.server.glgwt.GLNextId;
 import org.greatlogic.gxttestbed.shared.IDBEnums.EGXTTestbedTable;
 import org.greatlogic.gxttestbed.shared.IDBEnums.Pet;
 import org.greatlogic.gxttestbed.shared.IDBEnums.PetType;
 import org.greatlogic.gxttestbed.shared.IGXTTestbedEnums.ETestDataOption;
+import com.google.common.collect.Lists;
 import com.greatlogic.glbase.gldb.GLDBException;
 import com.greatlogic.glbase.gldb.GLDBUtil;
 import com.greatlogic.glbase.gldb.GLSQL;
@@ -45,7 +48,7 @@ private static final String[] PetNamesAndSex = new String[] {"Angel,F", "Ashley,
     "Tommy,M", "Tucker,M", "Winston,M", "Ziggy,M", "Zoe,F", "Zoey,F"};
 private static void reloadPets() throws GLDBException {
   truncate(EGXTTestbedTable.Pet);
-  int nextPetId = 1;
+  final List<Integer> petTypeIdList = reloadPetsGetPetTypeIdList();
   for (final String petNameAndSex : PetNamesAndSex) {
     final GLSQL petSQL = GLSQL.insert(EGXTTestbedTable.Pet.name(), false);
     final String[] nameAndSex = petNameAndSex.split(",");
@@ -59,14 +62,30 @@ private static void reloadPets() throws GLDBException {
     petSQL.setValue(Pet.FosterDate.name(), fosterDate);
     petSQL.setValue(Pet.IntakeDate.name(), intakeDate + intakeTime);
     petSQL.setValue(Pet.NumberOfFosters.name(), GLUtil.getRandomInt(5));
-    petSQL.setValue(Pet.PetId.name(), nextPetId);
+    petSQL.setValue(Pet.PetId.name(), GLNextId.getNextIdValue(EGXTTestbedTable.Pet.name(), 1));
     petSQL.setValue(Pet.PetName.name(), nameAndSex[0]);
-    petSQL.setValue(Pet.PetTypeId.name(), GLUtil.getRandomInt(PetTypes.length) + 1);
+    petSQL.setValue(Pet.PetTypeId.name(),
+                    petTypeIdList.get(GLUtil.getRandomInt(petTypeIdList.size())));
     petSQL.setValue(Pet.Sex.name(), nameAndSex[1]);
     petSQL.setValue(Pet.TrainedFlag.name(), GLUtil.getRandomInt(2) == 0 ? "Y" : "N");
     petSQL.execute(false);
-    ++nextPetId;
   }
+}
+//--------------------------------------------------------------------------------------------------
+private static List<Integer> reloadPetsGetPetTypeIdList() throws GLDBException {
+  final List<Integer> result = Lists.newArrayList();
+  final GLSQL petTypeSQL = GLSQL.select();
+  petTypeSQL.from(EGXTTestbedTable.PetType.name());
+  petTypeSQL.open();
+  try {
+    while (petTypeSQL.next(false)) {
+      result.add(petTypeSQL.asInt(PetType.PetTypeId.name()));
+    }
+  }
+  finally {
+    petTypeSQL.close();
+  }
+  return result;
 }
 //--------------------------------------------------------------------------------------------------
 private static final String[] PetTypes = new String[] {"Cat,Cat", "Dog,Dog", "Hedgedog,Hedgehog",
@@ -79,10 +98,10 @@ private static void reloadPetTypes() throws GLDBException {
     final GLSQL petTypeSQL = GLSQL.insert(EGXTTestbedTable.PetType.name(), false);
     petTypeSQL.setValue(PetType.PetTypeDesc.name(), petTypeFields[0]);
     petTypeSQL.setValue(PetType.PetTypeShortDesc.name(), petTypeFields[1]);
-    petTypeSQL.setValue(PetType.PetTypeId.name(), nextPetTypeId);
+    petTypeSQL.setValue(Pet.PetTypeId.name(), nextPetTypeId++);
     petTypeSQL.execute();
-    ++nextPetTypeId;
   }
+  GLNextId.getNextIdValue(EGXTTestbedTable.PetType.name(), PetTypes.length + 1);
 }
 //--------------------------------------------------------------------------------------------------
 private static void truncate(final EGXTTestbedTable table) throws GLDBException {

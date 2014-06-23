@@ -26,6 +26,11 @@ public void delete(final String deletes) {
 }
 //--------------------------------------------------------------------------------------------------
 @Override
+public int getNextId(final String tableName, final int numberOfValues) {
+  return GLNextId.getNextIdValue(tableName, numberOfValues);
+}
+//--------------------------------------------------------------------------------------------------
+@Override
 public void log(final int logLevelId, final String location, final String message) {
   GLLog.log(EGLLogLevel.lookupUsingPriority(logLevelId * 10), location + "=>" + message);
 }

@@ -1,12 +1,35 @@
 package org.greatlogic.gxttestbed.shared;
 
 import org.greatlogic.gxttestbed.shared.glgwt.IGLColumn;
-import org.greatlogic.gxttestbed.shared.glgwt.IGLTable;
 import org.greatlogic.gxttestbed.shared.glgwt.IGLEnums.EGLColumnDataType;
+import org.greatlogic.gxttestbed.shared.glgwt.IGLTable;
 
 public interface IDBEnums {
 //--------------------------------------------------------------------------------------------------
+public enum EGXTTestbedId {
+PetId(1, "PetId", EGXTTestbedTable.Pet),
+PetTypeId(2, "PetTypeId", EGXTTestbedTable.PetType);
+private final String           _name;
+private final int              _nextId;
+private final EGXTTestbedTable _table;
+private EGXTTestbedId(final int nextId, final String name, final EGXTTestbedTable table) {
+  _nextId = nextId;
+  _name = name;
+  _table = table;
+}
+public String getName() {
+  return _name;
+}
+public int getNextId() {
+  return _nextId;
+}
+public EGXTTestbedTable getTable() {
+  return _table;
+}
+}
+//--------------------------------------------------------------------------------------------------
 public enum EGXTTestbedTable implements IGLTable {
+NextId(IDBEnums.NextId.NextId, IDBEnums.NextId.NextIdName),
 Pet(IDBEnums.Pet.PetId, IDBEnums.Pet.PetName),
 PetType(IDBEnums.PetType.PetTypeId, IDBEnums.PetType.PetTypeShortDesc);
 private final IGLColumn _comboboxDisplayColumn;
@@ -22,6 +45,48 @@ public IGLColumn getComboboxDisplayColumn() {
 @Override
 public IGLColumn getPrimaryKeyColumn() {
   return _primaryKeyColumn;
+}
+}
+//--------------------------------------------------------------------------------------------------
+public enum NextId implements IGLColumn {
+NextId(EGLColumnDataType.Int, 0, "Id", 50),
+NextIdName(EGLColumnDataType.String, 50, "Name", 100),
+NextIdTableName(EGLColumnDataType.String, 50, "Table", 100),
+NextIdValue(EGLColumnDataType.Int, 0, "Next Value", 10);
+private final EGLColumnDataType _dataType;
+private final int               _defaultGridColumnWidth;
+private final int               _numberOfDecimalPlaces;
+private final String            _title;
+private NextId(final EGLColumnDataType dataType, final int numberOfDecimalPlaces,
+               final String title, final int defaultGridColumnWidth) {
+  _dataType = dataType;
+  _numberOfDecimalPlaces = numberOfDecimalPlaces;
+  _title = title;
+  _defaultGridColumnWidth = defaultGridColumnWidth;
+}
+@Override
+public String[] getChoices() {
+  return null;
+}
+@Override
+public EGLColumnDataType getDataType() {
+  return _dataType;
+}
+@Override
+public int getDefaultGridColumnWidth() {
+  return _defaultGridColumnWidth;
+}
+@Override
+public int getNumberOfDecimalPlaces() {
+  return _numberOfDecimalPlaces;
+}
+@Override
+public IGLTable getParentTable() {
+  return null;
+}
+@Override
+public String getTitle() {
+  return _title;
 }
 }
 //--------------------------------------------------------------------------------------------------

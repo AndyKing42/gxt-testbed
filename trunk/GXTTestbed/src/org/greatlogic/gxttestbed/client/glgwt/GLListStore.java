@@ -1,20 +1,16 @@
 package org.greatlogic.gxttestbed.client.glgwt;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.sencha.gxt.data.shared.ListStore;
 import com.sencha.gxt.data.shared.ModelKeyProvider;
 import com.sencha.gxt.data.shared.event.StoreUpdateEvent;
 import com.sencha.gxt.data.shared.event.StoreUpdateEvent.StoreUpdateHandler;
-import com.sencha.gxt.widget.core.client.form.ComboBox;
 /**
  * A ListStore that contains GLRecord entries.
  */
 public class GLListStore extends ListStore<GLRecord> {
-//--------------------------------------------------------------------------------------------------
-private HashSet<ComboBox<GLRecord>> _comboBoxSet;
 //--------------------------------------------------------------------------------------------------
 /**
  * Creates a new GLListStore.
@@ -34,13 +30,6 @@ public GLListStore() {
     }
   });
   createStoreUpdateHandler();
-}
-//--------------------------------------------------------------------------------------------------
-public void addComboBox(final ComboBox<GLRecord> comboBox) {
-  if (_comboBoxSet == null) {
-    _comboBoxSet = new HashSet<>();
-  }
-  _comboBoxSet.add(comboBox);
 }
 //--------------------------------------------------------------------------------------------------
 @Override
@@ -101,10 +90,6 @@ private void createStoreUpdateHandler() {
     }
   };
   addStoreUpdateHandler(storeUpdateHandler);
-}
-//--------------------------------------------------------------------------------------------------
-public HashSet<ComboBox<GLRecord>> getComboBoxSet() {
-  return _comboBoxSet;
 }
 //--------------------------------------------------------------------------------------------------
 public void remove(final ArrayList<GLRecord> recordList) {

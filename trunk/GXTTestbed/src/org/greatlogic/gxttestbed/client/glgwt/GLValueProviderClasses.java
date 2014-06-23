@@ -15,8 +15,8 @@ package org.greatlogic.gxttestbed.client.glgwt;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.Date;
-import org.greatlogic.gxttestbed.shared.IGLColumn;
-import org.greatlogic.gxttestbed.shared.IGLTable;
+import org.greatlogic.gxttestbed.shared.glgwt.IGLColumn;
+import org.greatlogic.gxttestbed.shared.glgwt.IGLTable;
 import com.google.gwt.i18n.client.DateTimeFormat;
 import com.sencha.gxt.core.client.ValueProvider;
 

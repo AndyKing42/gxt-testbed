@@ -10,7 +10,6 @@ import org.greatlogic.gxttestbed.shared.IDBEnums.Pet;
 
 public class GXTTestbedCache {
 //--------------------------------------------------------------------------------------------------
-// todo: this doesn't really belong here ... the pets aren't held in the cache
 public static void loadPets(final GLListStore petListStore) {
   try {
     final GLSQL petSQL = GLSQL.select();
@@ -28,7 +27,7 @@ public static void loadPets(final GLListStore petListStore) {
     });
   }
   catch (final GLDBException dbe) {
-
+    //    GLUtil.getRemoteService().log(logLevel, location, message, callback);
   }
 }
 //--------------------------------------------------------------------------------------------------

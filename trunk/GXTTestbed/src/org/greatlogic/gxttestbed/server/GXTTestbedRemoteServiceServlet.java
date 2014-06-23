@@ -1,29 +1,13 @@
 package org.greatlogic.gxttestbed.server;
 
+import org.greatlogic.gxttestbed.server.glgwt.GLRemoteServiceServlet;
 import org.greatlogic.gxttestbed.shared.IRemoteService;
-import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 import com.greatlogic.glbase.gllib.GLLog;
 import com.greatlogic.glbase.gllib.IGLLibEnums.EGLLogLevel;
 
 @SuppressWarnings("serial")
-public class GXTTestbedRemoteServiceServlet extends RemoteServiceServlet implements IRemoteService {
-//--------------------------------------------------------------------------------------------------
-/**
- * Deletes any number of rows from any number of tables. The format for the "deletes" parameter is:
- * 
- * <pre>
- * Table:table_name1/key1,key2,key3<linefeed>
- * Table:table_name2/key1,key2,key3<linefeed>
- * Table:table_name3/key1,key2,key3<linefeed>
- * </pre>
- * 
- * Each line in the "deletes" string represents any number of rows to be deleted from a single
- * table.
- */
-@Override
-public void delete(final String deletes) {
-  DBStatement.delete(deletes);
-}
+public class GXTTestbedRemoteServiceServlet extends GLRemoteServiceServlet implements
+                                                                          IRemoteService {
 //--------------------------------------------------------------------------------------------------
 @Override
 public void loadTestData(final String testDataOptionString) {
@@ -63,28 +47,6 @@ public Integer login(final String loginName, final String password) {
 @Override
 public void recreateTables() {
   DBCreateTables.recreateTables();
-}
-//--------------------------------------------------------------------------------------------------
-@Override
-public String select(final String xmlRequest) {
-  return DBStatement.select(xmlRequest);
-}
-//--------------------------------------------------------------------------------------------------
-/**
- * Updates rows in any number of tables. The format for the "updates" parameter is:
- * 
- * <pre>
- * Table:table_name1/key1:column1=value1;column2=value2;column3=value3<linefeed>
- * Table:table_name2/key2:column1=value1;column2=value2;column3=value3<linefeed>
- * Table:table_name3/key3:column1=value1;column2=value2;column3=value3<linefeed>
- * </pre>
- * 
- * where the "key1", "key2", etc., values are the primary key values for each of the rows to be
- * updated. Each line in the "updates" string represents changes to a single row.
- */
-@Override
-public void update(final String updates) {
-  DBStatement.update(updates);
 }
 //--------------------------------------------------------------------------------------------------
 }

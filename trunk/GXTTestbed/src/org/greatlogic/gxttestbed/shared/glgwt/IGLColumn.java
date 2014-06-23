@@ -1,6 +1,6 @@
-package org.greatlogic.gxttestbed.shared;
+package org.greatlogic.gxttestbed.shared.glgwt;
 
-import org.greatlogic.gxttestbed.shared.IGLEnums.EGLColumnDataType;
+import org.greatlogic.gxttestbed.shared.glgwt.IGLEnums.EGLColumnDataType;
 /*
  * Copyright 2006-2014 Andy King (GreatLogic.com)
  * 

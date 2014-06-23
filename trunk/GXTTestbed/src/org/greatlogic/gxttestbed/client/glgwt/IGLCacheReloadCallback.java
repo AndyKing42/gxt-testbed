@@ -1,6 +1,6 @@
 package org.greatlogic.gxttestbed.client.glgwt;
 
-import org.greatlogic.gxttestbed.shared.IGLTable;
+import org.greatlogic.gxttestbed.shared.glgwt.IGLTable;
 
 public interface IGLCacheReloadCallback {
 //--------------------------------------------------------------------------------------------------

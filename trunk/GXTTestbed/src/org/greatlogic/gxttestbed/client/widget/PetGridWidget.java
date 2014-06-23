@@ -12,13 +12,8 @@ package org.greatlogic.gxttestbed.client.widget;
  * or implied. See the License for the specific language governing permissions and limitations under
  * the License.
  */
-import org.greatlogic.gxttestbed.client.GXTTestbedCache;
-import org.greatlogic.gxttestbed.client.IGXTTestbedEnums.ELookupListKey;
 import org.greatlogic.gxttestbed.client.glgwt.GLGridColumnDef;
 import org.greatlogic.gxttestbed.client.glgwt.GLGridWidget;
-import org.greatlogic.gxttestbed.client.glgwt.GLListStore;
-import org.greatlogic.gxttestbed.client.glgwt.GLRecord;
-import org.greatlogic.gxttestbed.client.glgwt.IGLLookupListStoreKey;
 import org.greatlogic.gxttestbed.shared.IDBEnums.Pet;
 
 public class PetGridWidget extends GLGridWidget {
@@ -28,23 +23,9 @@ public PetGridWidget() {
 }
 //--------------------------------------------------------------------------------------------------
 @Override
-public GLListStore getLookupListStore(final IGLLookupListStoreKey lookupListStoreKey) {
-  if (lookupListStoreKey == ELookupListKey.PetTypes) {
-    return GXTTestbedCache.getPetTypeListStore();
-  }
-  return null;
-}
-//--------------------------------------------------------------------------------------------------
-@Override
-public GLRecord getRecordForLookupValue(final IGLLookupListStoreKey lookupListStoreKey,
-                                        final String value) {
-  return GXTTestbedCache.getPetTypeRecordUsingPetTypeShortDesc(value);
-}
-//--------------------------------------------------------------------------------------------------
-@Override
 protected void loadGridColumnDefList() {
   _gridColumnDefList.add(new GLGridColumnDef(Pet.PetName));
-  _gridColumnDefList.add(new GLGridColumnDef(Pet.PetTypeId, ELookupListKey.PetTypes));
+  _gridColumnDefList.add(new GLGridColumnDef(Pet.PetTypeId));
   _gridColumnDefList.add(new GLGridColumnDef(Pet.Sex));
   _gridColumnDefList.add(new GLGridColumnDef(Pet.IntakeDate));
   _gridColumnDefList.add(new GLGridColumnDef(Pet.TrainedFlag));

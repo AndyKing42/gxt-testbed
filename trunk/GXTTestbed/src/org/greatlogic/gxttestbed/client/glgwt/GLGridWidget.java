@@ -27,6 +27,7 @@ import org.greatlogic.gxttestbed.client.glgwt.GLValueProviderClasses.GLIntegerVa
 import org.greatlogic.gxttestbed.client.glgwt.GLValueProviderClasses.GLStringValueProvider;
 import org.greatlogic.gxttestbed.shared.IGLColumn;
 import org.greatlogic.gxttestbed.shared.IGLEnums.EGLColumnDataType;
+import org.greatlogic.gxttestbed.shared.IGLTable;
 import com.google.gwt.cell.client.DateCell;
 import com.google.gwt.cell.client.TextCell;
 import com.google.gwt.core.client.Scheduler;
@@ -49,6 +50,8 @@ import com.sencha.gxt.core.client.util.TextMetrics;
 import com.sencha.gxt.data.shared.Converter;
 import com.sencha.gxt.data.shared.LabelProvider;
 import com.sencha.gxt.data.shared.Store;
+import com.sencha.gxt.data.shared.event.StoreDataChangeEvent;
+import com.sencha.gxt.data.shared.event.StoreDataChangeEvent.StoreDataChangeHandler;
 import com.sencha.gxt.widget.core.client.ContentPanel;
 import com.sencha.gxt.widget.core.client.Dialog.PredefinedButton;
 import com.sencha.gxt.widget.core.client.box.AlertMessageBox;
@@ -104,8 +107,7 @@ protected GLGridWidget(final String headingText, final String noRowsMessage) {
   loadGridColumnDefList();
   createGridColumnDefMap();
   createContentPanel(headingText);
-  createGrid();
-  _contentPanel.add(_grid);
+  waitForComboBoxData();
 }
 //--------------------------------------------------------------------------------------------------
 private void addHeaderContextMenuHandler() {
@@ -212,6 +214,7 @@ private ColumnConfig<GLRecord, Date> createColumnConfigDateTime(final GLGridColu
 }
 //--------------------------------------------------------------------------------------------------
 private ColumnConfig<GLRecord, String> createColumnConfigForeignKey(final GLGridColumnDef gridColumnDef,
+                                                                    final IGLTable lookupTable,
                                                                     final IGLColumn column) {
   final ColumnConfig<GLRecord, String> result;
   final ValueProvider<GLRecord, String> valueProvider;
@@ -276,7 +279,8 @@ private ColumnModel<GLRecord> createColumnModel() {
           columnConfig = createColumnConfigInteger(gridColumnDef, column);
         }
         else {
-          columnConfig = createColumnConfigForeignKey(gridColumnDef, column);
+          columnConfig = createColumnConfigForeignKey(gridColumnDef, column.getParentTable(), //
+                                                      column);
         }
         break;
       case String:
@@ -439,18 +443,17 @@ private void createEditors() {
 private void createEditorsForeignKeyCombobox(final GridEditing<GLRecord> gridEditing,
                                              final GLGridColumnDef gridColumnDef) {
   final IGLColumn column = gridColumnDef.getColumn();
-  final IGLLookupListStoreKey lookupListStoreKey = gridColumnDef.getLookupListStoreKey();
-  final GLListStore lookupListStore = getLookupListStore(lookupListStoreKey);
+  final IGLTable parentTable = column.getParentTable();
+  final GLListStore lookupListStore = GLLookupTableCache.getListStore(parentTable);
   if (lookupListStore == null) {
-    GLUtil.info(10, "Lookup list store not found for column:" + column + " key" +
-                    lookupListStoreKey);
+    GLUtil.info(10, "Lookup list store not found for column:" + column);
     return;
   }
   final LabelProvider<GLRecord> labelProvider = new LabelProvider<GLRecord>() {
     @Override
     public String getLabel(final GLRecord record) {
       try {
-        return record.asString(column.getParentDisplayColumn());
+        return record.asString(parentTable.getComboboxDisplayColumn());
       }
       catch (final GLInvalidFieldOrColumnException e) {
         return "???";
@@ -458,14 +461,27 @@ private void createEditorsForeignKeyCombobox(final GridEditing<GLRecord> gridEdi
     }
   };
   final ComboBox<GLRecord> comboBox = new ComboBox<GLRecord>(lookupListStore, labelProvider);
+  comboBox.setForceSelection(true);
+  lookupListStore.addComboBox(comboBox);
+  lookupListStore.addStoreDataChangeHandler(new StoreDataChangeHandler<GLRecord>() {
+    @Override
+    public void onDataChange(final StoreDataChangeEvent<GLRecord> event) {
+      comboBox.setStore(lookupListStore);
+    }
+  });
   final Converter<String, GLRecord> converter = new Converter<String, GLRecord>() {
     @Override
     public GLRecord convertModelValue(final String displayValue) {
-      return getRecordForLookupValue(lookupListStoreKey, displayValue);
+      return GLLookupTableCache.lookupRecord(parentTable, displayValue);
     }
     @Override
     public String convertFieldValue(final GLRecord record) {
-      return "Cat";
+      try {
+        return record.asString(parentTable.getComboboxDisplayColumn());
+      }
+      catch (final GLInvalidFieldOrColumnException e) {
+        return "?";
+      }
     }
   };
   gridEditing.addEditor((ColumnConfig<GLRecord, String>)gridColumnDef.getColumnConfig(), converter,
@@ -492,6 +508,7 @@ private void createGrid() {
   _grid.setView(createGridView());
   addHeaderContextMenuHandler();
   createEditors();
+  _contentPanel.add(_grid);
 }
 //--------------------------------------------------------------------------------------------------
 private void createGridColumnDefMap() {
@@ -512,15 +529,6 @@ private GridView<GLRecord> createGridView() {
 //--------------------------------------------------------------------------------------------------
 public GLListStore getListStore() {
   return _listStore;
-}
-//--------------------------------------------------------------------------------------------------
-public GLListStore getLookupListStore(final IGLLookupListStoreKey lookupListStoreKey) {
-  return null;
-}
-//--------------------------------------------------------------------------------------------------
-public GLRecord getRecordForLookupValue(final IGLLookupListStoreKey lookupListStoreKey,
-                                        final String value) {
-  return null;
 }
 //--------------------------------------------------------------------------------------------------
 protected abstract void loadGridColumnDefList();
@@ -576,6 +584,32 @@ private void resizeNextColumn(final ProgressMessageBox messageBox, final int col
       resizeNextColumn(messageBox, columnIndex + 1, lastColumnIndex);
     }
   });
+}
+//--------------------------------------------------------------------------------------------------
+private void waitForComboBoxData() {
+  final HashSet<IGLTable> loadTableSet = new HashSet<>();
+  IGLCacheReloadCallback cacheReloadCallback = null;
+  for (final GLGridColumnDef gridColumnDef : _gridColumnDefList) {
+    final IGLTable parentTable = gridColumnDef.getColumn().getParentTable();
+    if (parentTable != null) {
+      if (cacheReloadCallback == null) {
+        cacheReloadCallback = new IGLCacheReloadCallback() {
+          @Override
+          public void onCompletion(final IGLTable table, final boolean reloadSucceeded) {
+            loadTableSet.remove(table);
+            if (loadTableSet.size() == 0) {
+              createGrid();
+            }
+          }
+        };
+      }
+      loadTableSet.add(parentTable);
+      GLLookupTableCache.reload(parentTable, true, cacheReloadCallback);
+    }
+  }
+  if (cacheReloadCallback == null) {
+    createGrid();
+  }
 }
 //--------------------------------------------------------------------------------------------------
 }

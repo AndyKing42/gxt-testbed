@@ -11,6 +11,7 @@ import org.greatlogic.gxttestbed.shared.glgwt.IGLColumn;
 public class GLRecord {
 //--------------------------------------------------------------------------------------------------
 private ArrayList<String>       _changedFieldNameList;
+private boolean                 _inserted;
 private final GLRecordDef       _recordDef;
 private final ArrayList<Object> _valueList;
 //--------------------------------------------------------------------------------------------------
@@ -183,6 +184,10 @@ public ArrayList<String> getChangedFieldNameList() {
   return _changedFieldNameList;
 }
 //--------------------------------------------------------------------------------------------------
+public boolean getInserted() {
+  return _inserted;
+}
+//--------------------------------------------------------------------------------------------------
 public String getKeyValueAsString() {
   return asString(_recordDef.getTable().getPrimaryKeyColumn());
 }
@@ -210,6 +215,10 @@ public Object put(final String fieldName, final Object value) {
 //--------------------------------------------------------------------------------------------------
 public Object put(final IGLColumn column, final Object value) {
   return put(column.toString(), value);
+}
+//--------------------------------------------------------------------------------------------------
+public void setInserted(final boolean inserted) {
+  _inserted = inserted;
 }
 //--------------------------------------------------------------------------------------------------
 @Override

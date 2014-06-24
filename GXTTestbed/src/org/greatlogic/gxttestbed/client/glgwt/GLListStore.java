@@ -45,9 +45,11 @@ private void createStoreUpdateHandler() {
   final StoreUpdateHandler<GLRecord> storeUpdateHandler = new StoreUpdateHandler<GLRecord>() {
     @Override
     public void onUpdate(final StoreUpdateEvent<GLRecord> event) {
-      final StringBuilder sb = new StringBuilder();
-      final List<GLRecord> updatedRecordList = event.getItems();
-      for (final GLRecord record : updatedRecordList) {
+      final StringBuilder insertsSB = new StringBuilder();
+      final StringBuilder updatesSB = new StringBuilder();
+      final List<GLRecord> recordList = event.getItems();
+      for (final GLRecord record : recordList) {
+        final StringBuilder sb = record.getInserted() ? insertsSB : updatesSB;
         sb.append("Table:").append(record.getRecordDef().getTable().toString()).append("/");
         sb.append(record.getKeyValueAsString());
         sb.append(":");
@@ -61,17 +63,11 @@ private void createStoreUpdateHandler() {
         sb.append("\n");
         record.getChangedFieldNameList().clear();
       }
-      if (sb.length() > 0) {
-        GLUtil.getRemoteService().update(sb.toString(), new AsyncCallback<Void>() {
-          @Override
-          public void onFailure(final Throwable t) {
-            GLUtil.info(10, "Server update failed:" + t.getMessage());
-          }
-          @Override
-          public void onSuccess(final Void result) {
-            GLUtil.info(10, "Changes have been saved on the server");
-          }
-        });
+      if (insertsSB.length() > 0) {
+        sendInsertsToServer(insertsSB);
+      }
+      if (updatesSB.length() > 0) {
+        sendUpdatesToServer(updatesSB);
       }
     }
   };
@@ -110,6 +106,32 @@ public void remove(final ArrayList<GLRecord> recordList) {
       }
     });
   }
+}
+//--------------------------------------------------------------------------------------------------
+private void sendInsertsToServer(final StringBuilder insertsSB) {
+  GLUtil.getRemoteService().insert(insertsSB.toString(), new AsyncCallback<Void>() {
+    @Override
+    public void onFailure(final Throwable t) {
+      GLUtil.info(10, "Server inserts failed:" + t.getMessage());
+    }
+    @Override
+    public void onSuccess(final Void result) {
+      GLUtil.info(10, "Changes have been saved on the server");
+    }
+  });
+}
+//--------------------------------------------------------------------------------------------------
+private void sendUpdatesToServer(final StringBuilder updatesSB) {
+  GLUtil.getRemoteService().update(updatesSB.toString(), new AsyncCallback<Void>() {
+    @Override
+    public void onFailure(final Throwable t) {
+      GLUtil.info(10, "Server updates failed:" + t.getMessage());
+    }
+    @Override
+    public void onSuccess(final Void result) {
+      GLUtil.info(10, "Changes have been saved on the server");
+    }
+  });
 }
 //--------------------------------------------------------------------------------------------------
 public void setRecordDef(final GLRecordDef recordDef) {

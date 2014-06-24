@@ -36,6 +36,56 @@ public static void delete(final String deletes) {
   }
 }
 //--------------------------------------------------------------------------------------------------
+public static void insert(final String inserts) {
+  GLLog.infoDetail("Inserts:");
+  GLLog.infoDetail(inserts);
+  insertOrUpdateRows(true, inserts);
+}
+//--------------------------------------------------------------------------------------------------
+private static void insertOrUpdateRows(final boolean insert, final String insertsOrUpdates) {
+  try {
+    final String[] rows = insertsOrUpdates.split("\n");
+    for (final String row : rows) {
+      int colonIndex = row.indexOf(':');
+      if (colonIndex > 0) {
+        final int slashIndex = row.indexOf('/', colonIndex);
+        if (slashIndex > colonIndex + 1) {
+          final IGLTable table = EGXTTestbedTable.valueOf(row.substring(colonIndex + 1, //
+                                                                        slashIndex));
+          colonIndex = row.indexOf(':', slashIndex);
+          if (colonIndex > slashIndex + 1 && colonIndex < row.length() - 1) {
+            final String keyValue = row.substring(slashIndex + 1, colonIndex);
+            final String[] columnNamesAndValues = row.substring(colonIndex + 1).split(";");
+            final GLSQL sql;
+            if (insert) {
+              sql = GLSQL.insert(table.toString(), false);
+              sql.setValue(table.getPrimaryKeyColumn().toString(), keyValue);
+            }
+            else {
+              sql = GLSQL.update(table.toString());
+            }
+            for (final String columnNameAndValue : columnNamesAndValues) {
+              final int equalsIndex = columnNameAndValue.indexOf('=');
+              if (equalsIndex > 0) {
+                final String columnName = columnNameAndValue.substring(0, equalsIndex);
+                final String value = columnNameAndValue.substring(equalsIndex + 1);
+                sql.setValue(columnName, value.isEmpty() ? null : value);
+              }
+            }
+            if (!insert) {
+              sql.whereAnd(0, table.getPrimaryKeyColumn().toString() + "=" + keyValue, 0);
+            }
+            sql.execute();
+          }
+        }
+      }
+    }
+  }
+  catch (final GLDBException dbe) {
+    GLLog.major("Error executing " + (insert ? "'insert'" : "'update'"), dbe);
+  }
+}
+//--------------------------------------------------------------------------------------------------
 public static String select(final String xmlRequest) {
   GLLog.debug(xmlRequest);
   final StringBuilder result = new StringBuilder();
@@ -70,38 +120,7 @@ public static String select(final String xmlRequest) {
 public static void update(final String updates) {
   GLLog.infoDetail("Updates:");
   GLLog.infoDetail(updates);
-  try {
-    final String[] rows = updates.split("\n");
-    for (final String row : rows) {
-      int colonIndex = row.indexOf(':');
-      if (colonIndex > 0) {
-        final int slashIndex = row.indexOf('/', colonIndex);
-        if (slashIndex > colonIndex + 1) {
-          final IGLTable table = EGXTTestbedTable.valueOf(row.substring(colonIndex + 1, //
-                                                                        slashIndex));
-          colonIndex = row.indexOf(':', slashIndex);
-          if (colonIndex > slashIndex + 1 && colonIndex < row.length() - 1) {
-            final String keyValue = row.substring(slashIndex + 1, colonIndex);
-            final String[] columnNamesAndValues = row.substring(colonIndex + 1).split(";");
-            final GLSQL updateSQL = GLSQL.update(table.toString());
-            for (final String columnNameAndValue : columnNamesAndValues) {
-              final int equalsIndex = columnNameAndValue.indexOf('=');
-              if (equalsIndex > 0) {
-                final String columnName = columnNameAndValue.substring(0, equalsIndex);
-                final String value = columnNameAndValue.substring(equalsIndex + 1);
-                updateSQL.setValue(columnName, value.isEmpty() ? null : value);
-              }
-            }
-            updateSQL.whereAnd(0, table.getPrimaryKeyColumn().toString() + "=" + keyValue, 0);
-            updateSQL.execute();
-          }
-        }
-      }
-    }
-  }
-  catch (final GLDBException dbe) {
-    GLLog.major("Error executing 'update'", dbe);
-  }
+  insertOrUpdateRows(false, updates);
 }
 //--------------------------------------------------------------------------------------------------
 }

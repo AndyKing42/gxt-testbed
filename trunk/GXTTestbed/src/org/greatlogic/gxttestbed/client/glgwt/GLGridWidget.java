@@ -327,26 +327,7 @@ private void createContentPanel(final String headingText) {
 }
 //--------------------------------------------------------------------------------------------------
 private void createContentPanelButtons() {
-  _contentPanel.addButton(new TextButton("New Pet", new SelectHandler() {
-    @Override
-    public void onSelect(final SelectEvent event) {
-      final GLRecord record = new GLRecord(_listStore.getRecordDef());
-      GLUtil.getRemoteService().getNextId(_table.toString(), 1, new AsyncCallback<Integer>() {
-        @Override
-        public void onFailure(final Throwable caught) {
-          // TODO Auto-generated method stub
-        }
-        @Override
-        public void onSuccess(final Integer nextId) {
-          record.put(_table.getPrimaryKeyColumn(), nextId);
-          _gridEditing.cancelEditing();
-          _listStore.add(0, record);
-          final int row = _listStore.indexOf(record);
-          _gridEditing.startEditing(new GridCell(row, 0));
-        }
-      });
-    }
-  }));
+  createContentPanelNewButton();
   _contentPanel.addButton(new TextButton("Undo Changes", new SelectHandler() {
     @Override
     public void onSelect(final SelectEvent event) {
@@ -400,6 +381,30 @@ private TextButton createContentPanelDeleteButton() {
       messageBox.show();
     }
   });
+}
+//--------------------------------------------------------------------------------------------------
+private void createContentPanelNewButton() {
+  _contentPanel.addButton(new TextButton("New", new SelectHandler() {
+    @Override
+    public void onSelect(final SelectEvent event) {
+      final GLRecord record = new GLRecord(_listStore.getRecordDef());
+      record.setInserted(true);
+      GLUtil.getRemoteService().getNextId(_table.toString(), 1, new AsyncCallback<Integer>() {
+        @Override
+        public void onFailure(final Throwable caught) {
+          // TODO Auto-generated method stub
+        }
+        @Override
+        public void onSuccess(final Integer nextId) {
+          record.put(_table.getPrimaryKeyColumn(), nextId);
+          _gridEditing.cancelEditing();
+          _listStore.add(0, record);
+          final int row = _listStore.indexOf(record);
+          _gridEditing.startEditing(new GridCell(row, 0));
+        }
+      });
+    }
+  }));
 }
 //--------------------------------------------------------------------------------------------------
 @SuppressWarnings("unchecked")

@@ -1,5 +1,6 @@
-package org.greatlogic.gxttestbed.client.glgwt;
+package org.greatlogic.gxttestbed.client.glwidget;
 
+import org.greatlogic.gxttestbed.client.glgwt.GLRecord;
 import org.greatlogic.gxttestbed.shared.glgwt.IGLColumn;
 import org.greatlogic.gxttestbed.shared.glgwt.IGLEnums.EGLColumnDataType;
 import com.google.gwt.user.client.ui.HasHorizontalAlignment;

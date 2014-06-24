@@ -1,4 +1,4 @@
-package org.greatlogic.gxttestbed.client.glgwt;
+package org.greatlogic.gxttestbed.client.glwidget;
 /*
  * Copyright 2006-2014 Andy King (GreatLogic.com)
  * 
@@ -15,6 +15,8 @@ package org.greatlogic.gxttestbed.client.glgwt;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.Date;
+import org.greatlogic.gxttestbed.client.glgwt.GLRecord;
+import org.greatlogic.gxttestbed.client.glgwt.GLUtil;
 import org.greatlogic.gxttestbed.shared.glgwt.IGLColumn;
 import org.greatlogic.gxttestbed.shared.glgwt.IGLTable;
 import com.google.gwt.i18n.client.DateTimeFormat;
@@ -98,11 +100,11 @@ public GLForeignKeyValueProvider(final IGLTable lookupTable, final IGLColumn col
 }
 @Override
 public String getValue(final GLRecord record) {
-  return GLLookupTableCache.lookupDisplayValue(_lookupTable, record.asInt(_column));
+  return GLUtil.getLookupTableCache().lookupDisplayValue(_lookupTable, record.asInt(_column));
 }
 @Override
 public void setValue(final GLRecord record, final String value) {
-  record.put(_column, GLLookupTableCache.lookupKeyValue(_lookupTable, value));
+  record.put(_column, GLUtil.getLookupTableCache().lookupKeyValue(_lookupTable, value));
 }
 @Override
 public String getPath() {

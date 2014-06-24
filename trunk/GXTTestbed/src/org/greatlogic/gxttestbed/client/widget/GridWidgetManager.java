@@ -13,7 +13,7 @@ package org.greatlogic.gxttestbed.client.widget;
  * the License.
  */
 import java.util.TreeMap;
-import org.greatlogic.gxttestbed.client.glgwt.GLGridWidget;
+import org.greatlogic.gxttestbed.client.glwidget.GLGridWidget;
 
 public class GridWidgetManager {
 //--------------------------------------------------------------------------------------------------

@@ -1,5 +1,7 @@
 package org.greatlogic.gxttestbed.shared.glgwt;
 
+import java.util.List;
+import org.greatlogic.gxttestbed.client.glgwt.GLRecord;
 /*
  * Copyright 2006-2014 Andy King (GreatLogic.com)
  * 
@@ -15,7 +17,9 @@ package org.greatlogic.gxttestbed.shared.glgwt;
  */
 public interface IGLTable {
 //--------------------------------------------------------------------------------------------------
+public List<IGLColumn> getColumnList();
 public IGLColumn getComboboxDisplayColumn();
 public IGLColumn getPrimaryKeyColumn();
+public void initializeNewRecord(final GLRecord record);
 //--------------------------------------------------------------------------------------------------
 }

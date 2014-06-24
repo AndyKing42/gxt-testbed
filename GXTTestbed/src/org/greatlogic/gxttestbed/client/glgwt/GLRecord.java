@@ -30,11 +30,27 @@ public GLRecord(final GLRecordDef recordDef) {
  * retrieved using the field name or column.
  * @param list The list of values for this record. Note that the List object is referenced from the
  * GLRecord object, and must not therefore be modified after being passed to the GLRecord
- * constructor.
+ * constructor. If the list is null then the record will be initialized based upon the default
+ * values that are set in the IGLTable#initialize method.
  */
 public GLRecord(final GLRecordDef recordDef, final ArrayList<Object> list) {
   _recordDef = recordDef;
-  _valueList = list == null ? new ArrayList<Object>(_recordDef.getNumberOfFields()) : list;
+  if (list == null) {
+    _inserted = true;
+    _valueList = new ArrayList<Object>(_recordDef.getNumberOfFields());
+    _recordDef.getTable().initializeNewRecord(this);
+  }
+  else {
+    _valueList = list;
+  }
+}
+//--------------------------------------------------------------------------------------------------
+public void addChangedField(final IGLColumn column) {
+  addChangedField(column.toString());
+}
+//--------------------------------------------------------------------------------------------------
+public void addChangedField(final String fieldName) {
+  getChangedFieldNameList().add(fieldName);
 }
 //--------------------------------------------------------------------------------------------------
 public boolean asBoolean(final IGLColumn column) {
@@ -215,6 +231,14 @@ public Object put(final String fieldName, final Object value) {
 //--------------------------------------------------------------------------------------------------
 public Object put(final IGLColumn column, final Object value) {
   return put(column.toString(), value);
+}
+//--------------------------------------------------------------------------------------------------
+public Object set(final String fieldName, final Object value) {
+  return put(fieldName, value);
+}
+//--------------------------------------------------------------------------------------------------
+public Object set(final IGLColumn column, final Object value) {
+  return put(column, value);
 }
 //--------------------------------------------------------------------------------------------------
 public void setInserted(final boolean inserted) {

@@ -52,6 +52,7 @@ import com.sencha.gxt.core.client.util.TextMetrics;
 import com.sencha.gxt.data.shared.Converter;
 import com.sencha.gxt.data.shared.LabelProvider;
 import com.sencha.gxt.data.shared.Store;
+import com.sencha.gxt.data.shared.StringLabelProvider;
 import com.sencha.gxt.widget.core.client.ContentPanel;
 import com.sencha.gxt.widget.core.client.Dialog.PredefinedButton;
 import com.sencha.gxt.widget.core.client.box.AlertMessageBox;
@@ -75,6 +76,7 @@ import com.sencha.gxt.widget.core.client.form.DateField;
 import com.sencha.gxt.widget.core.client.form.DateTimePropertyEditor;
 import com.sencha.gxt.widget.core.client.form.IntegerField;
 import com.sencha.gxt.widget.core.client.form.IsField;
+import com.sencha.gxt.widget.core.client.form.SimpleComboBox;
 import com.sencha.gxt.widget.core.client.form.TextField;
 import com.sencha.gxt.widget.core.client.grid.CheckBoxSelectionModel;
 import com.sencha.gxt.widget.core.client.grid.ColumnConfig;
@@ -387,8 +389,6 @@ private void createContentPanelNewButton() {
   _contentPanel.addButton(new TextButton("New", new SelectHandler() {
     @Override
     public void onSelect(final SelectEvent event) {
-      final GLRecord record = new GLRecord(_listStore.getRecordDef());
-      record.setInserted(true);
       GLUtil.getRemoteService().getNextId(_table.toString(), 1, new AsyncCallback<Integer>() {
         @Override
         public void onFailure(final Throwable caught) {
@@ -396,6 +396,7 @@ private void createContentPanelNewButton() {
         }
         @Override
         public void onSuccess(final Integer nextId) {
+          final GLRecord record = new GLRecord(_listStore.getRecordDef());
           record.put(_table.getPrimaryKeyColumn(), nextId);
           _gridEditing.cancelEditing();
           _listStore.add(0, record);
@@ -413,63 +414,90 @@ private void createEditors() {
   for (final GLGridColumnDef gridColumnDef : _gridColumnDefList) {
     final ColumnConfig<GLRecord, ?> columnConfig = gridColumnDef.getColumnConfig();
     final IGLColumn column = gridColumnDef.getColumn();
-    switch (column.getDataType()) {
-      case Boolean:
-        // no editor is needed - the checkbox can be changed in place
-        break;
-      case Currency:
-        _gridEditing.addEditor((ColumnConfig<GLRecord, BigDecimal>)columnConfig,
-                               new BigDecimalField());
-        break;
-      case Date: {
-        final DateTimeFormat dateTimeFormat = DateTimeFormat.getFormat("MM/dd/yyyy");
-        final DateTimePropertyEditor propertyEditor = new DateTimePropertyEditor(dateTimeFormat);
-        final DateField dateField = new DateField(propertyEditor);
-        dateField.setClearValueOnParseError(false);
-        _gridEditing.addEditor((ColumnConfig<GLRecord, Date>)columnConfig, dateField);
-        final IsField<Date> editor = _gridEditing.getEditor(columnConfig);
-        if (editor == null) {
-          GLUtil.initialize();
+    if (column.getChoiceList() != null) {
+      createEditorsFixedCombobox(column, columnConfig);
+    }
+    else {
+      switch (column.getDataType()) {
+        case Boolean:
+          // no editor is needed - the checkbox can be changed in place
+          break;
+        case Currency:
+          _gridEditing.addEditor((ColumnConfig<GLRecord, BigDecimal>)columnConfig,
+                                 new BigDecimalField());
+          break;
+        case Date: {
+          createEditorsDate(columnConfig);
+          break;
         }
-        break;
+        case DateTime: {
+          createEditorsDateTime(columnConfig);
+          break;
+        }
+        case Decimal:
+          _gridEditing.addEditor((ColumnConfig<GLRecord, BigDecimal>)columnConfig,
+                                 new BigDecimalField());
+          break;
+        case Int:
+          if (column.getParentTable() == null) {
+            _gridEditing.addEditor((ColumnConfig<GLRecord, Integer>)columnConfig,
+                                   new IntegerField());
+          }
+          else {
+            createEditorsForeignKeyCombobox(gridColumnDef);
+          }
+          break;
+        case String:
+          _gridEditing.addEditor((ColumnConfig<GLRecord, String>)columnConfig, new TextField());
+          break;
       }
-      case DateTime: {
-        /*
-         * In 3, I'd probably start by making an Editor instance with two sub-editors, one DateField
-         * and one TimeField, each using @Path("") to have them bind to the same value.
-         * 
-         * Or make the new class implement IsField, and use setValue() and getValue() to modify/read
-         * both sub-editors.
-         * 
-         * IsField is what is being used in 3 to replace most MultiField cases - it allows a widget
-         * to supply methods that are helpful for most fields, and as it extends LeafValueEditor, it
-         * can be used in GWT Editor framework, and subfields will be ignored, leaving the dev to
-         * write their own logic for binding the values.
-         */
-        final DateTimeFormat dateTimeFormat = DateTimeFormat.getFormat(PredefinedFormat.DATE_LONG);
-        final DateTimePropertyEditor propertyEditor = new DateTimePropertyEditor(dateTimeFormat);
-        final DateField dateField = new DateField(propertyEditor);
-        dateField.setClearValueOnParseError(false);
-        _gridEditing.addEditor((ColumnConfig<GLRecord, Date>)columnConfig, dateField);
-        break;
-      }
-      case Decimal:
-        _gridEditing.addEditor((ColumnConfig<GLRecord, BigDecimal>)columnConfig,
-                               new BigDecimalField());
-        break;
-      case Int:
-        if (column.getParentTable() == null) {
-          _gridEditing.addEditor((ColumnConfig<GLRecord, Integer>)columnConfig, new IntegerField());
-        }
-        else {
-          createEditorsForeignKeyCombobox(gridColumnDef);
-        }
-        break;
-      case String:
-        _gridEditing.addEditor((ColumnConfig<GLRecord, String>)columnConfig, new TextField());
-        break;
     }
   }
+}
+//--------------------------------------------------------------------------------------------------
+@SuppressWarnings("unchecked")
+private void createEditorsDate(final ColumnConfig<GLRecord, ?> columnConfig) {
+  final DateTimeFormat dateTimeFormat = DateTimeFormat.getFormat("MM/dd/yyyy");
+  final DateTimePropertyEditor propertyEditor = new DateTimePropertyEditor(dateTimeFormat);
+  final DateField dateField = new DateField(propertyEditor);
+  dateField.setClearValueOnParseError(false);
+  _gridEditing.addEditor((ColumnConfig<GLRecord, Date>)columnConfig, dateField);
+  final IsField<Date> editor = _gridEditing.getEditor(columnConfig);
+  if (editor == null) {
+    GLUtil.initialize();
+  }
+}
+//--------------------------------------------------------------------------------------------------
+@SuppressWarnings("unchecked")
+private void createEditorsDateTime(final ColumnConfig<GLRecord, ?> columnConfig) {
+  /*
+   * In 3, I'd probably start by making an Editor instance with two sub-editors, one DateField and
+   * one TimeField, each using @Path("") to have them bind to the same value.
+   * 
+   * Or make the new class implement IsField, and use setValue() and getValue() to modify/read both
+   * sub-editors.
+   * 
+   * IsField is what is being used in 3 to replace most MultiField cases - it allows a widget to
+   * supply methods that are helpful for most fields, and as it extends LeafValueEditor, it can be
+   * used in GWT Editor framework, and subfields will be ignored, leaving the dev to write their own
+   * logic for binding the values.
+   */
+  final DateTimeFormat dateTimeFormat = DateTimeFormat.getFormat(PredefinedFormat.DATE_LONG);
+  final DateTimePropertyEditor propertyEditor = new DateTimePropertyEditor(dateTimeFormat);
+  final DateField dateField = new DateField(propertyEditor);
+  dateField.setClearValueOnParseError(false);
+  _gridEditing.addEditor((ColumnConfig<GLRecord, Date>)columnConfig, dateField);
+}
+//--------------------------------------------------------------------------------------------------
+@SuppressWarnings("unchecked")
+private void createEditorsFixedCombobox(final IGLColumn column,
+                                        final ColumnConfig<GLRecord, ?> columnConfig) {
+  final SimpleComboBox<String> combobox = new SimpleComboBox<String>(new StringLabelProvider<>());
+  combobox.setClearValueOnParseError(false);
+  combobox.setTriggerAction(TriggerAction.ALL);
+  combobox.add(column.getChoiceList());
+  combobox.setForceSelection(true);
+  _gridEditing.addEditor((ColumnConfig<GLRecord, String>)columnConfig, combobox);
 }
 //--------------------------------------------------------------------------------------------------
 @SuppressWarnings("unchecked")
@@ -508,7 +536,7 @@ private void createEditorsForeignKeyCombobox(final GLGridColumnDef gridColumnDef
 private void createGrid() {
   createCheckBoxSelectionModel();
   final ColumnModel<GLRecord> columnModel = createColumnModel();
-  _grid = new Grid<GLRecord>(_listStore, columnModel);
+  _grid = new Grid<>(_listStore, columnModel);
   _grid.addRowClickHandler(new RowClickEvent.RowClickHandler() {
     @Override
     public void onRowClick(final RowClickEvent event) {
@@ -526,6 +554,7 @@ private void createGrid() {
   addHeaderContextMenuHandler();
   createEditors();
   _contentPanel.add(_grid);
+  _contentPanel.forceLayout();
 }
 //--------------------------------------------------------------------------------------------------
 private void createGridColumnDefMap() {

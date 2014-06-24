@@ -18,12 +18,11 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.Random;
 import org.greatlogic.gxttestbed.client.GXTTestbedCache;
+import org.greatlogic.gxttestbed.client.glwidget.LoginDialogBox;
 import org.greatlogic.gxttestbed.client.widget.GridWidgetManager;
 import org.greatlogic.gxttestbed.client.widget.PetGridWidget;
 import org.greatlogic.gxttestbed.shared.IGXTTestbedEnums.ETestDataOption;
-import org.greatlogic.gxttestbed.shared.IRemoteService;
 import org.greatlogic.gxttestbed.shared.IRemoteServiceAsync;
-import com.google.gwt.core.client.GWT;
 import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.sencha.gxt.widget.core.client.info.DefaultInfoConfig;
@@ -32,6 +31,9 @@ import com.sencha.gxt.widget.core.client.info.InfoConfig;
 
 public class GLUtil {
 //--------------------------------------------------------------------------------------------------
+private static GLClientFactory     _clientFactory;
+private static LoginDialogBox      _loginDialogBox;
+private static GLLookupTableCache  _lookupTableCache;
 private static Random              _random;
 private static IRemoteServiceAsync _remoteService;
 private static DateTimeFormat      _yyyymmddDateTimeFormat;
@@ -124,6 +126,10 @@ public static String formatObjectSpecial(final Object value, final String defaul
   return result;
 } // formatObjectSpecial()
 //--------------------------------------------------------------------------------------------------
+public static GLLookupTableCache getLookupTableCache() {
+  return _lookupTableCache;
+}
+//--------------------------------------------------------------------------------------------------
 /**
  * Returns a random value between 0 and the maxValue minus one.
  * @param maxValue The maximum value plus one for the random value.
@@ -152,10 +158,6 @@ public static void info(final int seconds, final String message) {
   infoConfig.setDisplay(seconds * 1000);
   final Info info = new Info();
   info.show(infoConfig);
-}
-//--------------------------------------------------------------------------------------------------
-public static void initialize() {
-  _remoteService = GWT.create(IRemoteService.class);
 }
 //--------------------------------------------------------------------------------------------------
 public static boolean isBlank(final CharSequence s) {
@@ -201,6 +203,13 @@ public static ArrayList<String> loadListFromStrings(final ArrayList<String> stri
   return result;
 }
 //--------------------------------------------------------------------------------------------------
+public static void login() {
+  if (_loginDialogBox == null) {
+    _loginDialogBox = new LoginDialogBox();
+  }
+  _loginDialogBox.login();
+}
+//--------------------------------------------------------------------------------------------------
 public static void recreateTables() {
   _remoteService.recreateTables(new AsyncCallback<Void>() {
     @Override
@@ -211,7 +220,7 @@ public static void recreateTables() {
     public void onSuccess(final Void result) {
       GLUtil.info(10, "Database table creation is complete");
       final PetGridWidget petGrid = GridWidgetManager.getPetGrid("Main");
-      GLLookupTableCache.reload(null);
+      _clientFactory.getLookupTableCache().reload(null);
       GXTTestbedCache.loadPets(petGrid.getListStore());
     }
   });
@@ -227,7 +236,7 @@ public static void reloadTestData() {
     public void onSuccess(final Void result) {
       GLUtil.info(10, "Test data reload is complete");
       final PetGridWidget petGrid = GridWidgetManager.getPetGrid("Main");
-      GLLookupTableCache.reload(null);
+      _clientFactory.getLookupTableCache().reload(null);
       GXTTestbedCache.loadPets(petGrid.getListStore());
     }
   });
@@ -241,6 +250,12 @@ public static void reloadTestData() {
  */
 public static boolean stringToBoolean(final String stringValue) {
   return stringToBoolean(stringValue, false);
+}
+//--------------------------------------------------------------------------------------------------
+public static void setClientFactory(final GLClientFactory clientFactory) {
+  _clientFactory = clientFactory;
+  _lookupTableCache = _clientFactory.getLookupTableCache();
+  _remoteService = _clientFactory.getRemoteService();
 }
 //--------------------------------------------------------------------------------------------------
 /**

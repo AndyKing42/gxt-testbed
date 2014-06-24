@@ -1,4 +1,4 @@
-package org.greatlogic.gxttestbed.client.glgwt;
+package org.greatlogic.gxttestbed.client.glwidget;
 /*
  * Copyright 2006-2014 Andy King (GreatLogic.com)
  * 
@@ -19,12 +19,16 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.TreeMap;
-import org.greatlogic.gxttestbed.client.glgwt.GLValueProviderClasses.GLBigDecimalValueProvider;
-import org.greatlogic.gxttestbed.client.glgwt.GLValueProviderClasses.GLBooleanValueProvider;
-import org.greatlogic.gxttestbed.client.glgwt.GLValueProviderClasses.GLDateValueProvider;
-import org.greatlogic.gxttestbed.client.glgwt.GLValueProviderClasses.GLForeignKeyValueProvider;
-import org.greatlogic.gxttestbed.client.glgwt.GLValueProviderClasses.GLIntegerValueProvider;
-import org.greatlogic.gxttestbed.client.glgwt.GLValueProviderClasses.GLStringValueProvider;
+import org.greatlogic.gxttestbed.client.glgwt.GLListStore;
+import org.greatlogic.gxttestbed.client.glgwt.GLRecord;
+import org.greatlogic.gxttestbed.client.glgwt.GLUtil;
+import org.greatlogic.gxttestbed.client.glgwt.IGLCacheReloadCallback;
+import org.greatlogic.gxttestbed.client.glwidget.GLValueProviderClasses.GLBigDecimalValueProvider;
+import org.greatlogic.gxttestbed.client.glwidget.GLValueProviderClasses.GLBooleanValueProvider;
+import org.greatlogic.gxttestbed.client.glwidget.GLValueProviderClasses.GLDateValueProvider;
+import org.greatlogic.gxttestbed.client.glwidget.GLValueProviderClasses.GLForeignKeyValueProvider;
+import org.greatlogic.gxttestbed.client.glwidget.GLValueProviderClasses.GLIntegerValueProvider;
+import org.greatlogic.gxttestbed.client.glwidget.GLValueProviderClasses.GLStringValueProvider;
 import org.greatlogic.gxttestbed.shared.glgwt.IGLColumn;
 import org.greatlogic.gxttestbed.shared.glgwt.IGLEnums.EGLColumnDataType;
 import org.greatlogic.gxttestbed.shared.glgwt.IGLTable;
@@ -504,7 +508,7 @@ private void createEditorsFixedCombobox(final IGLColumn column,
 private void createEditorsForeignKeyCombobox(final GLGridColumnDef gridColumnDef) {
   final IGLColumn column = gridColumnDef.getColumn();
   final IGLTable parentTable = column.getParentTable();
-  final GLListStore lookupListStore = GLLookupTableCache.getListStore(parentTable);
+  final GLListStore lookupListStore = GLUtil.getLookupTableCache().getListStore(parentTable);
   if (lookupListStore == null) {
     GLUtil.info(10, "Lookup list store not found for column:" + column);
     return;
@@ -522,7 +526,7 @@ private void createEditorsForeignKeyCombobox(final GLGridColumnDef gridColumnDef
   final Converter<String, GLRecord> converter = new Converter<String, GLRecord>() {
     @Override
     public GLRecord convertModelValue(final String displayValue) {
-      return GLLookupTableCache.lookupRecord(parentTable, displayValue);
+      return GLUtil.getLookupTableCache().lookupRecord(parentTable, displayValue);
     }
     @Override
     public String convertFieldValue(final GLRecord record) {
@@ -650,7 +654,7 @@ private void waitForComboBoxData() {
         };
       }
       loadTableSet.add(parentTable);
-      GLLookupTableCache.reload(parentTable, true, cacheReloadCallback);
+      GLUtil.getLookupTableCache().reload(parentTable, true, cacheReloadCallback);
     }
   }
   if (cacheReloadCallback == null) {

@@ -7,19 +7,19 @@ import org.greatlogic.gxttestbed.shared.glgwt.IGLTable;
 
 public class GLLookupTableCache {
 //--------------------------------------------------------------------------------------------------
-private static ArrayList<IGLTable>                           _cachedTableList;
-private static HashMap<IGLTable, TreeMap<String, GLRecord>>  _displayValueToRecordMapByTableMap;
-private static HashMap<IGLTable, TreeMap<Integer, GLRecord>> _keyToRecordMapByTableMap;
-private static HashMap<IGLTable, GLListStore>                _listStoreByTableMap;
+private final ArrayList<IGLTable>                           _cachedTableList;
+private final HashMap<IGLTable, TreeMap<String, GLRecord>>  _displayValueToRecordMapByTableMap;
+private final HashMap<IGLTable, TreeMap<Integer, GLRecord>> _keyToRecordMapByTableMap;
+private final HashMap<IGLTable, GLListStore>                _listStoreByTableMap;
 //--------------------------------------------------------------------------------------------------
-static {
+public GLLookupTableCache() {
   _cachedTableList = new ArrayList<>();
   _displayValueToRecordMapByTableMap = new HashMap<>();
   _keyToRecordMapByTableMap = new HashMap<>();
   _listStoreByTableMap = new HashMap<>();
 }
 //--------------------------------------------------------------------------------------------------
-private static GLListStore addLookupType(final IGLTable lookupTable) {
+private GLListStore addLookupType(final IGLTable lookupTable) {
   GLListStore result = _listStoreByTableMap.get(lookupTable);
   if (result != null) {
     return result;
@@ -31,11 +31,11 @@ private static GLListStore addLookupType(final IGLTable lookupTable) {
   return result;
 }
 //--------------------------------------------------------------------------------------------------
-public static GLListStore getListStore(final IGLTable table) {
+public GLListStore getListStore(final IGLTable table) {
   return addLookupType(table);
 }
 //--------------------------------------------------------------------------------------------------
-public static String lookupDisplayValue(final IGLTable lookupTable, final int key) {
+public String lookupDisplayValue(final IGLTable lookupTable, final int key) {
   final TreeMap<Integer, GLRecord> keyToRecordMap = _keyToRecordMapByTableMap.get(lookupTable);
   if (keyToRecordMap == null) {
     return "?";
@@ -44,7 +44,7 @@ public static String lookupDisplayValue(final IGLTable lookupTable, final int ke
   return record == null ? "?" : record.asString(lookupTable.getComboboxDisplayColumn());
 }
 //--------------------------------------------------------------------------------------------------
-public static int lookupKeyValue(final IGLTable lookupTable, final String displayValue) {
+public int lookupKeyValue(final IGLTable lookupTable, final String displayValue) {
   final GLRecord record = lookupRecord(lookupTable, displayValue);
   if (record == null) {
     return 0;
@@ -52,7 +52,7 @@ public static int lookupKeyValue(final IGLTable lookupTable, final String displa
   return record.asInt(lookupTable.getPrimaryKeyColumn());
 }
 //--------------------------------------------------------------------------------------------------
-public static GLRecord lookupRecord(final IGLTable lookupTable, final String displayValue) {
+public GLRecord lookupRecord(final IGLTable lookupTable, final String displayValue) {
   final TreeMap<String, GLRecord> displayValueToRecordMap;
   displayValueToRecordMap = _displayValueToRecordMapByTableMap.get(lookupTable);
   if (displayValueToRecordMap == null) {
@@ -61,14 +61,14 @@ public static GLRecord lookupRecord(final IGLTable lookupTable, final String dis
   return displayValueToRecordMap.get(displayValue);
 }
 //--------------------------------------------------------------------------------------------------
-public static void reload(final IGLCacheReloadCallback cacheReloadCallback) {
+public void reload(final IGLCacheReloadCallback cacheReloadCallback) {
   for (final IGLTable table : _cachedTableList) {
     reload(table, false, cacheReloadCallback);
   }
 }
 //--------------------------------------------------------------------------------------------------
-public static void reload(final IGLTable table, final boolean addToReloadList,
-                          final IGLCacheReloadCallback cacheReloadCallback) {
+public void reload(final IGLTable table, final boolean addToReloadList,
+                   final IGLCacheReloadCallback cacheReloadCallback) {
   if (addToReloadList) {
     _cachedTableList.add(table);
   }

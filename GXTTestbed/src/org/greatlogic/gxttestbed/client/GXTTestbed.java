@@ -12,36 +12,23 @@ package org.greatlogic.gxttestbed.client;
  * or implied. See the License for the specific language governing permissions and limitations under
  * the License.
  */
-import org.greatlogic.gxttestbed.client.glgwt.GLGridWidget;
+import org.greatlogic.gxttestbed.client.glgwt.GLClientFactory;
+import org.greatlogic.gxttestbed.client.glgwt.GLClientFactoryUI;
 import org.greatlogic.gxttestbed.client.glgwt.GLListStore;
 import org.greatlogic.gxttestbed.client.glgwt.GLUtil;
+import org.greatlogic.gxttestbed.client.glwidget.GLGridWidget;
 import org.greatlogic.gxttestbed.client.widget.GridWidgetManager;
 import org.greatlogic.gxttestbed.client.widget.MainLayoutWidget;
 import org.greatlogic.gxttestbed.client.widget.PetGridWidget;
 import com.google.gwt.core.client.EntryPoint;
-import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.RootPanel;
-import com.sencha.gxt.widget.core.client.box.MessageBox;
 
 public class GXTTestbed implements EntryPoint {
 //--------------------------------------------------------------------------------------------------
-private void login() {
-  GLUtil.getRemoteService().login("name", "password", new AsyncCallback<Integer>() {
-    @Override
-    public void onFailure(final Throwable t) {
-
-    }
-    @Override
-    public void onSuccess(final Integer userId) {
-      final MessageBox messageBox = new MessageBox("login result:" + userId);
-      messageBox.show();
-    }
-  });
-}
-//--------------------------------------------------------------------------------------------------
 @Override
 public void onModuleLoad() {
-  GLUtil.initialize();
+  final GLClientFactory clientFactory = new GLClientFactoryUI();
+  GLUtil.setClientFactory(clientFactory);
   final MainLayoutWidget mainLayoutWidget = new MainLayoutWidget();
   final boolean loadTestData = false;
   final PetGridWidget petGrid = GridWidgetManager.getPetGrid("Main");

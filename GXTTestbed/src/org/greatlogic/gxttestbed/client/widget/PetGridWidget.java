@@ -12,8 +12,8 @@ package org.greatlogic.gxttestbed.client.widget;
  * or implied. See the License for the specific language governing permissions and limitations under
  * the License.
  */
-import org.greatlogic.gxttestbed.client.glgwt.GLGridColumnDef;
-import org.greatlogic.gxttestbed.client.glgwt.GLGridWidget;
+import org.greatlogic.gxttestbed.client.glwidget.GLGridColumnDef;
+import org.greatlogic.gxttestbed.client.glwidget.GLGridWidget;
 import org.greatlogic.gxttestbed.shared.IDBEnums.EGXTTestbedTable;
 import org.greatlogic.gxttestbed.shared.IDBEnums.Pet;
 

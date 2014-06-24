@@ -1,5 +1,6 @@
 package org.greatlogic.gxttestbed.shared.glgwt;
 
+import java.util.ArrayList;
 import org.greatlogic.gxttestbed.shared.glgwt.IGLEnums.EGLColumnDataType;
 /*
  * Copyright 2006-2014 Andy King (GreatLogic.com)
@@ -16,9 +17,10 @@ import org.greatlogic.gxttestbed.shared.glgwt.IGLEnums.EGLColumnDataType;
  */
 public interface IGLColumn {
 //--------------------------------------------------------------------------------------------------
-public String[] getChoices();
+public ArrayList<String> getChoiceList();
 public EGLColumnDataType getDataType();
 public int getDefaultGridColumnWidth();
+public Object getDefaultValue();
 public int getNumberOfDecimalPlaces();
 public IGLTable getParentTable();
 public String getTitle();

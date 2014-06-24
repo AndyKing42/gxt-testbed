@@ -13,6 +13,8 @@ package org.greatlogic.gxttestbed.client.glgwt;
  * the License.
  */
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.Random;
 import org.greatlogic.gxttestbed.client.GXTTestbedCache;
@@ -158,6 +160,45 @@ public static void initialize() {
 //--------------------------------------------------------------------------------------------------
 public static boolean isBlank(final CharSequence s) {
   return s == null || s.toString().trim().length() == 0;
+}
+//--------------------------------------------------------------------------------------------------
+/**
+ * Converts a string containing a comma-delimited list of values into a <code>List</code> containing
+ * those values.
+ * @param commaDelimitedStrings A string containing a comma-delimited list of values.
+ * @param sortList If this is <code>true</code> then the returned list will be sorted.
+ * @return A <code>List</code> containing the separated values.
+ */
+public static ArrayList<String> loadListFromStrings(final String commaDelimitedStrings,
+                                                    final boolean sortList) {
+  return loadListFromStrings(null, commaDelimitedStrings, sortList);
+}
+//--------------------------------------------------------------------------------------------------
+/**
+ * Converts a string containing a comma-delimited list of values into a <code>List</code> containing
+ * those values.
+ * @param stringList The <code>List</code> into which the values will be placed. If this is
+ * <code>null</code> then a new <code>List</code> will be created.
+ * @param commaDelimitedStrings A string containing a comma-delimited list of values.
+ * @param sortList If this is <code>true</code> then the returned list will be sorted.
+ * @return A <code>List</code> containing the separated values.
+ */
+public static ArrayList<String> loadListFromStrings(final ArrayList<String> stringList,
+                                                    final String commaDelimitedStrings,
+                                                    final boolean sortList) {
+  final ArrayList<String> result = stringList == null ? new ArrayList<String>(20) : stringList;
+  try {
+    final String[] strings = commaDelimitedStrings.split(",");
+    result.clear();
+    Collections.addAll(result, strings);
+    if (sortList) {
+      Collections.sort(result);
+    }
+  }
+  catch (final Exception e) {
+    // the list will have everything up to the first exception
+  }
+  return result;
 }
 //--------------------------------------------------------------------------------------------------
 public static void recreateTables() {

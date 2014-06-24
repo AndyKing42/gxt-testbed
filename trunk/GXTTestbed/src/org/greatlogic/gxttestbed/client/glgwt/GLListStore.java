@@ -2,6 +2,7 @@ package org.greatlogic.gxttestbed.client.glgwt;
 
 import java.util.ArrayList;
 import java.util.List;
+import org.greatlogic.gxttestbed.shared.glgwt.IGLColumn;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.sencha.gxt.data.shared.ListStore;
 import com.sencha.gxt.data.shared.ModelKeyProvider;
@@ -34,8 +35,18 @@ public void commitChanges() {
   for (final Record record : getModifiedRecords()) {
     final GLRecord glRecord = record.getModel();
     glRecord.getChangedFieldNameList().clear();
-    for (final Change<GLRecord, ?> change : record.getChanges()) {
-      glRecord.getChangedFieldNameList().add(change.getChangeTag().toString());
+    if (glRecord.getInserted()) {
+      for (final IGLColumn column : glRecord.getRecordDef().getTable().getColumnList()) {
+        final Object value = glRecord.asObject(column);
+        if (value != null) {
+          glRecord.addChangedField(column);
+        }
+      }
+    }
+    else {
+      for (final Change<GLRecord, ?> change : record.getChanges()) {
+        glRecord.addChangedField(change.getChangeTag().toString());
+      }
     }
   }
   super.commitChanges();
@@ -65,6 +76,9 @@ private void createStoreUpdateHandler() {
       }
       if (insertsSB.length() > 0) {
         sendInsertsToServer(insertsSB);
+        for (final GLRecord record : recordList) {
+          record.setInserted(false);
+        }
       }
       if (updatesSB.length() > 0) {
         sendUpdatesToServer(updatesSB);

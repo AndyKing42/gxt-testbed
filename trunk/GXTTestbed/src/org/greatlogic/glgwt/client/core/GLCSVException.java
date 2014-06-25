@@ -1,4 +1,6 @@
-package org.greatlogic.gxttestbed.client.widget;
+package org.greatlogic.glgwt.client.core;
+
+import org.greatlogic.glgwt.client.core.GLCSV.EGLCSVException;
 /*
  * Copyright 2006-2014 Andy King (GreatLogic.com)
  * 
@@ -12,26 +14,13 @@ package org.greatlogic.gxttestbed.client.widget;
  * or implied. See the License for the specific language governing permissions and limitations under
  * the License.
  */
-import org.greatlogic.glgwt.client.widget.GLGridColumnDef;
-import org.greatlogic.glgwt.client.widget.GLGridWidget;
-import org.greatlogic.gxttestbed.shared.IDBEnums.EGXTTestbedTable;
-import org.greatlogic.gxttestbed.shared.IDBEnums.Pet;
-
-public class PetGridWidget extends GLGridWidget {
+// --------------------------------------------------------------------------------------------------
+public class GLCSVException extends Exception {
 //--------------------------------------------------------------------------------------------------
-public PetGridWidget() {
-  super(EGXTTestbedTable.Pet, null, "There are no pets");
-}
+private static final long serialVersionUID = 1L;
 //--------------------------------------------------------------------------------------------------
-@Override
-protected void loadGridColumnDefList() {
-  _gridColumnDefList.add(new GLGridColumnDef(Pet.PetName));
-  _gridColumnDefList.add(new GLGridColumnDef(Pet.PetTypeId));
-  _gridColumnDefList.add(new GLGridColumnDef(Pet.Sex));
-  _gridColumnDefList.add(new GLGridColumnDef(Pet.IntakeDate));
-  _gridColumnDefList.add(new GLGridColumnDef(Pet.TrainedFlag));
-  _gridColumnDefList.add(new GLGridColumnDef(Pet.AdoptionFee));
-  _gridColumnDefList.add(new GLGridColumnDef(Pet.FosterDate));
-}
+GLCSVException(final EGLCSVException glcsvException, final CharSequence message) {
+  super(glcsvException.toString() + " - " + message);
+} // GLCSVException()
 //--------------------------------------------------------------------------------------------------
 }

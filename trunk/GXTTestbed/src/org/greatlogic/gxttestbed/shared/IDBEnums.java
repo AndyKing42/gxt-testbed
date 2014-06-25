@@ -2,11 +2,11 @@ package org.greatlogic.gxttestbed.shared;
 
 import java.util.ArrayList;
 import java.util.List;
+import org.greatlogic.glgwt.client.core.GLRecord;
 import org.greatlogic.glgwt.client.core.GLUtil;
-import org.greatlogic.gxttestbed.client.glgwt.GLRecord;
-import org.greatlogic.gxttestbed.shared.glgwt.IGLColumn;
-import org.greatlogic.gxttestbed.shared.glgwt.IGLEnums.EGLColumnDataType;
-import org.greatlogic.gxttestbed.shared.glgwt.IGLTable;
+import org.greatlogic.glgwt.shared.IGLColumn;
+import org.greatlogic.glgwt.shared.IGLTable;
+import org.greatlogic.glgwt.shared.IGLEnums.EGLColumnDataType;
 
 public interface IDBEnums {
 //--------------------------------------------------------------------------------------------------

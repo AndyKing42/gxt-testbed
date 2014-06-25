@@ -1,4 +1,7 @@
-package org.greatlogic.gxttestbed.client.widget;
+package org.greatlogic.glgwt.shared;
+
+import java.util.List;
+import org.greatlogic.glgwt.client.core.GLRecord;
 /*
  * Copyright 2006-2014 Andy King (GreatLogic.com)
  * 
@@ -12,25 +15,11 @@ package org.greatlogic.gxttestbed.client.widget;
  * or implied. See the License for the specific language governing permissions and limitations under
  * the License.
  */
-import java.util.TreeMap;
-import org.greatlogic.glgwt.client.widget.GLGridWidget;
-
-public class GridWidgetManager {
+public interface IGLTable {
 //--------------------------------------------------------------------------------------------------
-private static TreeMap<String, GLGridWidget> _gridWidgetMap; // grid name -> GLValueMapGridWidget
-
-//--------------------------------------------------------------------------------------------------
-static {
-  _gridWidgetMap = new TreeMap<String, GLGridWidget>();
-}
-//--------------------------------------------------------------------------------------------------
-public static PetGridWidget getPetGrid(final String gridName) {
-  PetGridWidget result = (PetGridWidget)_gridWidgetMap.get(gridName);
-  if (result == null) {
-    result = new PetGridWidget();
-    _gridWidgetMap.put(gridName, result);
-  }
-  return result;
-}
+public List<IGLColumn> getColumnList();
+public IGLColumn getComboboxDisplayColumn();
+public IGLColumn getPrimaryKeyColumn();
+public void initializeNewRecord(final GLRecord record);
 //--------------------------------------------------------------------------------------------------
 }

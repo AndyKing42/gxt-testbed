@@ -1,6 +1,6 @@
 package org.greatlogic.gxttestbed.server;
 
-import org.greatlogic.gxttestbed.server.glgwt.GLRemoteServiceServlet;
+import org.greatlogic.glgwt.server.GLRemoteServiceServlet;
 import org.greatlogic.gxttestbed.shared.IRemoteService;
 import com.greatlogic.glbase.gllib.GLLog;
 import com.greatlogic.glbase.gllib.IGLLibEnums.EGLLogLevel;

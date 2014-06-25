@@ -12,11 +12,9 @@ package org.greatlogic.gxttestbed.client;
  * or implied. See the License for the specific language governing permissions and limitations under
  * the License.
  */
+import org.greatlogic.glgwt.client.core.GLListStore;
 import org.greatlogic.glgwt.client.core.GLUtil;
-import org.greatlogic.gxttestbed.client.glgwt.GLClientFactory;
-import org.greatlogic.gxttestbed.client.glgwt.GLClientFactoryUI;
-import org.greatlogic.gxttestbed.client.glgwt.GLListStore;
-import org.greatlogic.gxttestbed.client.glwidget.GLGridWidget;
+import org.greatlogic.glgwt.client.widget.GLGridWidget;
 import org.greatlogic.gxttestbed.client.widget.GridWidgetManager;
 import org.greatlogic.gxttestbed.client.widget.MainLayoutWidget;
 import org.greatlogic.gxttestbed.client.widget.PetGridWidget;
@@ -27,7 +25,7 @@ public class GXTTestbed implements EntryPoint {
 //--------------------------------------------------------------------------------------------------
 @Override
 public void onModuleLoad() {
-  final GLClientFactory clientFactory = new GLClientFactoryUI();
+  final ClientFactory clientFactory = new ClientFactoryUI();
   GLUtil.setClientFactory(clientFactory);
   final MainLayoutWidget mainLayoutWidget = new MainLayoutWidget();
   final boolean loadTestData = false;

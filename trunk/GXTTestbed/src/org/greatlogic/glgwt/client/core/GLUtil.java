@@ -17,11 +17,9 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.Random;
+import org.greatlogic.glgwt.client.widget.LoginDialogBox;
+import org.greatlogic.gxttestbed.client.ClientFactory;
 import org.greatlogic.gxttestbed.client.GXTTestbedCache;
-import org.greatlogic.gxttestbed.client.glgwt.GLClientFactory;
-import org.greatlogic.gxttestbed.client.glgwt.GLLog;
-import org.greatlogic.gxttestbed.client.glgwt.GLLookupTableCache;
-import org.greatlogic.gxttestbed.client.glwidget.LoginDialogBox;
 import org.greatlogic.gxttestbed.client.widget.GridWidgetManager;
 import org.greatlogic.gxttestbed.client.widget.PetGridWidget;
 import org.greatlogic.gxttestbed.shared.IGXTTestbedEnums.ETestDataOption;
@@ -31,7 +29,7 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 
 public class GLUtil {
 //--------------------------------------------------------------------------------------------------
-private static GLClientFactory     _clientFactory;
+private static ClientFactory     _clientFactory;
 private static LoginDialogBox      _loginDialogBox;
 private static GLLookupTableCache  _lookupTableCache;
 private static Random              _random;
@@ -245,7 +243,7 @@ public static boolean stringToBoolean(final String stringValue) {
   return stringToBoolean(stringValue, false);
 }
 //--------------------------------------------------------------------------------------------------
-public static void setClientFactory(final GLClientFactory clientFactory) {
+public static void setClientFactory(final ClientFactory clientFactory) {
   _clientFactory = clientFactory;
   _lookupTableCache = _clientFactory.getLookupTableCache();
   _remoteService = _clientFactory.getRemoteService();

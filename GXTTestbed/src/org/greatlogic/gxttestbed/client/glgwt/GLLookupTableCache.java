@@ -81,7 +81,7 @@ public void reload(final IGLTable table, final boolean addToReloadList,
     sql.execute(listStore, new IGLSQLSelectCallback() {
       @Override
       public void onFailure(final Throwable t) {
-        GLUtil.info(30, table + " loading failed: " + t.getMessage());
+        GLLog.popup(30, table + " loading failed: " + t.getMessage());
         if (cacheReloadCallback != null) {
           cacheReloadCallback.onCompletion(table, false);
         }
@@ -98,7 +98,7 @@ public void reload(final IGLTable table, final boolean addToReloadList,
           displayValueToRecordMap.put(record.asString(table.getComboboxDisplayColumn()), record);
           keyToRecordMap.put(record.asInt(table.getPrimaryKeyColumn()), record);
         }
-        GLUtil.info(5, "Reload of " + table + " was successful");
+        GLLog.popup(5, "Reload of " + table + " was successful");
         if (cacheReloadCallback != null) {
           cacheReloadCallback.onCompletion(table, true);
         }

@@ -25,9 +25,6 @@ import org.greatlogic.gxttestbed.shared.IGXTTestbedEnums.ETestDataOption;
 import org.greatlogic.gxttestbed.shared.IRemoteServiceAsync;
 import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.user.client.rpc.AsyncCallback;
-import com.sencha.gxt.widget.core.client.info.DefaultInfoConfig;
-import com.sencha.gxt.widget.core.client.info.Info;
-import com.sencha.gxt.widget.core.client.info.InfoConfig;
 
 public class GLUtil {
 //--------------------------------------------------------------------------------------------------
@@ -153,13 +150,6 @@ public static IRemoteServiceAsync getRemoteService() {
   return _remoteService;
 }
 //--------------------------------------------------------------------------------------------------
-public static void info(final int seconds, final String message) {
-  final InfoConfig infoConfig = new DefaultInfoConfig("", message);
-  infoConfig.setDisplay(seconds * 1000);
-  final Info info = new Info();
-  info.show(infoConfig);
-}
-//--------------------------------------------------------------------------------------------------
 public static boolean isBlank(final CharSequence s) {
   return s == null || s.toString().trim().length() == 0;
 }
@@ -214,11 +204,11 @@ public static void recreateTables() {
   _remoteService.recreateTables(new AsyncCallback<Void>() {
     @Override
     public void onFailure(final Throwable t) {
-      GLUtil.info(10, "Database table creation failed:" + t.getMessage());
+      GLLog.popup(10, "Database table creation failed:" + t.getMessage());
     }
     @Override
     public void onSuccess(final Void result) {
-      GLUtil.info(10, "Database table creation is complete");
+      GLLog.popup(10, "Database table creation is complete");
       final PetGridWidget petGrid = GridWidgetManager.getPetGrid("Main");
       _clientFactory.getLookupTableCache().reload(null);
       GXTTestbedCache.loadPets(petGrid.getListStore());
@@ -230,11 +220,11 @@ public static void reloadTestData() {
   _remoteService.loadTestData(ETestDataOption.Reload.name(), new AsyncCallback<Void>() {
     @Override
     public void onFailure(final Throwable t) {
-      GLUtil.info(10, "Test data reload failed:" + t.getMessage());
+      GLLog.popup(10, "Test data reload failed:" + t.getMessage());
     }
     @Override
     public void onSuccess(final Void result) {
-      GLUtil.info(10, "Test data reload is complete");
+      GLLog.popup(10, "Test data reload is complete");
       final PetGridWidget petGrid = GridWidgetManager.getPetGrid("Main");
       _clientFactory.getLookupTableCache().reload(null);
       GXTTestbedCache.loadPets(petGrid.getListStore());

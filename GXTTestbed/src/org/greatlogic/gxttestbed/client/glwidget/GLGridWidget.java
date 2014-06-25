@@ -20,6 +20,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.TreeMap;
 import org.greatlogic.gxttestbed.client.glgwt.GLListStore;
+import org.greatlogic.gxttestbed.client.glgwt.GLLog;
 import org.greatlogic.gxttestbed.client.glgwt.GLRecord;
 import org.greatlogic.gxttestbed.client.glgwt.GLUtil;
 import org.greatlogic.gxttestbed.client.glgwt.IGLCacheReloadCallback;
@@ -467,9 +468,6 @@ private void createEditorsDate(final ColumnConfig<GLRecord, ?> columnConfig) {
   dateField.setClearValueOnParseError(false);
   _gridEditing.addEditor((ColumnConfig<GLRecord, Date>)columnConfig, dateField);
   final IsField<Date> editor = _gridEditing.getEditor(columnConfig);
-  if (editor == null) {
-    GLUtil.initialize();
-  }
 }
 //--------------------------------------------------------------------------------------------------
 @SuppressWarnings("unchecked")
@@ -510,7 +508,7 @@ private void createEditorsForeignKeyCombobox(final GLGridColumnDef gridColumnDef
   final IGLTable parentTable = column.getParentTable();
   final GLListStore lookupListStore = GLUtil.getLookupTableCache().getListStore(parentTable);
   if (lookupListStore == null) {
-    GLUtil.info(10, "Lookup list store not found for column:" + column);
+    GLLog.popup(10, "Lookup list store not found for column:" + column);
     return;
   }
   final LabelProvider<GLRecord> labelProvider = new LabelProvider<GLRecord>() {

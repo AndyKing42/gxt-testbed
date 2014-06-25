@@ -17,8 +17,7 @@ import org.greatlogic.glgwt.client.widget.GLGridWidget;
 
 public class GridWidgetManager {
 //--------------------------------------------------------------------------------------------------
-private static TreeMap<String, GLGridWidget> _gridWidgetMap; // grid name -> GLValueMapGridWidget
-
+private static TreeMap<String, GLGridWidget> _gridWidgetMap; /* grid name -> GLGridWidget */
 //--------------------------------------------------------------------------------------------------
 static {
   _gridWidgetMap = new TreeMap<String, GLGridWidget>();

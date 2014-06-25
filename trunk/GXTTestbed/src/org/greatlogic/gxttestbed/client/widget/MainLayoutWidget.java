@@ -12,7 +12,7 @@ package org.greatlogic.gxttestbed.client.widget;
  * or implied. See the License for the specific language governing permissions and limitations under
  * the License.
  */
-import org.greatlogic.glgwt.client.core.GLUtil;
+import org.greatlogic.gxttestbed.client.DBUtil;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
@@ -59,7 +59,7 @@ public void onRecreateTablesButtonClick(final SelectEvent event) {
     @Override
     public void onDialogHide(final DialogHideEvent hideEvent) {
       if (hideEvent.getHideButton() == PredefinedButton.YES) {
-        GLUtil.recreateTables();
+        DBUtil.recreateTables();
       }
     }
   });
@@ -75,7 +75,7 @@ public void onReloadTestDataButtonClick(final SelectEvent event) {
     @Override
     public void onDialogHide(final DialogHideEvent hideEvent) {
       if (hideEvent.getHideButton() == PredefinedButton.YES) {
-        GLUtil.reloadTestData();
+        DBUtil.reloadTestData();
       }
     }
   });

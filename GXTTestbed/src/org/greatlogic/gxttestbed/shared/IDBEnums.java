@@ -2,8 +2,8 @@ package org.greatlogic.gxttestbed.shared;
 
 import java.util.ArrayList;
 import java.util.List;
+import org.greatlogic.glgwt.client.core.GLUtil;
 import org.greatlogic.gxttestbed.client.glgwt.GLRecord;
-import org.greatlogic.gxttestbed.client.glgwt.GLUtil;
 import org.greatlogic.gxttestbed.shared.glgwt.IGLColumn;
 import org.greatlogic.gxttestbed.shared.glgwt.IGLEnums.EGLColumnDataType;
 import org.greatlogic.gxttestbed.shared.glgwt.IGLTable;

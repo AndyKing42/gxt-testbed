@@ -1,4 +1,4 @@
-package org.greatlogic.gxttestbed.client.glgwt;
+package org.greatlogic.glgwt.client.core;
 /*
  * Copyright 2006-2014 Andy King (GreatLogic.com)
  * 
@@ -18,6 +18,9 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.Random;
 import org.greatlogic.gxttestbed.client.GXTTestbedCache;
+import org.greatlogic.gxttestbed.client.glgwt.GLClientFactory;
+import org.greatlogic.gxttestbed.client.glgwt.GLLog;
+import org.greatlogic.gxttestbed.client.glgwt.GLLookupTableCache;
 import org.greatlogic.gxttestbed.client.glwidget.LoginDialogBox;
 import org.greatlogic.gxttestbed.client.widget.GridWidgetManager;
 import org.greatlogic.gxttestbed.client.widget.PetGridWidget;

@@ -18,6 +18,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.TreeMap;
+import org.greatlogic.glgwt.client.core.GLUtil;
 import org.greatlogic.gxttestbed.shared.glgwt.IGLColumn;
 /**
  * Instances of this class represent a map of keys to values. The benefit of using this class over

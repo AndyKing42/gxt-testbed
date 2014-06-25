@@ -6,9 +6,9 @@ import com.google.gwt.core.client.GWT;
 
 public abstract class GLClientFactory {
 //--------------------------------------------------------------------------------------------------
-private GLLookupTableCache        _lookupTableCache;
-private final GLEventBus          _eventBus;
-private final IRemoteServiceAsync _remoteService;
+protected GLLookupTableCache  _lookupTableCache;
+private final GLEventBus      _eventBus;
+protected IRemoteServiceAsync _remoteService;
 //--------------------------------------------------------------------------------------------------
 protected GLClientFactory() {
   _eventBus = new GLEventBus();

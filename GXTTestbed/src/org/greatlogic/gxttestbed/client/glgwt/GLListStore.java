@@ -2,6 +2,7 @@ package org.greatlogic.gxttestbed.client.glgwt;
 
 import java.util.ArrayList;
 import java.util.List;
+import org.greatlogic.glgwt.client.core.GLUtil;
 import org.greatlogic.gxttestbed.shared.glgwt.IGLColumn;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.sencha.gxt.data.shared.ListStore;

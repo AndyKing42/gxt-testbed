@@ -3,6 +3,7 @@ package org.greatlogic.gxttestbed.client.glgwt;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Map.Entry;
+import org.greatlogic.glgwt.client.core.GLUtil;
 import org.greatlogic.gxttestbed.shared.glgwt.IGLColumn;
 /**
  * A thin wrapper around a list of field values. The objective is to provide easy access to the

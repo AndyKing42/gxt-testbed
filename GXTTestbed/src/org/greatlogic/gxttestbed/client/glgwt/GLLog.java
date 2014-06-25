@@ -1,5 +1,6 @@
 package org.greatlogic.gxttestbed.client.glgwt;
 
+import org.greatlogic.glgwt.client.core.GLUtil;
 import org.greatlogic.gxttestbed.shared.IRemoteServiceAsync;
 import org.greatlogic.gxttestbed.shared.glgwt.IGLEnums.EGLLogLevel;
 import com.sencha.gxt.widget.core.client.info.DefaultInfoConfig;

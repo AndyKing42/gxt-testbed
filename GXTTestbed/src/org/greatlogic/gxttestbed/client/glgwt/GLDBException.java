@@ -1,4 +1,5 @@
 package org.greatlogic.gxttestbed.client.glgwt;
+import org.greatlogic.glgwt.client.core.GLUtil;
 /*
  * Copyright 2006-2014 Andy King (GreatLogic.com)
  * 

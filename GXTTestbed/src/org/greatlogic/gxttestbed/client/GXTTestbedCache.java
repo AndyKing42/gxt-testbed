@@ -1,10 +1,10 @@
 package org.greatlogic.gxttestbed.client;
 
-import org.greatlogic.gxttestbed.client.glgwt.GLDBException;
-import org.greatlogic.gxttestbed.client.glgwt.GLListStore;
-import org.greatlogic.gxttestbed.client.glgwt.GLLog;
-import org.greatlogic.gxttestbed.client.glgwt.GLSQL;
-import org.greatlogic.gxttestbed.client.glgwt.IGLSQLSelectCallback;
+import org.greatlogic.glgwt.client.core.GLDBException;
+import org.greatlogic.glgwt.client.core.GLListStore;
+import org.greatlogic.glgwt.client.core.GLLog;
+import org.greatlogic.glgwt.client.core.GLSQL;
+import org.greatlogic.glgwt.client.core.IGLSQLSelectCallback;
 import org.greatlogic.gxttestbed.shared.IDBEnums.EGXTTestbedTable;
 import org.greatlogic.gxttestbed.shared.IDBEnums.Pet;
 

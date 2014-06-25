@@ -1,7 +1,7 @@
 package org.greatlogic.gxttestbed.server;
 
 import java.util.List;
-import org.greatlogic.gxttestbed.server.glgwt.GLNextId;
+import org.greatlogic.glgwt.server.GLNextId;
 import org.greatlogic.gxttestbed.shared.IDBEnums.EGXTTestbedTable;
 import org.greatlogic.gxttestbed.shared.IDBEnums.Pet;
 import org.greatlogic.gxttestbed.shared.IDBEnums.PetType;

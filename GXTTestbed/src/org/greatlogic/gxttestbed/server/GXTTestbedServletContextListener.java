@@ -1,7 +1,7 @@
 package org.greatlogic.gxttestbed.server;
 
 import javax.servlet.ServletContextEvent;
-import org.greatlogic.gxttestbed.server.glgwt.GLServletContextListener;
+import org.greatlogic.glgwt.server.GLServletContextListener;
 import com.google.appengine.api.utils.SystemProperty;
 import com.greatlogic.glbase.gldb.GLDBType;
 import com.greatlogic.glbase.gldb.GLDataSource;

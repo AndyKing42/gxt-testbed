@@ -1,6 +1,6 @@
 package org.greatlogic.gxttestbed.shared;
 
-import org.greatlogic.gxttestbed.shared.glgwt.IGLRemoteServiceAsync;
+import org.greatlogic.glgwt.shared.IGLRemoteServiceAsync;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
 public interface IRemoteServiceAsync extends IGLRemoteServiceAsync {

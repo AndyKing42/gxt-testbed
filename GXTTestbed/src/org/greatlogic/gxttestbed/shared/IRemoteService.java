@@ -1,6 +1,6 @@
 package org.greatlogic.gxttestbed.shared;
 
-import org.greatlogic.gxttestbed.shared.glgwt.IGLRemoteService;
+import org.greatlogic.glgwt.shared.IGLRemoteService;
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
 
 @RemoteServiceRelativePath("GXTTestbedRemoteServiceServlet")

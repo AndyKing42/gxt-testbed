@@ -3,6 +3,7 @@ package org.greatlogic.glgwt.client.core;
 import java.util.ArrayList;
 import java.util.List;
 import org.greatlogic.glgwt.shared.IGLColumn;
+import org.greatlogic.glgwt.shared.IGLTable;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.sencha.gxt.data.shared.ListStore;
 import com.sencha.gxt.data.shared.ModelKeyProvider;
@@ -59,10 +60,12 @@ private void createStoreUpdateHandler() {
       final StringBuilder insertsSB = new StringBuilder();
       final StringBuilder updatesSB = new StringBuilder();
       final List<GLRecord> recordList = event.getItems();
+      final IGLTable table = _recordDef.getTable();
+      final String primaryKeyColumnName = table.getPrimaryKeyColumn().toString();
       for (final GLRecord record : recordList) {
         final StringBuilder sb = record.getInserted() ? insertsSB : updatesSB;
-        sb.append("Table:").append(record.getRecordDef().getTable().toString()).append("/");
-        sb.append(record.getKeyValueAsString());
+        sb.append("Table:").append(table.toString()).append("/");
+        sb.append(primaryKeyColumnName).append("=").append(record.getKeyValueAsString());
         sb.append(":");
         boolean firstField = true;
         for (final String fieldName : record.getChangedFieldNameList()) {
@@ -97,16 +100,13 @@ public void remove(final ArrayList<GLRecord> recordList) {
     remove(record);
   }
   final StringBuilder sb = new StringBuilder();
+  final IGLTable table = _recordDef.getTable();
+  sb.append("Table:").append(table.toString()).append("/").append(table.getPrimaryKeyColumn());
+  sb.append(":");
   boolean firstRecord = true;
   for (final GLRecord record : recordList) {
-    if (firstRecord) {
-      sb.append("Table:").append(record.getRecordDef().getTable().toString()).append("/");
-      firstRecord = false;
-    }
-    else {
-      sb.append(",");
-    }
-    sb.append(record.getKeyValueAsString());
+    sb.append(firstRecord ? "" : ",").append(record.getKeyValueAsString());
+    firstRecord = false;
   }
   if (sb.length() > 0) {
     GLUtil.getRemoteService().delete(sb.toString(), new AsyncCallback<Void>() {

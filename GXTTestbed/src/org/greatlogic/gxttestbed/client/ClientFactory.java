@@ -8,11 +8,14 @@ import com.google.gwt.core.client.GWT;
 
 public abstract class ClientFactory {
 //--------------------------------------------------------------------------------------------------
+public static ClientFactory   Instance;
+
 protected GLLookupTableCache  _lookupTableCache;
 private final GLEventBus      _eventBus;
 protected IRemoteServiceAsync _remoteService;
 //--------------------------------------------------------------------------------------------------
 protected ClientFactory() {
+  Instance = this;
   _eventBus = new GLEventBus();
   _remoteService = GWT.create(IRemoteService.class);
 }

@@ -1,14 +1,14 @@
 package org.greatlogic.glgwt.client.core;
 
 import org.greatlogic.glgwt.shared.IGLEnums.EGLLogLevel;
-import org.greatlogic.gxttestbed.shared.IRemoteServiceAsync;
+import org.greatlogic.glgwt.shared.IGLRemoteServiceAsync;
 import com.sencha.gxt.widget.core.client.info.DefaultInfoConfig;
 import com.sencha.gxt.widget.core.client.info.Info;
 import com.sencha.gxt.widget.core.client.info.InfoConfig;
 
 public class GLLog {
 //--------------------------------------------------------------------------------------------------
-private static IRemoteServiceAsync _remoteService;
+private static IGLRemoteServiceAsync _remoteService;
 //--------------------------------------------------------------------------------------------------
 static {
   _remoteService = GLUtil.getRemoteService();

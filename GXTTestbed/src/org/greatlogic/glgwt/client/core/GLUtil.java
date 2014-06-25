@@ -18,23 +18,16 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.Random;
 import org.greatlogic.glgwt.client.widget.LoginDialogBox;
-import org.greatlogic.gxttestbed.client.ClientFactory;
-import org.greatlogic.gxttestbed.client.GXTTestbedCache;
-import org.greatlogic.gxttestbed.client.widget.GridWidgetManager;
-import org.greatlogic.gxttestbed.client.widget.PetGridWidget;
-import org.greatlogic.gxttestbed.shared.IGXTTestbedEnums.ETestDataOption;
-import org.greatlogic.gxttestbed.shared.IRemoteServiceAsync;
+import org.greatlogic.glgwt.shared.IGLRemoteServiceAsync;
 import com.google.gwt.i18n.client.DateTimeFormat;
-import com.google.gwt.user.client.rpc.AsyncCallback;
 
 public class GLUtil {
 //--------------------------------------------------------------------------------------------------
-private static ClientFactory     _clientFactory;
-private static LoginDialogBox      _loginDialogBox;
-private static GLLookupTableCache  _lookupTableCache;
-private static Random              _random;
-private static IRemoteServiceAsync _remoteService;
-private static DateTimeFormat      _yyyymmddDateTimeFormat;
+private static LoginDialogBox        _loginDialogBox;
+private static GLLookupTableCache    _lookupTableCache;
+private static Random                _random;
+private static IGLRemoteServiceAsync _remoteService;
+private static DateTimeFormat        _yyyymmddDateTimeFormat;
 //--------------------------------------------------------------------------------------------------
 static {
   _random = new Random(System.currentTimeMillis());
@@ -147,8 +140,14 @@ public static int getRandomInt(final int minValue, final int maxValue) {
   return _random.nextInt(maxValue - minValue) + minValue;
 }
 //--------------------------------------------------------------------------------------------------
-public static IRemoteServiceAsync getRemoteService() {
+public static IGLRemoteServiceAsync getRemoteService() {
   return _remoteService;
+}
+//--------------------------------------------------------------------------------------------------
+public static void initialize(final GLLookupTableCache lookupTableCache,
+                              final IGLRemoteServiceAsync remoteService) {
+  _lookupTableCache = lookupTableCache;
+  _remoteService = remoteService;
 }
 //--------------------------------------------------------------------------------------------------
 public static boolean isBlank(final CharSequence s) {
@@ -201,38 +200,6 @@ public static void login() {
   _loginDialogBox.login();
 }
 //--------------------------------------------------------------------------------------------------
-public static void recreateTables() {
-  _remoteService.recreateTables(new AsyncCallback<Void>() {
-    @Override
-    public void onFailure(final Throwable t) {
-      GLLog.popup(10, "Database table creation failed:" + t.getMessage());
-    }
-    @Override
-    public void onSuccess(final Void result) {
-      GLLog.popup(10, "Database table creation is complete");
-      final PetGridWidget petGrid = GridWidgetManager.getPetGrid("Main");
-      _clientFactory.getLookupTableCache().reload(null);
-      GXTTestbedCache.loadPets(petGrid.getListStore());
-    }
-  });
-}
-//--------------------------------------------------------------------------------------------------
-public static void reloadTestData() {
-  _remoteService.loadTestData(ETestDataOption.Reload.name(), new AsyncCallback<Void>() {
-    @Override
-    public void onFailure(final Throwable t) {
-      GLLog.popup(10, "Test data reload failed:" + t.getMessage());
-    }
-    @Override
-    public void onSuccess(final Void result) {
-      GLLog.popup(10, "Test data reload is complete");
-      final PetGridWidget petGrid = GridWidgetManager.getPetGrid("Main");
-      _clientFactory.getLookupTableCache().reload(null);
-      GXTTestbedCache.loadPets(petGrid.getListStore());
-    }
-  });
-}
-//--------------------------------------------------------------------------------------------------
 /**
  * Converts a string value to its equivalent boolean value. If the string does not represent a
  * "true" value then the result will be set to <code>false</code>.
@@ -241,12 +208,6 @@ public static void reloadTestData() {
  */
 public static boolean stringToBoolean(final String stringValue) {
   return stringToBoolean(stringValue, false);
-}
-//--------------------------------------------------------------------------------------------------
-public static void setClientFactory(final ClientFactory clientFactory) {
-  _clientFactory = clientFactory;
-  _lookupTableCache = _clientFactory.getLookupTableCache();
-  _remoteService = _clientFactory.getRemoteService();
 }
 //--------------------------------------------------------------------------------------------------
 /**

@@ -7,7 +7,7 @@ public interface IGLRemoteService extends RemoteService {
 void delete(final String deletes);
 int getNextId(final String tableName, final int numberOfValues);
 void insert(final String inserts);
-void log(final int logLevel, final String location, final String message);
+void log(final int priority, final String location, final String message);
 String select(final String xmlRequest);
 void update(final String updates);
 //--------------------------------------------------------------------------------------------------

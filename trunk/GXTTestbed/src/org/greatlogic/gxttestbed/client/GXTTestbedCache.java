@@ -2,8 +2,8 @@ package org.greatlogic.gxttestbed.client;
 
 import org.greatlogic.gxttestbed.client.glgwt.GLDBException;
 import org.greatlogic.gxttestbed.client.glgwt.GLListStore;
+import org.greatlogic.gxttestbed.client.glgwt.GLLog;
 import org.greatlogic.gxttestbed.client.glgwt.GLSQL;
-import org.greatlogic.gxttestbed.client.glgwt.GLUtil;
 import org.greatlogic.gxttestbed.client.glgwt.IGLSQLSelectCallback;
 import org.greatlogic.gxttestbed.shared.IDBEnums.EGXTTestbedTable;
 import org.greatlogic.gxttestbed.shared.IDBEnums.Pet;
@@ -18,11 +18,11 @@ public static void loadPets(final GLListStore petListStore) {
     petSQL.execute(petListStore, new IGLSQLSelectCallback() {
       @Override
       public void onFailure(final Throwable t) {
-        GLUtil.info(30, "Pet loading failed: " + t.getMessage());
+        GLLog.popup(30, "Pet loading failed: " + t.getMessage());
       }
       @Override
       public void onSuccess() {
-        GLUtil.info(5, "Pets loaded successfully");
+        GLLog.popup(5, "Pets loaded successfully");
       }
     });
   }

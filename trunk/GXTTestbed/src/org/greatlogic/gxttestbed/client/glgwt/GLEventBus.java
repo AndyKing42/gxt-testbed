@@ -19,8 +19,7 @@ public <H> HandlerRegistration addHandler(final Type<H> type, final H handler) {
 //--------------------------------------------------------------------------------------------------
 public void fireEvent(final String location, final Event<?> event) {
   _eventBus.fireEvent(event);
-  GLUtil.getRemoteService().log(logLevel, location, "Event fired-" + event.toDebugString(),
-                                callback);
+  GLLog.infoDetail(location, "Event fired-" + event.toDebugString());
 }
 //--------------------------------------------------------------------------------------------------
 public SimpleEventBus getEventBus() {

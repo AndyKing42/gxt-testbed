@@ -48,8 +48,8 @@ public void insert(final String inserts) {
 }
 //--------------------------------------------------------------------------------------------------
 @Override
-public void log(final int logLevelId, final String location, final String message) {
-  GLLog.log(EGLLogLevel.lookupUsingPriority(logLevelId * 10), location + "=>" + message);
+public void log(final int priority, final String location, final String message) {
+  GLLog.log(EGLLogLevel.lookupUsingPriority(priority), location + "=>" + message);
 }
 //--------------------------------------------------------------------------------------------------
 @Override

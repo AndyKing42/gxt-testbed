@@ -56,7 +56,7 @@ public void login(final String loginName, final String password) {
   //      _clientFactory.getRequestFactoryResender().resend();
   //    }
   //  });
-} // login()
+}
 //--------------------------------------------------------------------------------------------------
 @UiHandler("okButton")
 public void onOKButtonClick(@SuppressWarnings("unused") final ClickEvent clickEvent) {

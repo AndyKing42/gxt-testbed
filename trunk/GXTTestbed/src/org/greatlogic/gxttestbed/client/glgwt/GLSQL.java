@@ -15,6 +15,7 @@ package org.greatlogic.gxttestbed.client.glgwt;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.TreeMap;
+import org.greatlogic.glgwt.client.core.GLUtil;
 import org.greatlogic.gxttestbed.shared.glgwt.IGLColumn;
 import org.greatlogic.gxttestbed.shared.glgwt.IGLEnums.EGLDBConj;
 import org.greatlogic.gxttestbed.shared.glgwt.IGLEnums.EGLDBException;

@@ -14,10 +14,10 @@ package org.greatlogic.gxttestbed.client;
  */
 import java.util.ArrayList;
 import java.util.List;
+import org.greatlogic.glgwt.client.core.GLUtil;
 import org.greatlogic.gxttestbed.client.glgwt.GLListStore;
 import org.greatlogic.gxttestbed.client.glgwt.GLRecord;
 import org.greatlogic.gxttestbed.client.glgwt.GLRecordDef;
-import org.greatlogic.gxttestbed.client.glgwt.GLUtil;
 import org.greatlogic.gxttestbed.shared.IDBEnums.EGXTTestbedTable;
 import org.greatlogic.gxttestbed.shared.IDBEnums.Pet;
 import org.greatlogic.gxttestbed.shared.IDBEnums.PetType;

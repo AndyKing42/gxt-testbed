@@ -42,42 +42,6 @@ public static String dateAddDays(final String originalDate, final int numberOfDa
 }
 //--------------------------------------------------------------------------------------------------
 /**
- * Formats a <code>Date</code>, <code>Calendar</code>, or milliseconds value returning a value in
- * the format YYYYMMDDHHMMSS.
- * @param dateOrMillis A <code>Date</code>, <code>Calendar</code>, or millisecond value.
- * @return The date in the format YYYYMMDDHHMMSS.
- */
-public static String formatDateYYYYMMDDHHMMSS(final Object dateOrMillis) {
-  String result;
-  try {
-    //    if (dateOrMillis instanceof java.util.Date) {
-    //      result = DateFormatUtils.format((java.util.Date)dateOrMillis, "yyyyMMddHHmmss");
-    //    }
-    //    else if (dateOrMillis instanceof Calendar) {
-    //      final Calendar calendar = (Calendar)dateOrMillis;
-    //      final int year = calendar.get(Calendar.YEAR);
-    //      final int month = calendar.get(Calendar.MONTH) + 1;
-    //      final int day = calendar.get(Calendar.DAY_OF_MONTH);
-    //      final int hour = calendar.get(Calendar.HOUR_OF_DAY);
-    //      final int minute = calendar.get(Calendar.MINUTE);
-    //      final int second = calendar.get(Calendar.SECOND);
-    //      result = year + (month < 10 ? "0" : "") + month + (day < 10 ? "0" : "") + day +
-    //               (hour < 10 ? "0" : "") + hour + (minute < 10 ? "0" : "") + minute +
-    //               (second < 10 ? "0" : "") + second;
-    //      //      result = DateFormatUtils.format((Calendar)dateOrMillis, "yyyyMMddHHmmss");
-    //    }
-    //    else {
-    //      result = DateFormatUtils.format((Long)dateOrMillis, "yyyyMMddHHmmss");
-    //    }
-    result = "";
-  }
-  catch (final Exception e) {
-    result = "";
-  }
-  return result;
-} // formatDateYYYYMMDDHHMMSS()
-//--------------------------------------------------------------------------------------------------
-/**
  * Returns an <code>Object</code> formatted as a <code>String</code> in a format that is consistent
  * with the GL "normal" formatting.
  * @param value The value to be formatted.
@@ -85,7 +49,7 @@ public static String formatDateYYYYMMDDHHMMSS(final Object dateOrMillis) {
  */
 public static String formatObjectSpecial(final Object value) {
   return formatObjectSpecial(value, "");
-} // formatObjectSpecial()
+}
 //--------------------------------------------------------------------------------------------------
 /**
  * Returns an <code>Object</code> formatted as a <code>String</code> in a format that is consistent
@@ -105,8 +69,8 @@ public static String formatObjectSpecial(final Object value, final String defaul
   else if (value instanceof Boolean) {
     result = (Boolean)value ? "Y" : "N";
   }
-  else if (value instanceof java.util.Date) {
-    result = GLUtil.formatDateYYYYMMDDHHMMSS(value);
+  else if (value instanceof Date) {
+    result = DateTimeFormat.getFormat("yyyyMMddHHmmss").format((Date)value);
   }
   else if (value instanceof BigDecimal) {
     result = ((BigDecimal)value).toPlainString();
@@ -115,7 +79,7 @@ public static String formatObjectSpecial(final Object value, final String defaul
     result = value.toString();
   }
   return result;
-} // formatObjectSpecial()
+}
 //--------------------------------------------------------------------------------------------------
 public static GLLookupTableCache getLookupTableCache() {
   return _lookupTableCache;

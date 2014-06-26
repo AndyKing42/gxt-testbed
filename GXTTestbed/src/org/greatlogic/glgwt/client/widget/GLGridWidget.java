@@ -33,6 +33,7 @@ import org.greatlogic.glgwt.client.widget.GLValueProviderClasses.GLStringValuePr
 import org.greatlogic.glgwt.shared.IGLColumn;
 import org.greatlogic.glgwt.shared.IGLEnums.EGLColumnDataType;
 import org.greatlogic.glgwt.shared.IGLTable;
+import org.greatlogic.gxttestbed.client.ClientFactory;
 import com.google.gwt.cell.client.DateCell;
 import com.google.gwt.cell.client.TextCell;
 import com.google.gwt.core.client.Scheduler;
@@ -504,7 +505,8 @@ private void createEditorsFixedCombobox(final IGLColumn column,
 private void createEditorsForeignKeyCombobox(final GLGridColumnDef gridColumnDef) {
   final IGLColumn column = gridColumnDef.getColumn();
   final IGLTable parentTable = column.getParentTable();
-  final GLListStore lookupListStore = GLUtil.getLookupTableCache().getListStore(parentTable);
+  final GLListStore lookupListStore = ClientFactory.Instance.getLookupTableCache() //
+                                                            .getListStore(parentTable);
   if (lookupListStore == null) {
     GLLog.popup(10, "Lookup list store not found for column:" + column);
     return;
@@ -650,7 +652,7 @@ private void waitForComboBoxData() {
         };
       }
       loadTableSet.add(parentTable);
-      GLUtil.getLookupTableCache().reload(parentTable, true, cacheReloadCallback);
+      ClientFactory.Instance.getLookupTableCache().reload(parentTable, true, cacheReloadCallback);
     }
   }
   if (cacheReloadCallback == null) {

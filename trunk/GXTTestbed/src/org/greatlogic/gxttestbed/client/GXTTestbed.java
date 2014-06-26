@@ -38,7 +38,7 @@ public void onModuleLoad() {
   }
   mainLayoutWidget.getCenterPanel().setWidget(gridWidget);
   RootPanel.get().add(mainLayoutWidget);
-  GXTTestbedCache.loadPets(petGrid.getListStore());
+  DBAccess.loadPets(petGrid.getListStore());
 }
 //--------------------------------------------------------------------------------------------------
 }

@@ -31,8 +31,8 @@ import org.greatlogic.glgwt.client.widget.GLValueProviderClasses.GLForeignKeyVal
 import org.greatlogic.glgwt.client.widget.GLValueProviderClasses.GLIntegerValueProvider;
 import org.greatlogic.glgwt.client.widget.GLValueProviderClasses.GLStringValueProvider;
 import org.greatlogic.glgwt.shared.IGLColumn;
-import org.greatlogic.glgwt.shared.IGLTable;
 import org.greatlogic.glgwt.shared.IGLEnums.EGLColumnDataType;
+import org.greatlogic.glgwt.shared.IGLTable;
 import com.google.gwt.cell.client.DateCell;
 import com.google.gwt.cell.client.TextCell;
 import com.google.gwt.core.client.Scheduler;
@@ -80,7 +80,6 @@ import com.sencha.gxt.widget.core.client.form.ComboBox;
 import com.sencha.gxt.widget.core.client.form.DateField;
 import com.sencha.gxt.widget.core.client.form.DateTimePropertyEditor;
 import com.sencha.gxt.widget.core.client.form.IntegerField;
-import com.sencha.gxt.widget.core.client.form.IsField;
 import com.sencha.gxt.widget.core.client.form.SimpleComboBox;
 import com.sencha.gxt.widget.core.client.form.TextField;
 import com.sencha.gxt.widget.core.client.grid.CheckBoxSelectionModel;
@@ -467,7 +466,6 @@ private void createEditorsDate(final ColumnConfig<GLRecord, ?> columnConfig) {
   final DateField dateField = new DateField(propertyEditor);
   dateField.setClearValueOnParseError(false);
   _gridEditing.addEditor((ColumnConfig<GLRecord, Date>)columnConfig, dateField);
-  final IsField<Date> editor = _gridEditing.getEditor(columnConfig);
 }
 //--------------------------------------------------------------------------------------------------
 @SuppressWarnings("unchecked")

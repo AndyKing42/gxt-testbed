@@ -9,42 +9,31 @@ import com.greatlogic.glbase.gllib.IGLLibEnums.EGLLogLevel;
 public class GLRemoteServiceServlet extends RemoteServiceServlet implements IGLRemoteService {
 //--------------------------------------------------------------------------------------------------
 /**
- * Deletes any number of rows from any number of tables. The format for the "deletes" parameter is:
+ * Inserts, updates, or deletes rows. The entries in the "dbChanges" parameter are broken into
+ * linefeed-separated lines. Each line represents an insert (one per line), update (one per line),
+ * or deletes (any number per line). Each line begins with a single character that indicates whether
+ * this is an insert ("I"), update ("U"), or delete ("D") line. This character is followed by a
+ * hyphen, and then the table name. The table name is followed by a forward slash, and then the key
+ * column name, and then an equals sign. On insert and update lines the equals sign is followed by
+ * the key value for the row that is to be inserted or updated, followed by a colon and then a
+ * comma-delimited list of column name, equals sign, and value; on delete lines the equals sign is
+ * followed by a comma-delimited list of key values for the rows that are to be deleted. An example
+ * containing each type of line:
  * 
  * <pre>
- * Table:table_name1/key_column_name1:key1,key2,key3<linefeed>
- * Table:table_name2/key_column_name2:key1,key2,key3<linefeed>
- * Table:table_name3/key_column_name3:key1,key2,key3<linefeed>
+ * I-table_name1/key_column_name1=key-value:column=value;column=value;column=value<linefeed>
+ * U-table_name1/key_column_name1=key-value:column=value;column=value;column=value<linefeed>
+ * D-table_name1/key_column_name1=key-value,key-value,key-value<linefeed>
  * </pre>
- * 
- * Each line in the "deletes" string represents any number of rows to be deleted from a single
- * table.
  */
 @Override
-public void delete(final String deletes) {
-  GLDBStatement.delete(deletes);
+public void applyDBChanges(final String dbChanges) {
+  GLDBStatement.applyDBChanges(dbChanges);
 }
 //--------------------------------------------------------------------------------------------------
 @Override
 public int getNextId(final String tableName, final int numberOfValues) {
   return GLNextId.getNextIdValue(tableName, numberOfValues);
-}
-//--------------------------------------------------------------------------------------------------
-/**
- * Inserts rows into a table. The format for the "inserts" parameter is:
- * 
- * <pre>
- * Table:table_name1/key_column_name1=key1:column1=value1;column2=value2;column3=value3<linefeed>
- * Table:table_name2/key_column_name2=key2:column1=value1;column2=value2;column3=value3<linefeed>
- * Table:table_name3/key_column_name3=key3:column1=value1;column2=value2;column3=value3<linefeed>
- * </pre>
- * 
- * where the "key1", "key2", etc., values are the primary key values for each of the rows to be
- * inserted. Each line in the "inserts" string represents a single row.
- */
-@Override
-public void insert(final String inserts) {
-  GLDBStatement.insert(inserts);
 }
 //--------------------------------------------------------------------------------------------------
 @Override
@@ -55,23 +44,6 @@ public void log(final int priority, final String location, final String message)
 @Override
 public String select(final String xmlRequest) {
   return GLDBStatement.select(xmlRequest);
-}
-//--------------------------------------------------------------------------------------------------
-/**
- * Updates rows in any number of tables. The format for the "updates" parameter is:
- * 
- * <pre>
- * Table:table_name1/key_column_name1=key1:column1=value1;column2=value2;column3=value3<linefeed>
- * Table:table_name2/key_column_name2=key2:column1=value1;column2=value2;column3=value3<linefeed>
- * Table:table_name3/key_column_name3=key3:column1=value1;column2=value2;column3=value3<linefeed>
- * </pre>
- * 
- * where the "key1", "key2", etc., values are the primary key values for each of the rows to be
- * updated. Each line in the "updates" string represents changes to a single row.
- */
-@Override
-public void update(final String updates) {
-  GLDBStatement.update(updates);
 }
 //--------------------------------------------------------------------------------------------------
 }

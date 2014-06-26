@@ -1,6 +1,6 @@
 package org.greatlogic.glgwt.shared;
 
-import java.util.List;
+import java.util.Collection;
 import org.greatlogic.glgwt.client.core.GLRecord;
 /*
  * Copyright 2006-2014 Andy King (GreatLogic.com)
@@ -17,7 +17,8 @@ import org.greatlogic.glgwt.client.core.GLRecord;
  */
 public interface IGLTable {
 //--------------------------------------------------------------------------------------------------
-public List<IGLColumn> getColumnList();
+public IGLColumn findColumnUsingColumnName(final String columnName);
+public Collection<IGLColumn> getColumns();
 public IGLColumn getComboboxDisplayColumn();
 public IGLColumn getPrimaryKeyColumn();
 public void initializeNewRecord(final GLRecord record);

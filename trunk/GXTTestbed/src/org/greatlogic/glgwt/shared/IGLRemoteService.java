@@ -4,11 +4,9 @@ import com.google.gwt.user.client.rpc.RemoteService;
 
 public interface IGLRemoteService extends RemoteService {
 //--------------------------------------------------------------------------------------------------
-void delete(final String deletes);
+void applyDBChanges(final String dbChanges);
 int getNextId(final String tableName, final int numberOfValues);
-void insert(final String inserts);
 void log(final int priority, final String location, final String message);
 String select(final String xmlRequest);
-void update(final String updates);
 //--------------------------------------------------------------------------------------------------
 }

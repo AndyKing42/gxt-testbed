@@ -1,12 +1,13 @@
 package org.greatlogic.gxttestbed.shared;
 
 import java.util.ArrayList;
-import java.util.List;
+import java.util.Collection;
+import java.util.TreeMap;
 import org.greatlogic.glgwt.client.core.GLRecord;
 import org.greatlogic.glgwt.client.core.GLUtil;
 import org.greatlogic.glgwt.shared.IGLColumn;
-import org.greatlogic.glgwt.shared.IGLTable;
 import org.greatlogic.glgwt.shared.IGLEnums.EGLColumnDataType;
+import org.greatlogic.glgwt.shared.IGLTable;
 
 public interface IDBEnums {
 //--------------------------------------------------------------------------------------------------
@@ -37,8 +38,8 @@ NextId(IDBEnums.NextId.class, IDBEnums.NextId.NextId, IDBEnums.NextId.NextIdName
 Pet(IDBEnums.Pet.class, IDBEnums.Pet.PetId, IDBEnums.Pet.PetName),
 PetType(IDBEnums.PetType.class, IDBEnums.PetType.PetTypeId, IDBEnums.PetType.PetTypeShortDesc);
 private final IGLColumn                _comboboxDisplayColumn;
+private TreeMap<String, IGLColumn>     _columnByColumnNameMap;
 private final Class<? extends Enum<?>> _columnClass;
-private ArrayList<IGLColumn>           _columnList;
 private final IGLColumn                _primaryKeyColumn;
 private EGXTTestbedTable(final Class<? extends Enum<?>> columnClass,
                          final IGLColumn primaryKeyColumn, final IGLColumn comboboxDisplayColumn) {
@@ -46,15 +47,23 @@ private EGXTTestbedTable(final Class<? extends Enum<?>> columnClass,
   _primaryKeyColumn = primaryKeyColumn;
   _comboboxDisplayColumn = comboboxDisplayColumn;
 }
-@Override
-public List<IGLColumn> getColumnList() {
-  if (_columnList == null) {
-    _columnList = new ArrayList<>();
+private void createColumnByColumnNameMap() {
+  if (_columnByColumnNameMap == null) {
+    _columnByColumnNameMap = new TreeMap<>();
     for (final Enum<?> column : _columnClass.getEnumConstants()) {
-      _columnList.add((IGLColumn)column);
+      _columnByColumnNameMap.put(column.name(), (IGLColumn)column);
     }
   }
-  return _columnList;
+}
+@Override
+public IGLColumn findColumnUsingColumnName(final String columnName) {
+  createColumnByColumnNameMap();
+  return _columnByColumnNameMap.get(columnName);
+}
+@Override
+public Collection<IGLColumn> getColumns() {
+  createColumnByColumnNameMap();
+  return _columnByColumnNameMap.values();
 }
 @Override
 public IGLColumn getComboboxDisplayColumn() {
@@ -66,7 +75,8 @@ public IGLColumn getPrimaryKeyColumn() {
 }
 @Override
 public void initializeNewRecord(final GLRecord record) {
-  for (final IGLColumn column : getColumnList()) {
+  createColumnByColumnNameMap();
+  for (final IGLColumn column : _columnByColumnNameMap.values()) {
     final Object defaultValue = column.getDefaultValue();
     if (defaultValue != null) {
       record.set(column, defaultValue);

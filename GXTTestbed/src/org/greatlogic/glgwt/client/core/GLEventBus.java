@@ -17,9 +17,9 @@ public <H> HandlerRegistration addHandler(final Type<H> type, final H handler) {
   return _eventBus.addHandler(type, handler);
 }
 //--------------------------------------------------------------------------------------------------
-public void fireEvent(final String location, final Event<?> event) {
+public void fireEvent(final Event<?> event) {
   _eventBus.fireEvent(event);
-  GLLog.infoDetail(location, "Event fired-" + event.toDebugString());
+  GLLog.infoDetail("GLEventBus.fireEvent", "Event fired-" + event.toDebugString());
 }
 //--------------------------------------------------------------------------------------------------
 public SimpleEventBus getEventBus() {

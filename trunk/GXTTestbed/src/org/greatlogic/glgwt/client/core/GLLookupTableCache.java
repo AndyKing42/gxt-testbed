@@ -3,6 +3,7 @@ package org.greatlogic.glgwt.client.core;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.TreeMap;
+import org.greatlogic.glgwt.client.event.GLLookupTableLoadedEvent;
 import org.greatlogic.glgwt.shared.IGLTable;
 
 public class GLLookupTableCache {
@@ -61,14 +62,13 @@ public GLRecord lookupRecord(final IGLTable lookupTable, final String displayVal
   return displayValueToRecordMap.get(displayValue);
 }
 //--------------------------------------------------------------------------------------------------
-public void reload(final IGLCacheReloadCallback cacheReloadCallback) {
+public void reloadAll() {
   for (final IGLTable table : _cachedTableList) {
-    reload(table, false, cacheReloadCallback);
+    reload(table, false);
   }
 }
 //--------------------------------------------------------------------------------------------------
-public void reload(final IGLTable table, final boolean addToReloadList,
-                   final IGLCacheReloadCallback cacheReloadCallback) {
+public void reload(final IGLTable table, final boolean addToReloadList) {
   if (addToReloadList) {
     _cachedTableList.add(table);
   }
@@ -78,13 +78,10 @@ public void reload(final IGLTable table, final boolean addToReloadList,
     final GLSQL sql = GLSQL.select();
     sql.from(table);
     sql.orderBy(table, table.getComboboxDisplayColumn(), true);
-    sql.execute(listStore, new IGLSQLSelectCallback() {
+    sql.executeSelect(listStore, new IGLSQLSelectCallback() {
       @Override
       public void onFailure(final Throwable t) {
         GLLog.popup(30, table + " loading failed: " + t.getMessage());
-        if (cacheReloadCallback != null) {
-          cacheReloadCallback.onCompletion(table, false);
-        }
       }
       @Override
       public void onSuccess() {
@@ -99,9 +96,7 @@ public void reload(final IGLTable table, final boolean addToReloadList,
           keyToRecordMap.put(record.asInt(table.getPrimaryKeyColumn()), record);
         }
         GLLog.popup(5, "Reload of " + table + " was successful");
-        if (cacheReloadCallback != null) {
-          cacheReloadCallback.onCompletion(table, true);
-        }
+        GLUtil.getEventBus().fireEvent(new GLLookupTableLoadedEvent(table));
       }
     });
   }

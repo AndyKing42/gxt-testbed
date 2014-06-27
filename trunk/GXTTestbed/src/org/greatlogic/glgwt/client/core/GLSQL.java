@@ -15,13 +15,14 @@ package org.greatlogic.glgwt.client.core;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.TreeMap;
+import org.greatlogic.glgwt.client.event.GLSelectCompleteEvent;
 import org.greatlogic.glgwt.shared.IGLColumn;
-import org.greatlogic.glgwt.shared.IGLTable;
 import org.greatlogic.glgwt.shared.IGLEnums.EGLDBConj;
 import org.greatlogic.glgwt.shared.IGLEnums.EGLDBException;
 import org.greatlogic.glgwt.shared.IGLEnums.EGLDBOp;
 import org.greatlogic.glgwt.shared.IGLEnums.EGLJoinType;
 import org.greatlogic.glgwt.shared.IGLEnums.EGLSQLType;
+import org.greatlogic.glgwt.shared.IGLTable;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
 public class GLSQL {
@@ -320,13 +321,13 @@ private void ensureSQLTypeIn(final EGLSQLType... sqlTypes) throws GLDBException 
 /**
  * Executes a "select" statement.
  * @param listStore The ListStore that will receive the results of the "select".
- * @param callback The object that contains the success and failure callback methods.
+ * @param sqlSelectCallback The object that contains the success and failure callback methods.
  */
-public void execute(final GLListStore listStore, final IGLSQLSelectCallback callback) {
+public void executeSelect(final GLListStore listStore, final IGLSQLSelectCallback sqlSelectCallback) {
   GLUtil.getRemoteService().select(toXMLSB().toString(), new AsyncCallback<String>() {
     @Override
     public void onFailure(final Throwable t) {
-      callback.onFailure(t);
+      sqlSelectCallback.onFailure(t);
     }
     @Override
     public void onSuccess(final String selectResult) {
@@ -347,7 +348,8 @@ public void execute(final GLListStore listStore, final IGLSQLSelectCallback call
             listStore.add(record);
           }
         }
-        callback.onSuccess();
+        GLUtil.getEventBus().fireEvent(new GLSelectCompleteEvent(listStore));
+        sqlSelectCallback.onSuccess();
       }
       catch (final GLCSVException csve) {
         onFailure(csve);

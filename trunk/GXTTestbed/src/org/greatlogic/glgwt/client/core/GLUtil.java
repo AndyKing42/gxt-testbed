@@ -17,12 +17,17 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.Random;
+import org.greatlogic.glgwt.client.event.GLEventBus;
+import org.greatlogic.glgwt.client.event.GLNewRecordEvent;
 import org.greatlogic.glgwt.client.widget.LoginDialogBox;
 import org.greatlogic.glgwt.shared.IGLRemoteServiceAsync;
+import org.greatlogic.glgwt.shared.IGLTable;
 import com.google.gwt.i18n.client.DateTimeFormat;
+import com.google.gwt.user.client.rpc.AsyncCallback;
 
 public class GLUtil {
 //--------------------------------------------------------------------------------------------------
+private static GLEventBus            _eventBus;
 private static LoginDialogBox        _loginDialogBox;
 private static GLLookupTableCache    _lookupTableCache;
 private static Random                _random;
@@ -32,6 +37,28 @@ private static DateTimeFormat        _yyyymmddDateTimeFormat;
 static {
   _random = new Random(System.currentTimeMillis());
   _yyyymmddDateTimeFormat = DateTimeFormat.getFormat("yyyyMMdd");
+}
+//--------------------------------------------------------------------------------------------------
+public static void createNewRecord(final GLRecordDef recordDef,
+                                   final IGLCreateNewRecordCallback createNewRecordCallback) {
+  final IGLTable table = recordDef.getTable();
+  GLUtil.getRemoteService().getNextId(table.toString(), 1, new AsyncCallback<Integer>() {
+    @Override
+    public void onFailure(final Throwable caught) {
+      if (createNewRecordCallback != null) {
+        createNewRecordCallback.onFailure(caught);
+      }
+    }
+    @Override
+    public void onSuccess(final Integer nextId) {
+      final GLRecord record = new GLRecord(recordDef);
+      record.put(table.getPrimaryKeyColumn(), nextId);
+      GLUtil.getEventBus().fireEvent(new GLNewRecordEvent(record));
+      if (createNewRecordCallback != null) {
+        createNewRecordCallback.onSuccess(record);
+      }
+    }
+  });
 }
 //--------------------------------------------------------------------------------------------------
 @SuppressWarnings("deprecation")
@@ -81,6 +108,10 @@ public static String formatObjectSpecial(final Object value, final String defaul
   return result;
 }
 //--------------------------------------------------------------------------------------------------
+public static GLEventBus getEventBus() {
+  return _eventBus;
+}
+//--------------------------------------------------------------------------------------------------
 public static GLLookupTableCache getLookupTableCache() {
   return _lookupTableCache;
 }
@@ -108,8 +139,9 @@ public static IGLRemoteServiceAsync getRemoteService() {
   return _remoteService;
 }
 //--------------------------------------------------------------------------------------------------
-public static void initialize(final GLLookupTableCache lookupTableCache,
+public static void initialize(final GLEventBus eventBus, final GLLookupTableCache lookupTableCache,
                               final IGLRemoteServiceAsync remoteService) {
+  _eventBus = eventBus;
   _lookupTableCache = lookupTableCache;
   _remoteService = remoteService;
 }

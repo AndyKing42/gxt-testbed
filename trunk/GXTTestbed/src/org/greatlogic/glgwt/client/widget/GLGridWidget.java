@@ -23,7 +23,9 @@ import org.greatlogic.glgwt.client.core.GLListStore;
 import org.greatlogic.glgwt.client.core.GLLog;
 import org.greatlogic.glgwt.client.core.GLRecord;
 import org.greatlogic.glgwt.client.core.GLUtil;
-import org.greatlogic.glgwt.client.core.IGLCacheReloadCallback;
+import org.greatlogic.glgwt.client.core.IGLCreateNewRecordCallback;
+import org.greatlogic.glgwt.client.event.GLLookupTableLoadedEvent;
+import org.greatlogic.glgwt.client.event.GLLookupTableLoadedEvent.IGLLookupTableLoadedEventHandler;
 import org.greatlogic.glgwt.client.widget.GLValueProviderClasses.GLBigDecimalValueProvider;
 import org.greatlogic.glgwt.client.widget.GLValueProviderClasses.GLBooleanValueProvider;
 import org.greatlogic.glgwt.client.widget.GLValueProviderClasses.GLDateValueProvider;
@@ -33,7 +35,6 @@ import org.greatlogic.glgwt.client.widget.GLValueProviderClasses.GLStringValuePr
 import org.greatlogic.glgwt.shared.IGLColumn;
 import org.greatlogic.glgwt.shared.IGLEnums.EGLColumnDataType;
 import org.greatlogic.glgwt.shared.IGLTable;
-import org.greatlogic.gxttestbed.client.ClientFactory;
 import com.google.gwt.cell.client.DateCell;
 import com.google.gwt.cell.client.TextCell;
 import com.google.gwt.core.client.Scheduler;
@@ -46,9 +47,10 @@ import com.google.gwt.i18n.client.NumberFormat;
 import com.google.gwt.safecss.shared.SafeStyles;
 import com.google.gwt.safecss.shared.SafeStylesUtils;
 import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
-import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.IsWidget;
 import com.google.gwt.user.client.ui.Widget;
+import com.google.web.bindery.event.shared.Event.Type;
+import com.google.web.bindery.event.shared.HandlerRegistration;
 import com.sencha.gxt.cell.core.client.NumberCell;
 import com.sencha.gxt.cell.core.client.form.CheckBoxCell;
 import com.sencha.gxt.cell.core.client.form.ComboBoxCell.TriggerAction;
@@ -104,6 +106,7 @@ protected ArrayList<GLGridColumnDef>             _gridColumnDefList;
 private TreeMap<String, GLGridColumnDef>         _gridColumnDefMap;
 private GridEditing<GLRecord>                    _gridEditing;
 protected GLListStore                            _listStore;
+private HandlerRegistration                      _lookupTableLoadedHandlerRegistration;
 private final String                             _noRowsMessage;
 private GridSelectionModel<GLRecord>             _selectionModel;
 private final IGLTable                           _table;
@@ -394,15 +397,13 @@ private void createContentPanelNewButton() {
   _contentPanel.addButton(new TextButton("New", new SelectHandler() {
     @Override
     public void onSelect(final SelectEvent event) {
-      GLUtil.getRemoteService().getNextId(_table.toString(), 1, new AsyncCallback<Integer>() {
+      GLUtil.createNewRecord(_listStore.getRecordDef(), new IGLCreateNewRecordCallback() {
         @Override
-        public void onFailure(final Throwable caught) {
-          // TODO Auto-generated method stub
+        public void onFailure(final Throwable t) {
+
         }
         @Override
-        public void onSuccess(final Integer nextId) {
-          final GLRecord record = new GLRecord(_listStore.getRecordDef());
-          record.put(_table.getPrimaryKeyColumn(), nextId);
+        public void onSuccess(final GLRecord record) {
           _gridEditing.cancelEditing();
           _listStore.add(0, record);
           final int row = _listStore.indexOf(record);
@@ -505,8 +506,7 @@ private void createEditorsFixedCombobox(final IGLColumn column,
 private void createEditorsForeignKeyCombobox(final GLGridColumnDef gridColumnDef) {
   final IGLColumn column = gridColumnDef.getColumn();
   final IGLTable parentTable = column.getParentTable();
-  final GLListStore lookupListStore = ClientFactory.Instance.getLookupTableCache() //
-                                                            .getListStore(parentTable);
+  final GLListStore lookupListStore = GLUtil.getLookupTableCache().getListStore(parentTable);
   if (lookupListStore == null) {
     GLLog.popup(10, "Lookup list store not found for column:" + column);
     return;
@@ -636,27 +636,43 @@ private void resizeNextColumn(final ProgressMessageBox messageBox, final int col
 //--------------------------------------------------------------------------------------------------
 private void waitForComboBoxData() {
   final HashSet<IGLTable> loadTableSet = new HashSet<>();
-  IGLCacheReloadCallback cacheReloadCallback = null;
   for (final GLGridColumnDef gridColumnDef : _gridColumnDefList) {
     final IGLTable parentTable = gridColumnDef.getColumn().getParentTable();
     if (parentTable != null) {
-      if (cacheReloadCallback == null) {
-        cacheReloadCallback = new IGLCacheReloadCallback() {
-          @Override
-          public void onCompletion(final IGLTable table, final boolean reloadSucceeded) {
-            loadTableSet.remove(table);
-            if (loadTableSet.size() == 0) {
-              createGrid();
-            }
-          }
-        };
-      }
       loadTableSet.add(parentTable);
-      ClientFactory.Instance.getLookupTableCache().reload(parentTable, true, cacheReloadCallback);
+      addLookupTableLoadedEventHandler(loadTableSet);
+      GLUtil.getLookupTableCache().reload(parentTable, true);
     }
   }
-  if (cacheReloadCallback == null) {
+  if (loadTableSet.size() == 0) {
     createGrid();
+  }
+}
+//--------------------------------------------------------------------------------------------------
+/**
+ * If there are lookup tables that are needed by any of the columns in the grid then the creation of
+ * the grid must be deferred until all of those lookup tables have been loaded into the cache. The
+ * lookup tables are added to the loadTableSet; when the LookupTableLoadedEvent is fired the table
+ * that's been loaded is removed from the set; when all tables have been loaded the grid is created.
+ * @param loadTableSet The set that contains the list of lookup tables that need to be loaded prior
+ * to creating the grid.
+ */
+private void addLookupTableLoadedEventHandler(final HashSet<IGLTable> loadTableSet) {
+  if (_lookupTableLoadedHandlerRegistration == null) {
+    final IGLLookupTableLoadedEventHandler handler = new IGLLookupTableLoadedEventHandler() {
+      @Override
+      public void onLookupTableLoadedEvent(final GLLookupTableLoadedEvent lookupTableLoadedEvent) {
+        loadTableSet.remove(lookupTableLoadedEvent.getTable());
+        if (loadTableSet.size() == 0) {
+          _lookupTableLoadedHandlerRegistration.removeHandler();
+          _lookupTableLoadedHandlerRegistration = null;
+          createGrid();
+        }
+      }
+    };
+    final Type<IGLLookupTableLoadedEventHandler> eventType;
+    eventType = GLLookupTableLoadedEvent.LookTableLoadedEventType;
+    _lookupTableLoadedHandlerRegistration = GLUtil.getEventBus().addHandler(eventType, handler);
   }
 }
 //--------------------------------------------------------------------------------------------------

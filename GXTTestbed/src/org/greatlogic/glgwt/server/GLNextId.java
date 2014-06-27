@@ -39,7 +39,7 @@ public static int getNextIdValue(final String tableName, final int numberOfValue
                                               numberOfValues);
   }
   catch (final GLDBException dbe) {
-    GLLog.major("Error attempting to get the next value for id:" + idName);
+    GLLog.major("Error attempting to get the next value for id:" + idName, dbe);
     return -1;
   }
 }

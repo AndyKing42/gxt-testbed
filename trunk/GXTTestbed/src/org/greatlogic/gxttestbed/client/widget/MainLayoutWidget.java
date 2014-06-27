@@ -12,11 +12,14 @@ package org.greatlogic.gxttestbed.client.widget;
  * or implied. See the License for the specific language governing permissions and limitations under
  * the License.
  */
+import org.greatlogic.glgwt.client.core.GLLog;
+import org.greatlogic.gxttestbed.client.ClientFactory;
 import org.greatlogic.gxttestbed.client.DBAccess;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
+import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.Widget;
 import com.sencha.gxt.widget.core.client.ContentPanel;
@@ -32,6 +35,8 @@ public class MainLayoutWidget extends Composite {
 @UiField
 ContentPanel centerPanel;
 @UiField
+TextButton   gaeStuffButton;
+@UiField
 TextButton   recreateTablesButton;
 @UiField
 TextButton   reloadTestDataButton;
@@ -45,12 +50,26 @@ public MainLayoutWidget() {
   initWidget(uiBinder.createAndBindUi(this));
 }
 //--------------------------------------------------------------------------------------------------
+@UiHandler({"gaeStuffButton"})
+public void onGAEStuffButtonClick(@SuppressWarnings("unused") final SelectEvent event) {
+  ClientFactory.Instance.getRemoteService().gaeTest(new AsyncCallback<String>() {
+    @Override
+    public void onFailure(final Throwable caught) {
+      GLLog.popup(30, "GAE test failed:" + caught.getMessage());
+    }
+    @Override
+    public void onSuccess(final String result) {
+      GLLog.popup(30, "GAE test:" + result);
+    }
+  });
+}
+//--------------------------------------------------------------------------------------------------
 public ContentPanel getCenterPanel() {
   return centerPanel;
 }
 //--------------------------------------------------------------------------------------------------
 @UiHandler({"recreateTablesButton"})
-public void onRecreateTablesButtonClick(final SelectEvent event) {
+public void onRecreateTablesButtonClick(@SuppressWarnings("unused") final SelectEvent event) {
   final ConfirmMessageBox messageBox;
   messageBox = new ConfirmMessageBox("Recreate Database Tables", //
                                      "Are you sure you want to drop and recreate the " //
@@ -67,7 +86,7 @@ public void onRecreateTablesButtonClick(final SelectEvent event) {
 }
 //--------------------------------------------------------------------------------------------------
 @UiHandler({"reloadTestDataButton"})
-public void onReloadTestDataButtonClick(final SelectEvent event) {
+public void onReloadTestDataButtonClick(@SuppressWarnings("unused") final SelectEvent event) {
   final ConfirmMessageBox messageBox;
   messageBox = new ConfirmMessageBox("Reload Test Data", //
                                      "Are you sure you want to erase and reload all test data?");

@@ -22,8 +22,10 @@ import org.greatlogic.glgwt.client.event.GLNewRecordEvent;
 import org.greatlogic.glgwt.client.widget.LoginDialogBox;
 import org.greatlogic.glgwt.shared.IGLRemoteServiceAsync;
 import org.greatlogic.glgwt.shared.IGLTable;
+import com.google.gwt.dom.client.Document;
 import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.ui.RootPanel;
 
 public class GLUtil {
 //--------------------------------------------------------------------------------------------------
@@ -206,6 +208,15 @@ public static boolean stringToBoolean(final String stringValue) {
   return stringToBoolean(stringValue, false);
 }
 //--------------------------------------------------------------------------------------------------
+public static void setTheme(final String themeClassName) {
+  // from: http://stackoverflow.com/questions/7960685/allow-different-gwt-visual-themes-for-different-users/24455939#24455939
+  // TODO: use this from somewhere!
+  // One of these:
+  /* 1 */Document.get().getBody().setClassName(themeClassName);
+  /* 2 */RootPanel.get().setStyleName(themeClassName);
+  /* 3 */RootPanel.get().setStylePrimaryName(themeClassName);
+}
+//--------------------------------------------------------------------------------------------------
 /**
  * Converts a string value to its equivalent boolean value. The values "y" and "true", which are
  * compared with case ignored, are interpreted as true. If the string is null or is zero length then
@@ -220,9 +231,8 @@ public static boolean stringToBoolean(final CharSequence stringValue, final bool
     result = defaultValue;
   }
   else {
-    result =
-             stringValue.charAt(0) == 'y' || stringValue.charAt(0) == 'Y' ||
-                     stringValue.toString().equalsIgnoreCase("true");
+    result = stringValue.charAt(0) == 'y' || stringValue.charAt(0) == 'Y' || //
+             stringValue.toString().equalsIgnoreCase("true");
   }
   return result;
 }

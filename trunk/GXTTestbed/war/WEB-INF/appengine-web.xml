@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <appengine-web-app xmlns="http://appengine.google.com/ns/1.0">
   <application>gxt-testbed</application>
-  <version>1</version>
+  <module>default</module>
+  <version>v0-00-001</version>
   <threadsafe>true</threadsafe>
   <static-files>
     <include path="**"/>

@@ -5,7 +5,7 @@
   xmlns:button='urn:import:com.sencha.gxt.widget.core.client.button'
   xmlns:container='urn:import:com.sencha.gxt.widget.core.client.container'
   xmlns:gxt='urn:import:com.sencha.gxt.widget.core.client'>
-  <!--====== BorderLayoutContainer margins ======================================================-->
+  <!--====== BorderLayoutContainer margins ===================================================== -->
   <ui:with
     field='northMargins'
     type='com.sencha.gxt.core.client.util.Margins'>
@@ -51,7 +51,7 @@
       right='5'
       top='5'/>
   </ui:with>
-  <!--====== BorderLayoutContainer layout data ==================================================-->
+  <!--====== BorderLayoutContainer layout data ================================================= -->
   <ui:with
     field='northData'
     type='com.sencha.gxt.widget.core.client.container.BorderLayoutContainer.BorderLayoutData'>
@@ -82,19 +82,24 @@
       margins='{southMargins}'
       size='200'/>
   </ui:with>
-  <!--===========================================================================================-->
+  <!--========================================================================================== -->
   <container:Viewport>
     <container:BorderLayoutContainer borders='true'>
       <container:north layoutData='{northData}'>
         <gxt:ContentPanel headerVisible='false'>
-          <gwt:VerticalPanel>
+          <container:HBoxLayoutContainer
+            hBoxLayoutAlign='TOP'
+            pack='START'>
             <button:TextButton
               ui:field='recreateTablesButton'
               text='Recreate Database Tables'/>
             <button:TextButton
               ui:field='reloadTestDataButton'
               text='Reload Test Data'/>
-          </gwt:VerticalPanel>
+            <button:TextButton
+              ui:field='gaeStuffButton'
+              text='GAE Stuff'/>
+          </container:HBoxLayoutContainer>
         </gxt:ContentPanel>
       </container:north>
       <container:west layoutData='{westData}'>

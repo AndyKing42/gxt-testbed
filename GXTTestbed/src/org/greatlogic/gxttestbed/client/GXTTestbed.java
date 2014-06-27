@@ -26,7 +26,8 @@ public class GXTTestbed implements EntryPoint {
 @Override
 public void onModuleLoad() {
   final ClientFactory clientFactory = new ClientFactoryUI();
-  GLUtil.initialize(clientFactory.getLookupTableCache(), clientFactory.getRemoteService());
+  GLUtil.initialize(clientFactory.getEventBus(), clientFactory.getLookupTableCache(),
+                    clientFactory.getRemoteService());
   final MainLayoutWidget mainLayoutWidget = new MainLayoutWidget();
   final boolean loadTestData = false;
   final PetGridWidget petGrid = GridWidgetManager.getPetGrid("Main");

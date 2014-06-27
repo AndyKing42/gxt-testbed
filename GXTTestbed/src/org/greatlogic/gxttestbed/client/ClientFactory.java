@@ -1,7 +1,7 @@
 package org.greatlogic.gxttestbed.client;
 
-import org.greatlogic.glgwt.client.core.GLEventBus;
 import org.greatlogic.glgwt.client.core.GLLookupTableCache;
+import org.greatlogic.glgwt.client.event.GLEventBus;
 import org.greatlogic.gxttestbed.shared.IRemoteService;
 import org.greatlogic.gxttestbed.shared.IRemoteServiceAsync;
 import com.google.gwt.core.client.GWT;

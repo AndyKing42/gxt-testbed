@@ -1,5 +1,6 @@
-package org.greatlogic.glgwt.client.core;
+package org.greatlogic.glgwt.client.event;
 
+import org.greatlogic.glgwt.client.core.GLLog;
 import com.google.web.bindery.event.shared.Event;
 import com.google.web.bindery.event.shared.Event.Type;
 import com.google.web.bindery.event.shared.HandlerRegistration;

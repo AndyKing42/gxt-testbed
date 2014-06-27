@@ -2,6 +2,7 @@ package org.greatlogic.glgwt.client.core;
 
 import org.greatlogic.glgwt.shared.IGLEnums.EGLLogLevel;
 import org.greatlogic.glgwt.shared.IGLRemoteServiceAsync;
+import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.sencha.gxt.widget.core.client.info.DefaultInfoConfig;
 import com.sencha.gxt.widget.core.client.info.Info;
 import com.sencha.gxt.widget.core.client.info.InfoConfig;
@@ -31,7 +32,12 @@ public static void infoSummary(final String location, final String message) {
 }
 //--------------------------------------------------------------------------------------------------
 public static void log(final EGLLogLevel logLevel, final String location, final String message) {
-  _remoteService.log(logLevel.getPriority(), location, message, null);
+  _remoteService.log(logLevel.getPriority(), location, message, new AsyncCallback<Void>() {
+    @Override
+    public void onSuccess(final Void result) {/**/}
+    @Override
+    public void onFailure(final Throwable caught) {/**/}
+  });
 }
 //--------------------------------------------------------------------------------------------------
 public static void major(final String location, final String message) {

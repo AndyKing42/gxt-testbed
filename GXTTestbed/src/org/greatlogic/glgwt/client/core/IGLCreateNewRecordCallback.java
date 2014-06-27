@@ -1,9 +1,8 @@
 package org.greatlogic.glgwt.client.core;
 
-import org.greatlogic.glgwt.shared.IGLTable;
-
-public interface IGLCacheReloadCallback {
+public interface IGLCreateNewRecordCallback {
 //--------------------------------------------------------------------------------------------------
-public void onCompletion(final IGLTable table, final boolean reloadSucceeded);
+public void onFailure(final Throwable t);
+public void onSuccess(final GLRecord record);
 //--------------------------------------------------------------------------------------------------
 }

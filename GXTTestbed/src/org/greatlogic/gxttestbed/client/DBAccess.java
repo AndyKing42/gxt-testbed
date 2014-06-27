@@ -20,7 +20,7 @@ public static void loadPets(final GLListStore petListStore) {
     final GLSQL petSQL = GLSQL.select();
     petSQL.from(EGXTTestbedTable.Pet);
     petSQL.orderBy(EGXTTestbedTable.Pet, Pet.PetName, true);
-    petSQL.execute(petListStore, new IGLSQLSelectCallback() {
+    petSQL.executeSelect(petListStore, new IGLSQLSelectCallback() {
       @Override
       public void onFailure(final Throwable t) {
         GLLog.popup(30, "Pet loading failed: " + t.getMessage());
@@ -46,7 +46,7 @@ public static void recreateTables() {
     public void onSuccess(final Void result) {
       GLLog.popup(10, "Database table creation is complete");
       final PetGridWidget petGrid = GridWidgetManager.getPetGrid("Main");
-      ClientFactory.Instance.getLookupTableCache().reload(null);
+      ClientFactory.Instance.getLookupTableCache().reloadAll();
       loadPets(petGrid.getListStore());
     }
   });
@@ -63,7 +63,7 @@ public static void reloadTestData() {
     public void onSuccess(final Void result) {
       GLLog.popup(10, "Test data reload is complete");
       final PetGridWidget petGrid = GridWidgetManager.getPetGrid("Main");
-      ClientFactory.Instance.getLookupTableCache().reload(null);
+      ClientFactory.Instance.getLookupTableCache().reloadAll();
       loadPets(petGrid.getListStore());
     }
   });

@@ -2,6 +2,7 @@ package org.greatlogic.glgwt.client.core;
 
 import java.util.ArrayList;
 import java.util.TreeSet;
+import org.greatlogic.glgwt.client.event.GLCommitCompleteEvent;
 import org.greatlogic.glgwt.shared.IGLColumn;
 import org.greatlogic.glgwt.shared.IGLTable;
 import com.google.gwt.user.client.rpc.AsyncCallback;
@@ -31,7 +32,7 @@ public GLListStore() {
   addStoreUpdateHandler(new StoreUpdateHandler<GLRecord>() {
     @Override
     public void onUpdate(final StoreUpdateEvent<GLRecord> event) {
-      //      ClientFactory.Instance.getEventBus().fireEvent(changes_committed_event);
+      GLUtil.getEventBus().fireEvent(new GLCommitCompleteEvent());
     }
   });
 }

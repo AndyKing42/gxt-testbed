@@ -137,24 +137,24 @@ public enum Pet implements IGLColumn {
 AdoptionFee(EGLColumnDataType.Currency, 0, 2, "Adoption Fee", 100),
 FosterDate(EGLColumnDataType.Date, null, 0, "Foster Date", 100),
 IntakeDate(EGLColumnDataType.DateTime, null, 0, "Intake Date/Time", 125),
-NumberOfFosters(EGLColumnDataType.Int, 0, 0, "Number Of Fosters", 20),
+NumberOfFosters(EGLColumnDataType.Int, 0, 0, "Number Of Fosters", 60),
 PetId(EGLColumnDataType.Int, null, 0, "Id", 50),
 PetName(EGLColumnDataType.String, null, 0, "Pet Name", 80),
 PetTypeId(EGLColumnDataType.Int, null, 0, "Pet Type", 80) {
-  @Override
-  public IGLTable getParentTable() {
-    return EGXTTestbedTable.PetType;
-  }
+@Override
+public IGLTable getParentTable() {
+  return EGXTTestbedTable.PetType;
+}
 },
 Sex(EGLColumnDataType.String, "U", 0, "Sex", 50) {
-  private ArrayList<String> _choiceList;
-  @Override
-  public ArrayList<String> getChoiceList() {
-    if (_choiceList == null) {
-      _choiceList = GLUtil.loadListFromStrings("F,M,U", true);
-    }
-    return _choiceList;
+private ArrayList<String> _choiceList;
+@Override
+public ArrayList<String> getChoiceList() {
+  if (_choiceList == null) {
+    _choiceList = GLUtil.loadListFromStrings("F,M,U", true);
   }
+  return _choiceList;
+}
 },
 TrainedFlag(EGLColumnDataType.Boolean, "N", 0, "Trained?", 80);
 private final EGLColumnDataType _dataType;

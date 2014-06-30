@@ -40,6 +40,7 @@ public void onModuleLoad() {
   mainLayoutWidget.getCenterPanel().setWidget(gridWidget);
   RootPanel.get().add(mainLayoutWidget);
   DBAccess.loadPets(petGrid.getListStore());
+  //  GLUtil.login();
 }
 //--------------------------------------------------------------------------------------------------
 }

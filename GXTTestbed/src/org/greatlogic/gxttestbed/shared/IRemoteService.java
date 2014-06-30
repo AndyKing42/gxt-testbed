@@ -8,7 +8,6 @@ public interface IRemoteService extends IGLRemoteService {
 //--------------------------------------------------------------------------------------------------
 String gaeTest();
 void loadTestData(final String testDataOptionString);
-Integer login(final String loginName, final String password);
 void recreateTables();
 //--------------------------------------------------------------------------------------------------
 }

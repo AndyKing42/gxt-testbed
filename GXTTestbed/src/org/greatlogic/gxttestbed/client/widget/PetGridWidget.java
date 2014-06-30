@@ -14,13 +14,12 @@ package org.greatlogic.gxttestbed.client.widget;
  */
 import org.greatlogic.glgwt.client.widget.GLGridColumnDef;
 import org.greatlogic.glgwt.client.widget.GLGridWidget;
-import org.greatlogic.gxttestbed.shared.IDBEnums.EGXTTestbedTable;
 import org.greatlogic.gxttestbed.shared.IDBEnums.Pet;
 
 public class PetGridWidget extends GLGridWidget {
 //--------------------------------------------------------------------------------------------------
 public PetGridWidget() {
-  super(EGXTTestbedTable.Pet, null, "There are no pets");
+  super(null, "There are no pets");
 }
 //--------------------------------------------------------------------------------------------------
 @Override
@@ -32,6 +31,7 @@ protected void loadGridColumnDefList() {
   _gridColumnDefList.add(new GLGridColumnDef(Pet.TrainedFlag));
   _gridColumnDefList.add(new GLGridColumnDef(Pet.AdoptionFee));
   _gridColumnDefList.add(new GLGridColumnDef(Pet.FosterDate));
+  _gridColumnDefList.add(new GLGridColumnDef(Pet.NumberOfFosters));
 }
 //--------------------------------------------------------------------------------------------------
 }

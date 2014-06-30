@@ -23,6 +23,8 @@ import org.greatlogic.glgwt.client.widget.LoginDialogBox;
 import org.greatlogic.glgwt.shared.IGLRemoteServiceAsync;
 import org.greatlogic.glgwt.shared.IGLTable;
 import com.google.gwt.dom.client.Document;
+import com.google.gwt.dom.client.Element;
+import com.google.gwt.dom.client.Node;
 import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.RootPanel;
@@ -116,6 +118,17 @@ public static GLEventBus getEventBus() {
 //--------------------------------------------------------------------------------------------------
 public static GLLookupTableCache getLookupTableCache() {
   return _lookupTableCache;
+}
+//--------------------------------------------------------------------------------------------------
+public static String getLowestLevelCSSClassName(final Element element, final String attributeName) {
+  String result = null;
+  for (int childIndex = 0; childIndex < element.getChildCount(); ++childIndex) {
+    final Node node = element.getChild(childIndex);
+    if (node instanceof Element) {
+      result = getLowestLevelCSSClassName((Element)node, attributeName);
+    }
+  }
+  return result == null ? element.getClassName() : result;
 }
 //--------------------------------------------------------------------------------------------------
 /**

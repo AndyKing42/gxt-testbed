@@ -43,7 +43,6 @@ import com.google.gwt.event.logical.shared.SelectionEvent;
 import com.google.gwt.event.logical.shared.SelectionHandler;
 import com.google.gwt.i18n.client.NumberFormat;
 import com.google.gwt.i18n.shared.DateTimeFormat;
-import com.google.gwt.i18n.shared.DateTimeFormat.PredefinedFormat;
 import com.google.gwt.safecss.shared.SafeStyles;
 import com.google.gwt.safecss.shared.SafeStylesUtils;
 import com.google.gwt.user.client.ui.IsWidget;
@@ -51,9 +50,9 @@ import com.google.gwt.user.client.ui.Widget;
 import com.google.web.bindery.event.shared.Event.Type;
 import com.google.web.bindery.event.shared.HandlerRegistration;
 import com.sencha.gxt.cell.core.client.NumberCell;
-import com.sencha.gxt.cell.core.client.ResizableCell;
 import com.sencha.gxt.cell.core.client.form.CheckBoxCell;
 import com.sencha.gxt.cell.core.client.form.ComboBoxCell.TriggerAction;
+import com.sencha.gxt.cell.core.client.form.NumberInputCell;
 import com.sencha.gxt.core.client.IdentityValueProvider;
 import com.sencha.gxt.core.client.ValueProvider;
 import com.sencha.gxt.core.client.util.TextMetrics;
@@ -83,6 +82,7 @@ import com.sencha.gxt.widget.core.client.form.ComboBox;
 import com.sencha.gxt.widget.core.client.form.DateField;
 import com.sencha.gxt.widget.core.client.form.DateTimePropertyEditor;
 import com.sencha.gxt.widget.core.client.form.IntegerField;
+import com.sencha.gxt.widget.core.client.form.NumberPropertyEditor.BigDecimalPropertyEditor;
 import com.sencha.gxt.widget.core.client.form.SimpleComboBox;
 import com.sencha.gxt.widget.core.client.form.TextField;
 import com.sencha.gxt.widget.core.client.grid.CheckBoxSelectionModel;
@@ -99,6 +99,7 @@ import com.sencha.gxt.widget.core.client.menu.MenuItem;
 
 public abstract class GLGridWidget implements IsWidget {
 //--------------------------------------------------------------------------------------------------
+private static final String                      Zeroes = "00000000000000000000000000";
 private final HashSet<ColumnConfig<GLRecord, ?>> _checkBoxSet;
 private ContentPanel                             _contentPanel;
 private Grid<GLRecord>                           _grid;
@@ -151,10 +152,6 @@ private void addHeaderContextMenuHandler() {
     }
   };
   _grid.addHeaderContextMenuHandler(headerContextMenuHandler);
-}
-//--------------------------------------------------------------------------------------------------
-private void applyColumnWidthToCell(final ColumnConfig<GLRecord, ?> columnConfig) {
-  ((ResizableCell)(columnConfig.getCell())).setWidth(columnConfig.getWidth() - 2);
 }
 //--------------------------------------------------------------------------------------------------
 @Override
@@ -286,7 +283,7 @@ private ColumnModel<GLRecord> createColumnModel() {
         columnConfig = createColumnConfigDateTime(gridColumnDef, column, "dd/MM/yy");
         break;
       case DateTime:
-        columnConfig = createColumnConfigDateTime(gridColumnDef, column, "dd/MM/yy hh:mm a");
+        columnConfig = createColumnConfigDateTime(gridColumnDef, column, "dd/MM/yy hh:mma");
         break;
       case Decimal:
         columnConfig = createColumnConfigBigDecimal(gridColumnDef, column);
@@ -432,8 +429,7 @@ private void createEditors() {
           // no editor is needed - the checkbox can be changed in place
           break;
         case Currency:
-          _gridEditing.addEditor((ColumnConfig<GLRecord, BigDecimal>)columnConfig,
-                                 new BigDecimalField());
+          createEditorsDecimal(columnConfig, 2);
           break;
         case Date: {
           createEditorsDate(columnConfig);
@@ -444,8 +440,7 @@ private void createEditors() {
           break;
         }
         case Decimal:
-          _gridEditing.addEditor((ColumnConfig<GLRecord, BigDecimal>)columnConfig,
-                                 new BigDecimalField());
+          createEditorsDecimal(columnConfig, column.getNumberOfDecimalPlaces());
           break;
         case Int:
           if (column.getParentTable() == null) {
@@ -466,7 +461,7 @@ private void createEditors() {
 //--------------------------------------------------------------------------------------------------
 @SuppressWarnings("unchecked")
 private void createEditorsDate(final ColumnConfig<GLRecord, ?> columnConfig) {
-  final DateTimeFormat dateTimeFormat = DateTimeFormat.getFormat("MM/dd/yyyy");
+  final DateTimeFormat dateTimeFormat = DateTimeFormat.getFormat("MM/dd/yy");
   final DateTimePropertyEditor propertyEditor = new DateTimePropertyEditor(dateTimeFormat);
   final DateField dateField = new DateField(propertyEditor);
   dateField.setClearValueOnParseError(false);
@@ -487,11 +482,24 @@ private void createEditorsDateTime(final ColumnConfig<GLRecord, ?> columnConfig)
    * used in GWT Editor framework, and subfields will be ignored, leaving the dev to write their own
    * logic for binding the values.
    */
-  final DateTimeFormat dateTimeFormat = DateTimeFormat.getFormat(PredefinedFormat.DATE_LONG);
+  final DateTimeFormat dateTimeFormat = DateTimeFormat.getFormat("MM/dd/yy hh:mma");
   final DateTimePropertyEditor propertyEditor = new DateTimePropertyEditor(dateTimeFormat);
   final DateField dateField = new DateField(propertyEditor);
   dateField.setClearValueOnParseError(false);
   _gridEditing.addEditor((ColumnConfig<GLRecord, Date>)columnConfig, dateField);
+}
+//--------------------------------------------------------------------------------------------------
+@SuppressWarnings("unchecked")
+private void createEditorsDecimal(final ColumnConfig<GLRecord, ?> columnConfig,
+                                  final int numberOfDecimalPlaces) {
+  final NumberFormat format = NumberFormat.getFormat("#0." + //
+                                                     Zeroes.substring(0, numberOfDecimalPlaces));
+  final BigDecimalPropertyEditor propertyEditor;
+  propertyEditor = new BigDecimalPropertyEditor(format);
+  final NumberInputCell<BigDecimal> cell = new NumberInputCell<>(propertyEditor);
+  final BigDecimalField bigDecimalField = new BigDecimalField(cell);
+  bigDecimalField.setFormat(format);
+  _gridEditing.addEditor((ColumnConfig<GLRecord, BigDecimal>)columnConfig, bigDecimalField);
 }
 //--------------------------------------------------------------------------------------------------
 @SuppressWarnings("unchecked")

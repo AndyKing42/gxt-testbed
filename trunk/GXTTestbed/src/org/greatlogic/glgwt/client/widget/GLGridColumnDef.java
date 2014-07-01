@@ -3,6 +3,7 @@ package org.greatlogic.glgwt.client.widget;
 import org.greatlogic.glgwt.client.core.GLRecord;
 import org.greatlogic.glgwt.shared.IGLColumn;
 import org.greatlogic.glgwt.shared.IGLEnums.EGLColumnDataType;
+import com.google.gwt.i18n.shared.DateTimeFormat;
 import com.google.gwt.user.client.ui.HasHorizontalAlignment;
 import com.google.gwt.user.client.ui.HasHorizontalAlignment.HorizontalAlignmentConstant;
 import com.sencha.gxt.widget.core.client.grid.ColumnConfig;
@@ -12,6 +13,7 @@ public class GLGridColumnDef {
 private final IGLColumn                   _column;
 private ColumnConfig<GLRecord, ?>         _columnConfig;
 private int                               _columnIndex;
+private DateTimeFormat                    _dateTimeFormat;
 private final String                      _header;
 private final HorizontalAlignmentConstant _horizontalAlignment;
 private final int                         _width;
@@ -48,6 +50,10 @@ public int getColumnIndex() {
   return _columnIndex;
 }
 //--------------------------------------------------------------------------------------------------
+public DateTimeFormat getDateTimeFormat() {
+  return _dateTimeFormat;
+}
+//--------------------------------------------------------------------------------------------------
 public String getHeader() {
   return _header;
 }
@@ -63,6 +69,10 @@ public int getWidth() {
 public void setColumnConfig(final ColumnConfig<GLRecord, ?> columnConfig, final int columnIndex) {
   _columnConfig = columnConfig;
   _columnIndex = columnIndex;
+}
+//--------------------------------------------------------------------------------------------------
+public void setDateTimeFormat(final DateTimeFormat dateTimeFormat) {
+  _dateTimeFormat = dateTimeFormat;
 }
 //--------------------------------------------------------------------------------------------------
 @Override

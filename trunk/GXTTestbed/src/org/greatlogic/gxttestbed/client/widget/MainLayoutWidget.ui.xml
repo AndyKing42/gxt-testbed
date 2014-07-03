@@ -4,6 +4,7 @@
   xmlns:ui='urn:ui:com.google.gwt.uibinder'
   xmlns:button='urn:import:com.sencha.gxt.widget.core.client.button'
   xmlns:container='urn:import:com.sencha.gxt.widget.core.client.container'
+  xmlns:form='urn:import:com.sencha.gxt.widget.core.client.form'
   xmlns:gxt='urn:import:com.sencha.gxt.widget.core.client'>
   <!--====== BorderLayoutContainer margins ===================================================== -->
   <ui:with
@@ -99,6 +100,15 @@
             <button:TextButton
               ui:field='gaeStuffButton'
               text='GAE Stuff'/>
+            <form:CheckBox
+              ui:field='inlineEditingCheckBox'
+              boxLabel='Inline Editing?'/>
+            <form:CheckBox
+              ui:field='checkBoxSelectionModelCheckBox'
+              boxLabel='Checkbox Selection Model?'/>
+            <button:TextButton
+              ui:field='recreateGridButton'
+              text='Recreate Grid'/>
           </container:HBoxLayoutContainer>
         </gxt:ContentPanel>
       </container:north>

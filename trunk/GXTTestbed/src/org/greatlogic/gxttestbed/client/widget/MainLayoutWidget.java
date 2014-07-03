@@ -13,6 +13,7 @@ package org.greatlogic.gxttestbed.client.widget;
  * the License.
  */
 import org.greatlogic.glgwt.client.core.GLLog;
+import org.greatlogic.glgwt.client.widget.GLGridWidget;
 import org.greatlogic.gxttestbed.client.ClientFactory;
 import org.greatlogic.gxttestbed.client.DBAccess;
 import com.google.gwt.core.client.GWT;
@@ -29,23 +30,32 @@ import com.sencha.gxt.widget.core.client.button.TextButton;
 import com.sencha.gxt.widget.core.client.event.DialogHideEvent;
 import com.sencha.gxt.widget.core.client.event.DialogHideEvent.DialogHideHandler;
 import com.sencha.gxt.widget.core.client.event.SelectEvent;
+import com.sencha.gxt.widget.core.client.form.CheckBox;
 
 public class MainLayoutWidget extends Composite {
 //--------------------------------------------------------------------------------------------------
 @UiField
-ContentPanel centerPanel;
+ContentPanel                centerPanel;
 @UiField
-TextButton   gaeStuffButton;
+CheckBox                    checkBoxSelectionModelCheckBox;
 @UiField
-TextButton   recreateTablesButton;
+TextButton                  gaeStuffButton;
 @UiField
-TextButton   reloadTestDataButton;
+CheckBox                    inlineEditingCheckBox;
+@UiField
+TextButton                  recreateGridButton;
+@UiField
+TextButton                  recreateTablesButton;
+@UiField
+TextButton                  reloadTestDataButton;
+private final ClientFactory _clientFactory;
 //==================================================================================================
 interface MainLayoutWidgetUiBinder extends UiBinder<Widget, MainLayoutWidget> { //
 }
 //==================================================================================================
-public MainLayoutWidget() {
+public MainLayoutWidget(final ClientFactory clientFactory) {
   super();
+  _clientFactory = clientFactory;
   final MainLayoutWidgetUiBinder uiBinder = GWT.create(MainLayoutWidgetUiBinder.class);
   initWidget(uiBinder.createAndBindUi(this));
 }
@@ -66,6 +76,16 @@ public void onGAEStuffButtonClick(@SuppressWarnings("unused") final SelectEvent 
 //--------------------------------------------------------------------------------------------------
 public ContentPanel getCenterPanel() {
   return centerPanel;
+}
+//--------------------------------------------------------------------------------------------------
+@UiHandler({"recreateGridButton"})
+public void onRecreateGridButtonClick(@SuppressWarnings("unused") final SelectEvent event) {
+  final GLGridWidget gridWidget;
+  gridWidget = GridWidgetManager.getPetGrid("Main", inlineEditingCheckBox.getValue(), //
+                                            checkBoxSelectionModelCheckBox.getValue());
+  _clientFactory.getCenterPanel().setWidget(gridWidget);
+  DBAccess.loadPets(gridWidget.getListStore());
+  _clientFactory.getCenterPanel().forceLayout();
 }
 //--------------------------------------------------------------------------------------------------
 @UiHandler({"recreateTablesButton"})

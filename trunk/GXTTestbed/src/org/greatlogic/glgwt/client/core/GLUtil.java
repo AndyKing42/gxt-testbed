@@ -224,7 +224,7 @@ public static boolean stringToBoolean(final String stringValue) {
 public static void setTheme(final String themeClassName) {
   // from: http://stackoverflow.com/questions/7960685/allow-different-gwt-visual-themes-for-different-users/24455939#24455939
   // TODO: use this from somewhere!
-  // One of these:
+  // Use *** one *** of these:
   /* 1 */Document.get().getBody().setClassName(themeClassName);
   /* 2 */RootPanel.get().setStyleName(themeClassName);
   /* 3 */RootPanel.get().setStylePrimaryName(themeClassName);

@@ -13,23 +13,50 @@ package org.greatlogic.gxttestbed.client.widget;
  * the License.
  */
 import java.util.TreeMap;
+import org.greatlogic.glgwt.client.core.GLLog;
 import org.greatlogic.glgwt.client.widget.GLGridWidget;
 
 public class GridWidgetManager {
 //--------------------------------------------------------------------------------------------------
-private static TreeMap<String, GLGridWidget> _gridWidgetMap; /* grid name -> GLGridWidget */
+private static TreeMap<String, GridWidgetInfo> _gridWidgetInfoMap; /* grid name -> GLGridWidgetInfo */
+//--------------------------------------------------------------------------------------------------
+private static class GridWidgetInfo {
+private final GLGridWidget _gridWidget;
+private final boolean      _inlineEditing;
+private final boolean      _useCheckBoxSelectionModel;
+private GridWidgetInfo(final PetGridWidget gridWidget, final boolean inlineEditing,
+                       final boolean useCheckBoxSelectionModel) {
+  _gridWidget = gridWidget;
+  _inlineEditing = inlineEditing;
+  _useCheckBoxSelectionModel = useCheckBoxSelectionModel;
+}
+}
 //--------------------------------------------------------------------------------------------------
 static {
-  _gridWidgetMap = new TreeMap<String, GLGridWidget>();
+  _gridWidgetInfoMap = new TreeMap<>();
 }
 //--------------------------------------------------------------------------------------------------
 public static PetGridWidget getPetGrid(final String gridName) {
-  PetGridWidget result = (PetGridWidget)_gridWidgetMap.get(gridName);
-  if (result == null) {
-    result = new PetGridWidget();
-    _gridWidgetMap.put(gridName, result);
+  final GridWidgetInfo gridWidgetInfo = _gridWidgetInfoMap.get(gridName);
+  if (gridWidgetInfo == null) {
+    GLLog.popup(60, "Attempted to get grid with no settings");
+    return null;
   }
-  return result;
+  return getPetGrid(gridName, gridWidgetInfo._inlineEditing,
+                    gridWidgetInfo._useCheckBoxSelectionModel);
+}
+//--------------------------------------------------------------------------------------------------
+public static PetGridWidget getPetGrid(final String gridName, final boolean inlineEditing,
+                                       final boolean useCheckBoxSelectionModel) {
+  PetGridWidget result;
+  GridWidgetInfo gridWidgetInfo = _gridWidgetInfoMap.get(gridName);
+  if (gridWidgetInfo == null || gridWidgetInfo._inlineEditing != inlineEditing ||
+      gridWidgetInfo._useCheckBoxSelectionModel != useCheckBoxSelectionModel) {
+    result = new PetGridWidget(inlineEditing, useCheckBoxSelectionModel);
+    gridWidgetInfo = new GridWidgetInfo(result, inlineEditing, useCheckBoxSelectionModel);
+    _gridWidgetInfoMap.put(gridName, gridWidgetInfo);
+  }
+  return (PetGridWidget)gridWidgetInfo._gridWidget;
 }
 //--------------------------------------------------------------------------------------------------
 }

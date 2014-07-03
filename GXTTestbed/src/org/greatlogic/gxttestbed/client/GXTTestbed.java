@@ -17,7 +17,6 @@ import org.greatlogic.glgwt.client.core.GLUtil;
 import org.greatlogic.glgwt.client.widget.GLGridWidget;
 import org.greatlogic.gxttestbed.client.widget.GridWidgetManager;
 import org.greatlogic.gxttestbed.client.widget.MainLayoutWidget;
-import org.greatlogic.gxttestbed.client.widget.PetGridWidget;
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.user.client.ui.RootPanel;
 
@@ -28,18 +27,17 @@ public void onModuleLoad() {
   final ClientFactory clientFactory = new ClientFactoryUI();
   GLUtil.initialize(clientFactory.getEventBus(), clientFactory.getLookupTableCache(),
                     clientFactory.getRemoteService());
-  final MainLayoutWidget mainLayoutWidget = new MainLayoutWidget();
+  clientFactory.setMainLayoutWidget(new MainLayoutWidget(clientFactory));
   final boolean loadTestData = false;
-  final PetGridWidget petGrid = GridWidgetManager.getPetGrid("Main");
-  final GLGridWidget gridWidget = petGrid;
+  final GLGridWidget gridWidget = GridWidgetManager.getPetGrid("Main", false, false);
   if (loadTestData) {
     final GLListStore petTypeListStore = new GLListStore();
     TestData.loadPetTypeTestData(petTypeListStore);
     TestData.loadPetTestData(gridWidget.getListStore());
   }
-  mainLayoutWidget.getCenterPanel().setWidget(gridWidget);
-  RootPanel.get().add(mainLayoutWidget);
-  DBAccess.loadPets(petGrid.getListStore());
+  clientFactory.getCenterPanel().setWidget(gridWidget);
+  RootPanel.get().add(clientFactory.getMainLayoutWidget());
+  DBAccess.loadPets(gridWidget.getListStore());
   //  GLUtil.login();
 }
 //--------------------------------------------------------------------------------------------------

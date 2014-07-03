@@ -18,8 +18,8 @@ import org.greatlogic.gxttestbed.shared.IDBEnums.Pet;
 
 public class PetGridWidget extends GLGridWidget {
 //--------------------------------------------------------------------------------------------------
-public PetGridWidget() {
-  super(null, "There are no pets", false, false);
+public PetGridWidget(final boolean inlineEditing, final boolean useCheckBoxSelectionModel) {
+  super(null, "There are no pets", inlineEditing, useCheckBoxSelectionModel);
 }
 //--------------------------------------------------------------------------------------------------
 @Override

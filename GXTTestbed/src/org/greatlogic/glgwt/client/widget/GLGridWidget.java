@@ -442,9 +442,6 @@ private void createContentPanelNewButton() {
 @SuppressWarnings("unchecked")
 private void createEditors() {
   _gridEditing = _inlineEditing ? new GridInlineEditing<>(_grid) : new GridRowEditing<>(_grid);
-  if (_useCheckBoxSelectionModel && !_inlineEditing) {
-    _gridEditing.addEditor(null, new CheckBox());
-  }
   for (final GLGridColumnDef gridColumnDef : _gridColumnDefList) {
     final ColumnConfig<GLRecord, ?> columnConfig = gridColumnDef.getColumnConfig();
     final IGLColumn column = gridColumnDef.getColumn();
@@ -648,6 +645,7 @@ private void resizeColumnToFit(final int columnIndex) {
   textMetrics.bind(_grid.getView().getHeader().getAppearance().styles().head());
   int maxWidth = textMetrics.getWidth(columnConfig.getHeader().asString()) + 6;
   if (_listStore.size() > 0) {
+    final int extraPadding = 10;
     final String className = _grid.getView().getCell(1, 1).getClassName();
     textMetrics.bind(className);
     for (final GLRecord record : _listStore.getAll()) {
@@ -660,13 +658,13 @@ private void resizeColumnToFit(final int columnIndex) {
         else {
           valueAsString = dateTimeFormat.format((Date)value);
         }
-        final int width = textMetrics.getWidth(valueAsString) + 10;
+        final int width = textMetrics.getWidth(valueAsString) + extraPadding;
         maxWidth = width > maxWidth ? width : maxWidth;
       }
     }
     for (final Store<GLRecord>.Record record : _listStore.getModifiedRecords()) {
       final String valueAsString = record.getValue(columnConfig.getValueProvider()).toString();
-      final int width = textMetrics.getWidth(valueAsString) + 10;
+      final int width = textMetrics.getWidth(valueAsString) + extraPadding;
       maxWidth = width > maxWidth ? width : maxWidth;
     }
   }

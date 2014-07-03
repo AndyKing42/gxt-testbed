@@ -100,15 +100,17 @@
             <button:TextButton
               ui:field='gaeStuffButton'
               text='GAE Stuff'/>
-            <form:CheckBox
-              ui:field='inlineEditingCheckBox'
-              boxLabel='Inline Editing?'/>
-            <form:CheckBox
-              ui:field='checkBoxSelectionModelCheckBox'
-              boxLabel='Checkbox Selection Model?'/>
-            <button:TextButton
-              ui:field='recreateGridButton'
-              text='Recreate Grid'/>
+            <container:VBoxLayoutContainer>
+              <form:CheckBox
+                ui:field='inlineEditingCheckBox'
+                boxLabel='Inline Editing?'/>
+              <form:CheckBox
+                ui:field='checkBoxSelectionModelCheckBox'
+                boxLabel='Checkbox Selection Model?'/>
+              <button:TextButton
+                ui:field='recreateGridButton'
+                text='Recreate Grid'/>
+            </container:VBoxLayoutContainer>
           </container:HBoxLayoutContainer>
         </gxt:ContentPanel>
       </container:north>

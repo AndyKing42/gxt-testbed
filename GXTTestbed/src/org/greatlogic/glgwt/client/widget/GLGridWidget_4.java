@@ -45,17 +45,13 @@ import com.google.gwt.event.logical.shared.SelectionEvent;
 import com.google.gwt.event.logical.shared.SelectionHandler;
 import com.google.gwt.i18n.client.NumberFormat;
 import com.google.gwt.i18n.shared.DateTimeFormat;
+import com.google.gwt.safecss.shared.SafeStyles;
 import com.google.gwt.safecss.shared.SafeStylesUtils;
-import com.google.gwt.safehtml.shared.SafeHtml;
-import com.google.gwt.safehtml.shared.SafeHtmlUtils;
-import com.google.gwt.text.shared.AbstractSafeHtmlRenderer;
-import com.google.gwt.user.client.ui.HasHorizontalAlignment;
 import com.google.gwt.user.client.ui.IsWidget;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.web.bindery.event.shared.Event.Type;
 import com.google.web.bindery.event.shared.HandlerRegistration;
 import com.sencha.gxt.cell.core.client.NumberCell;
-import com.sencha.gxt.cell.core.client.SimpleSafeHtmlCell;
 import com.sencha.gxt.cell.core.client.form.CheckBoxCell;
 import com.sencha.gxt.cell.core.client.form.ComboBoxCell.TriggerAction;
 import com.sencha.gxt.cell.core.client.form.NumberInputCell;
@@ -84,7 +80,6 @@ import com.sencha.gxt.widget.core.client.event.RowClickEvent;
 import com.sencha.gxt.widget.core.client.event.SelectEvent;
 import com.sencha.gxt.widget.core.client.event.SelectEvent.SelectHandler;
 import com.sencha.gxt.widget.core.client.form.BigDecimalField;
-import com.sencha.gxt.widget.core.client.form.CheckBox;
 import com.sencha.gxt.widget.core.client.form.ComboBox;
 import com.sencha.gxt.widget.core.client.form.DateField;
 import com.sencha.gxt.widget.core.client.form.DateTimePropertyEditor;
@@ -95,7 +90,6 @@ import com.sencha.gxt.widget.core.client.form.TextField;
 import com.sencha.gxt.widget.core.client.form.Validator;
 import com.sencha.gxt.widget.core.client.form.error.DefaultEditorError;
 import com.sencha.gxt.widget.core.client.form.validator.EmptyValidator;
-import com.sencha.gxt.widget.core.client.grid.CellSelectionModel;
 import com.sencha.gxt.widget.core.client.grid.CheckBoxSelectionModel;
 import com.sencha.gxt.widget.core.client.grid.ColumnConfig;
 import com.sencha.gxt.widget.core.client.grid.ColumnModel;
@@ -105,11 +99,10 @@ import com.sencha.gxt.widget.core.client.grid.GridSelectionModel;
 import com.sencha.gxt.widget.core.client.grid.GridView;
 import com.sencha.gxt.widget.core.client.grid.editing.GridEditing;
 import com.sencha.gxt.widget.core.client.grid.editing.GridInlineEditing;
-import com.sencha.gxt.widget.core.client.grid.editing.GridRowEditing;
 import com.sencha.gxt.widget.core.client.menu.Item;
 import com.sencha.gxt.widget.core.client.menu.MenuItem;
 
-public abstract class GLGridWidget implements IsWidget {
+public abstract class GLGridWidget_4 implements IsWidget {
 //--------------------------------------------------------------------------------------------------
 private static final String                      Zeroes = "00000000000000000000000000";
 private final HashSet<ColumnConfig<GLRecord, ?>> _checkBoxSet;
@@ -118,22 +111,17 @@ private Grid<GLRecord>                           _grid;
 protected ArrayList<GLGridColumnDef>             _gridColumnDefList;
 private TreeMap<String, GLGridColumnDef>         _gridColumnDefMap;                    // column name -> GLGridColumnDef
 private GridEditing<GLRecord>                    _gridEditing;
-private final boolean                            _inlineEditing;
 protected GLListStore                            _listStore;
 private HandlerRegistration                      _lookupTableLoadedHandlerRegistration;
 private final String                             _noRowsMessage;
 private GridSelectionModel<GLRecord>             _selectionModel;
-private final boolean                            _useCheckBoxSelectionModel;
 //--------------------------------------------------------------------------------------------------
-protected GLGridWidget(final String headingText, final String noRowsMessage,
-                       final boolean inlineEditing, final boolean useCheckBoxSelectionModel) {
+protected GLGridWidget_4(final String headingText, final String noRowsMessage) {
   super();
   _noRowsMessage = noRowsMessage == null ? "There are no results to display" : noRowsMessage;
-  _inlineEditing = inlineEditing;
-  _useCheckBoxSelectionModel = useCheckBoxSelectionModel;
   _listStore = new GLListStore();
-  _checkBoxSet = new HashSet<>();
-  _gridColumnDefList = new ArrayList<>();
+  _checkBoxSet = new HashSet<ColumnConfig<GLRecord, ?>>();
+  _gridColumnDefList = new ArrayList<GLGridColumnDef>();
   loadGridColumnDefList();
   createGridColumnDefMap();
   createContentPanel(headingText);
@@ -161,7 +149,7 @@ private void addHeaderContextMenuHandler() {
                                                                        "Resizing Columns...");
           messageBox.setProgressText("Calculating...");
           messageBox.show();
-          resizeNextColumn(messageBox, _useCheckBoxSelectionModel ? 1 : 0,
+          resizeNextColumn(messageBox, _selectionModel instanceof CheckBoxSelectionModel ? 1 : 0,
                            _grid.getColumnModel().getColumnCount() - 1);
         }
       });
@@ -177,29 +165,24 @@ public Widget asWidget() {
 }
 //--------------------------------------------------------------------------------------------------
 private void centerCheckBox(final ColumnConfig<GLRecord, ?> columnConfig) {
-  if (_inlineEditing) {
-    final int leftPadding = (columnConfig.getWidth() - 12) / 2;
-    columnConfig.setColumnTextStyle(SafeStylesUtils.fromTrustedString("padding: 3px 0px 0px " +
-                                                                      leftPadding + "px;"));
-  }
+  final int leftPadding = (columnConfig.getWidth() - 12) / 2;
+  final String styles = "padding: 3px 0px 0px " + leftPadding + "px;";
+  final SafeStyles textStyles = SafeStylesUtils.fromTrustedString(styles);
+  columnConfig.setColumnTextStyle(textStyles);
 }
 //--------------------------------------------------------------------------------------------------
-private void createSelectionModel() {
-  if (_useCheckBoxSelectionModel) {
-    final IdentityValueProvider<GLRecord> identityValueProvider = new IdentityValueProvider<>();
-    _selectionModel = new CheckBoxSelectionModel<GLRecord>(identityValueProvider) {
-      @Override
-      protected void onRefresh(final RefreshEvent event) {
-        if (isSelectAllChecked()) {
-          selectAll();
-        }
-        super.onRefresh(event);
+private void createCheckBoxSelectionModel() {
+  final IdentityValueProvider<GLRecord> identityValueProvider;
+  identityValueProvider = new IdentityValueProvider<GLRecord>();
+  _selectionModel = new CheckBoxSelectionModel<GLRecord>(identityValueProvider) {
+    @Override
+    protected void onRefresh(final RefreshEvent event) {
+      if (isSelectAllChecked()) {
+        selectAll();
       }
-    };
-  }
-  else {
-    _selectionModel = new CellSelectionModel<>();
-  }
+      super.onRefresh(event);
+    }
+  };
 }
 //--------------------------------------------------------------------------------------------------
 private ColumnConfig<GLRecord, BigDecimal> createColumnConfigBigDecimal(final GLGridColumnDef gridColumnDef,
@@ -207,7 +190,8 @@ private ColumnConfig<GLRecord, BigDecimal> createColumnConfigBigDecimal(final GL
   final ColumnConfig<GLRecord, BigDecimal> result;
   final ValueProvider<GLRecord, BigDecimal> valueProvider;
   valueProvider = new GLBigDecimalValueProvider(column, column.getNumberOfDecimalPlaces());
-  result = new ColumnConfig<>(valueProvider, gridColumnDef.getWidth(), column.getTitle());
+  result = new ColumnConfig<GLRecord, BigDecimal>(valueProvider, gridColumnDef.getWidth(), //
+                                                  column.getTitle());
   result.setHorizontalAlignment(gridColumnDef.getHorizontalAlignment());
   NumberFormat numberFormat;
   if (column.getDataType() == EGLColumnDataType.Currency) {
@@ -224,20 +208,10 @@ private ColumnConfig<GLRecord, Boolean> createColumnConfigBoolean(final GLGridCo
                                                                   final IGLColumn column) {
   final ColumnConfig<GLRecord, Boolean> result;
   final ValueProvider<GLRecord, Boolean> valueProvider = new GLBooleanValueProvider(column);
-  result = new ColumnConfig<>(valueProvider, gridColumnDef.getWidth(), column.getTitle());
-  result.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_CENTER);
-  if (_inlineEditing) {
-    result.setCell(new CheckBoxCell());
-  }
-  else {
-    result.setCell(new SimpleSafeHtmlCell<Boolean>(new AbstractSafeHtmlRenderer<Boolean>() {
-      @Override
-      public SafeHtml render(final Boolean object) {
-        // TODO: these need to be drawn (use AbstractCell#render?)
-        return SafeHtmlUtils.fromTrustedString(object ? "&#x2713;" : "&#x2717");
-      }
-    }));
-  }
+  result = new ColumnConfig<GLRecord, Boolean>(valueProvider, gridColumnDef.getWidth(), //
+                                               column.getTitle());
+  result.setHorizontalAlignment(gridColumnDef.getHorizontalAlignment());
+  result.setCell(new CheckBoxCell());
   result.setSortable(false);
   _checkBoxSet.add(result);
   return result;
@@ -247,8 +221,9 @@ private ColumnConfig<GLRecord, Date> createColumnConfigDateTime(final GLGridColu
                                                                 final IGLColumn column,
                                                                 final String dateTimeFormatString) {
   final ColumnConfig<GLRecord, Date> result;
-  result = new ColumnConfig<>(new GLDateValueProvider(column), gridColumnDef.getWidth(), //
-                              column.getTitle());
+  final ValueProvider<GLRecord, Date> valueProvider = new GLDateValueProvider(column);
+  result = new ColumnConfig<GLRecord, Date>(valueProvider, gridColumnDef.getWidth(), //
+                                            column.getTitle());
   result.setHorizontalAlignment(gridColumnDef.getHorizontalAlignment());
   final DateTimeFormat dateTimeFormat = DateTimeFormat.getFormat(dateTimeFormatString);
   gridColumnDef.setDateTimeFormat(dateTimeFormat);
@@ -263,7 +238,8 @@ private ColumnConfig<GLRecord, String> createColumnConfigForeignKey(final GLGrid
   final ColumnConfig<GLRecord, String> result;
   final ValueProvider<GLRecord, String> valueProvider = new GLForeignKeyValueProvider(lookupTable, //
                                                                                       column);
-  result = new ColumnConfig<>(valueProvider, gridColumnDef.getWidth(), column.getTitle());
+  result = new ColumnConfig<GLRecord, String>(valueProvider, gridColumnDef.getWidth(), //
+                                              column.getTitle());
   result.setHorizontalAlignment(gridColumnDef.getHorizontalAlignment());
   result.setCell(new TextCell());
   return result;
@@ -272,8 +248,9 @@ private ColumnConfig<GLRecord, String> createColumnConfigForeignKey(final GLGrid
 private ColumnConfig<GLRecord, Integer> createColumnConfigInteger(final GLGridColumnDef gridColumnDef,
                                                                   final IGLColumn column) {
   final ColumnConfig<GLRecord, Integer> result;
-  result = new ColumnConfig<>(new GLIntegerValueProvider(column), gridColumnDef.getWidth(), //
-                              column.getTitle());
+  final ValueProvider<GLRecord, Integer> valueProvider = new GLIntegerValueProvider(column);
+  result = new ColumnConfig<GLRecord, Integer>(valueProvider, gridColumnDef.getWidth(), //
+                                               column.getTitle());
   result.setHorizontalAlignment(gridColumnDef.getHorizontalAlignment());
   result.setCell(new NumberCell<Integer>());
   return result;
@@ -282,8 +259,9 @@ private ColumnConfig<GLRecord, Integer> createColumnConfigInteger(final GLGridCo
 private ColumnConfig<GLRecord, String> createColumnConfigString(final GLGridColumnDef gridColumnDef,
                                                                 final IGLColumn column) {
   final ColumnConfig<GLRecord, String> result;
-  result = new ColumnConfig<>(new GLStringValueProvider(column), gridColumnDef.getWidth(), //
-                              column.getTitle());
+  final ValueProvider<GLRecord, String> valueProvider = new GLStringValueProvider(column);
+  result = new ColumnConfig<GLRecord, String>(valueProvider, gridColumnDef.getWidth(), //
+                                              column.getTitle());
   result.setHorizontalAlignment(gridColumnDef.getHorizontalAlignment());
   result.setCell(new TextCell());
   return result;
@@ -291,8 +269,9 @@ private ColumnConfig<GLRecord, String> createColumnConfigString(final GLGridColu
 //--------------------------------------------------------------------------------------------------
 private ColumnModel<GLRecord> createColumnModel() {
   ColumnModel<GLRecord> result;
-  final ArrayList<ColumnConfig<GLRecord, ?>> columnConfigList = new ArrayList<>();
-  if (_useCheckBoxSelectionModel) {
+  final ArrayList<ColumnConfig<GLRecord, ?>> columnConfigList;
+  columnConfigList = new ArrayList<ColumnConfig<GLRecord, ?>>();
+  if (_selectionModel instanceof CheckBoxSelectionModel) {
     columnConfigList.add(((CheckBoxSelectionModel<GLRecord>)_selectionModel).getColumn());
   }
   for (final GLGridColumnDef gridColumnDef : _gridColumnDefList) {
@@ -332,7 +311,7 @@ private ColumnModel<GLRecord> createColumnModel() {
       columnConfigList.add(columnConfig);
     }
   }
-  result = new ColumnModel<>(columnConfigList);
+  result = new ColumnModel<GLRecord>(columnConfigList);
   result.addColumnWidthChangeHandler(new ColumnWidthChangeHandler() {
     @Override
     public void onColumnWidthChange(final ColumnWidthChangeEvent event) {
@@ -405,7 +384,8 @@ private TextButton createContentPanelDeleteButton() {
         @Override
         public void onDialogHide(final DialogHideEvent hideEvent) {
           if (hideEvent.getHideButton() == PredefinedButton.YES) {
-            final ArrayList<GLRecord> recordList = new ArrayList<>(selectedRecordList.size());
+            final ArrayList<GLRecord> recordList;
+            recordList = new ArrayList<GLRecord>(selectedRecordList.size());
             for (final GLRecord record : selectedRecordList) {
               recordList.add(record);
             }
@@ -441,10 +421,7 @@ private void createContentPanelNewButton() {
 //--------------------------------------------------------------------------------------------------
 @SuppressWarnings("unchecked")
 private void createEditors() {
-  _gridEditing = _inlineEditing ? new GridInlineEditing<>(_grid) : new GridRowEditing<>(_grid);
-  if (_useCheckBoxSelectionModel && !_inlineEditing) {
-    _gridEditing.addEditor(null, new CheckBox());
-  }
+  _gridEditing = new GridInlineEditing<GLRecord>(_grid);
   for (final GLGridColumnDef gridColumnDef : _gridColumnDefList) {
     final ColumnConfig<GLRecord, ?> columnConfig = gridColumnDef.getColumnConfig();
     final IGLColumn column = gridColumnDef.getColumn();
@@ -455,8 +432,6 @@ private void createEditors() {
       switch (column.getDataType()) {
         case Boolean:
           // no editor is needed - the checkbox can be changed in place
-          // TODO: should this be necessary?
-          _gridEditing.addEditor((ColumnConfig<GLRecord, Boolean>)columnConfig, new CheckBox());
           break;
         case Currency:
           createEditorsDecimal(columnConfig, 2);
@@ -553,7 +528,7 @@ private void createEditorsDecimal(final ColumnConfig<GLRecord, ?> columnConfig,
 @SuppressWarnings("unchecked")
 private void createEditorsFixedCombobox(final IGLColumn column,
                                         final ColumnConfig<GLRecord, ?> columnConfig) {
-  final SimpleComboBox<String> combobox = new SimpleComboBox<>(new StringLabelProvider<>());
+  final SimpleComboBox<String> combobox = new SimpleComboBox<String>(new StringLabelProvider<>());
   combobox.setClearValueOnParseError(false);
   combobox.setTriggerAction(TriggerAction.ALL);
   combobox.add(column.getChoiceList());
@@ -576,7 +551,7 @@ private void createEditorsForeignKeyCombobox(final GLGridColumnDef gridColumnDef
       return record.asString(parentTable.getComboboxDisplayColumn());
     }
   };
-  final ComboBox<GLRecord> comboBox = new ComboBox<>(lookupListStore, labelProvider);
+  final ComboBox<GLRecord> comboBox = new ComboBox<GLRecord>(lookupListStore, labelProvider);
   comboBox.setForceSelection(true);
   comboBox.setTriggerAction(TriggerAction.ALL);
   comboBox.setTypeAhead(true);
@@ -595,7 +570,7 @@ private void createEditorsForeignKeyCombobox(final GLGridColumnDef gridColumnDef
 }
 //--------------------------------------------------------------------------------------------------
 private void createGrid() {
-  createSelectionModel();
+  createCheckBoxSelectionModel();
   final ColumnModel<GLRecord> columnModel = createColumnModel();
   _grid = new Grid<>(_listStore, columnModel);
   _grid.addRowClickHandler(new RowClickEvent.RowClickHandler() {
@@ -619,14 +594,14 @@ private void createGrid() {
 }
 //--------------------------------------------------------------------------------------------------
 private void createGridColumnDefMap() {
-  _gridColumnDefMap = new TreeMap<>();
+  _gridColumnDefMap = new TreeMap<String, GLGridColumnDef>();
   for (final GLGridColumnDef gridColumnDef : _gridColumnDefList) {
     _gridColumnDefMap.put(gridColumnDef.getColumn().toString(), gridColumnDef);
   }
 }
 //--------------------------------------------------------------------------------------------------
 private GridView<GLRecord> createGridView() {
-  final GridView<GLRecord> result = new GridView<>();
+  final GridView<GLRecord> result = new GridView<GLRecord>();
   result.setColumnLines(true);
   result.setEmptyText(_noRowsMessage);
   result.setForceFit(false);
@@ -670,7 +645,7 @@ private void resizeColumnToFit(final int columnIndex) {
       maxWidth = width > maxWidth ? width : maxWidth;
     }
   }
-  columnConfig.setWidth(maxWidth < 40 ? 40 : maxWidth);
+  columnConfig.setWidth(maxWidth);
   if (_checkBoxSet.contains(columnConfig)) {
     centerCheckBox(columnConfig);
   }

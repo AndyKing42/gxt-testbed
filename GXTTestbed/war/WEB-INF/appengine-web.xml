@@ -22,4 +22,8 @@
   <sessions-enabled>true</sessions-enabled>
   <async-session-persistence enabled="true"/>
   <use-google-connector-j>true</use-google-connector-j>
+  <basic-scaling>
+    <max-instances>2</max-instances>
+    <idle-timeout>5m</idle-timeout>
+  </basic-scaling>
 </appengine-web-app>

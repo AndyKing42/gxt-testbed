@@ -57,7 +57,8 @@ private static void reloadPets() throws GLDBException {
     final int minute = GLUtil.getRandomInt(4) * 15;
     final String intakeTime = (hour < 10 ? "0" : "") + hour + (minute < 10 ? "0" : "") + //
                               minute + "00";
-    final String fosterDate = GLUtil.dateAddDays(intakeDate, 60);
+    final String fosterDate = GLUtil.getRandomInt(3) == 0 ? null : GLUtil.dateAddDays(intakeDate, //
+                                                                                      60);
     petSQL.setValue(Pet.AdoptionFee.name(), GLUtil.getRandomInt(3000, 10000) / 100.0);
     petSQL.setValue(Pet.FosterDate.name(), fosterDate);
     petSQL.setValue(Pet.IntakeDate.name(), intakeDate + intakeTime);

@@ -84,7 +84,7 @@ public Date getValue(final GLRecord record) {
 }
 @Override
 public void setValue(final GLRecord record, final Date value) {
-  record.put(_column, DateTimeFormat.getFormat("yyyyMMdd").format(value));
+  record.put(_column, value == null ? null : DateTimeFormat.getFormat("yyyyMMdd").format(value));
 }
 @Override
 public String getPath() {

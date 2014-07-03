@@ -39,6 +39,8 @@ import com.google.gwt.cell.client.DateCell;
 import com.google.gwt.cell.client.TextCell;
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
+import com.google.gwt.editor.client.Editor;
+import com.google.gwt.editor.client.EditorError;
 import com.google.gwt.event.logical.shared.SelectionEvent;
 import com.google.gwt.event.logical.shared.SelectionHandler;
 import com.google.gwt.i18n.client.NumberFormat;
@@ -85,6 +87,9 @@ import com.sencha.gxt.widget.core.client.form.IntegerField;
 import com.sencha.gxt.widget.core.client.form.NumberPropertyEditor.BigDecimalPropertyEditor;
 import com.sencha.gxt.widget.core.client.form.SimpleComboBox;
 import com.sencha.gxt.widget.core.client.form.TextField;
+import com.sencha.gxt.widget.core.client.form.Validator;
+import com.sencha.gxt.widget.core.client.form.error.DefaultEditorError;
+import com.sencha.gxt.widget.core.client.form.validator.EmptyValidator;
 import com.sencha.gxt.widget.core.client.grid.CheckBoxSelectionModel;
 import com.sencha.gxt.widget.core.client.grid.ColumnConfig;
 import com.sencha.gxt.widget.core.client.grid.ColumnModel;
@@ -280,10 +285,10 @@ private ColumnModel<GLRecord> createColumnModel() {
         columnConfig = createColumnConfigBigDecimal(gridColumnDef, column);
         break;
       case Date:
-        columnConfig = createColumnConfigDateTime(gridColumnDef, column, "dd/MM/yy");
+        columnConfig = createColumnConfigDateTime(gridColumnDef, column, "MM/dd/yy");
         break;
       case DateTime:
-        columnConfig = createColumnConfigDateTime(gridColumnDef, column, "dd/MM/yy hh:mma");
+        columnConfig = createColumnConfigDateTime(gridColumnDef, column, "MM/dd/yy hh:mma");
         break;
       case Decimal:
         columnConfig = createColumnConfigBigDecimal(gridColumnDef, column);
@@ -465,6 +470,24 @@ private void createEditorsDate(final ColumnConfig<GLRecord, ?> columnConfig) {
   final DateTimePropertyEditor propertyEditor = new DateTimePropertyEditor(dateTimeFormat);
   final DateField dateField = new DateField(propertyEditor);
   dateField.setClearValueOnParseError(false);
+  dateField.addValidator(new EmptyValidator<Date>()); // or textField.setAllowBlank(false);
+  dateField.addValidator(new Validator<Date>() {
+    @SuppressWarnings("deprecation")
+    @Override
+    public List<EditorError> validate(final Editor<Date> editor, final Date date) {
+      final List<EditorError> result;
+      if (date == null) {
+        return null;
+      }
+      if (date.getMonth() == 1 || date.getDate() == 15) {
+        result = new ArrayList<>();
+        result.add(new DefaultEditorError(editor, "Nothing in February", ""));
+        result.add(new DefaultEditorError(editor, "No ides!", ""));
+        return result;
+      }
+      return null;
+    }
+  });
   _gridEditing.addEditor((ColumnConfig<GLRecord, Date>)columnConfig, dateField);
 }
 //--------------------------------------------------------------------------------------------------
@@ -600,7 +623,7 @@ private void resizeColumnToFit(final int columnIndex) {
   textMetrics.bind(_grid.getView().getHeader().getAppearance().styles().head());
   int maxWidth = textMetrics.getWidth(columnConfig.getHeader().asString()) + 6;
   if (_listStore.size() > 0) {
-    final String className = _grid.getView().getCell(0, 1).getClassName();
+    final String className = _grid.getView().getCell(1, 1).getClassName();
     textMetrics.bind(className);
     for (final GLRecord record : _listStore.getAll()) {
       final Object value = columnConfig.getValueProvider().getValue(record);
@@ -617,8 +640,8 @@ private void resizeColumnToFit(final int columnIndex) {
       }
     }
     for (final Store<GLRecord>.Record record : _listStore.getModifiedRecords()) {
-      final int width = textMetrics.getWidth(record.getValue(columnConfig.getValueProvider()) //
-                                                   .toString()) + 10;
+      final String valueAsString = record.getValue(columnConfig.getValueProvider()).toString();
+      final int width = textMetrics.getWidth(valueAsString) + 10;
       maxWidth = width > maxWidth ? width : maxWidth;
     }
   }
@@ -627,42 +650,6 @@ private void resizeColumnToFit(final int columnIndex) {
     centerCheckBox(columnConfig);
   }
 }
-//--------------------------------------------------------------------------------------------------
-//private void resizeColumnToFit(final int columnIndex) {
-//  final ColumnConfig<GLRecord, ?> columnConfig = _grid.getColumnModel().getColumn(columnIndex);
-//  final TextMetrics textMetrics = TextMetrics.get();
-//  textMetrics.bind(_grid.getView().getHeader().getAppearance().styles().head());
-//  int maxWidth = textMetrics.getWidth(columnConfig.getHeader().asString()) + 15; // extra is for the dropdown arrow
-//  if (_listStore.size() > 0) {
-//    textMetrics.bind(_grid.getView().getCell(0, 1));
-//    for (final GLRecord record : _listStore.getAll()) {
-//      final Object value = columnConfig.getValueProvider().getValue(record);
-//      if (value != null) {
-//        String valueAsString;
-//        if (columnConfig.getCell() instanceof DateCell) {
-//          final DateCell dateCell = (DateCell)columnConfig.getCell();
-//          final SafeHtmlBuilder sb = new SafeHtmlBuilder();
-//          dateCell.render(null, (Date)value, sb);
-//          valueAsString = sb.toSafeHtml().asString();
-//        }
-//        else {
-//          valueAsString = value.toString();
-//        }
-//        final int width = textMetrics.getWidth(valueAsString) + 12;
-//        maxWidth = width > maxWidth ? width : maxWidth;
-//      }
-//    }
-//    for (final Store<GLRecord>.Record record : _listStore.getModifiedRecords()) {
-//      final int width = textMetrics.getWidth(record.getValue(columnConfig.getValueProvider()) //
-//                                                   .toString()) + 12;
-//      maxWidth = width > maxWidth ? width : maxWidth;
-//    }
-//  }
-//  columnConfig.setWidth(maxWidth);
-//  if (_checkBoxSet.contains(columnConfig)) {
-//    centerCheckBox(columnConfig);
-//  }
-//}
 //--------------------------------------------------------------------------------------------------
 private void resizeNextColumn(final ProgressMessageBox messageBox, final int columnIndex,
                               final int lastColumnIndex) {

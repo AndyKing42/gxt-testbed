@@ -6,27 +6,37 @@
   xmlns:container='urn:import:com.sencha.gxt.widget.core.client.container'
   xmlns:form='urn:import:com.sencha.gxt.widget.core.client.form'
   xmlns:gxt='urn:import:com.sencha.gxt.widget.core.client'>
-  <!--====== BorderLayoutContainer margins ===================================================== -->
+  <!--====== Padding =========================================================================== -->
   <ui:with
-    field='northMargins'
+    type='com.sencha.gxt.core.client.util.Padding'
+    field='padding_3_3_3_3'>
+    <ui:attributes
+      top='3'
+      right='3'
+      bottom='3'
+      left='3'/>
+  </ui:with>
+  <!--====== Margins =========================================================================== -->
+  <ui:with
+    field='margins_3_3_3_3'
     type='com.sencha.gxt.core.client.util.Margins'>
     <ui:attributes
-      bottom='5'
-      left='5'
-      right='5'
-      top='5'/>
+      bottom='3'
+      left='3'
+      right='3'
+      top='3'/>
   </ui:with>
   <ui:with
-    field='westMargins'
+    field='margins_0_3_3_0'
     type='com.sencha.gxt.core.client.util.Margins'>
     <ui:attributes
       bottom='0'
-      left='5'
-      right='5'
+      left='3'
+      right='3'
       top='0'/>
   </ui:with>
   <ui:with
-    field='centerMargins'
+    field='margins_0_0_0_0'
     type='com.sencha.gxt.core.client.util.Margins'>
     <ui:attributes
       bottom='0'
@@ -34,54 +44,42 @@
       right='0'
       top='0'/>
   </ui:with>
-  <ui:with
-    field='eastMargins'
-    type='com.sencha.gxt.core.client.util.Margins'>
-    <ui:attributes
-      bottom='0'
-      left='5'
-      right='5'
-      top='0'/>
-  </ui:with>
-  <ui:with
-    field='southMargins'
-    type='com.sencha.gxt.core.client.util.Margins'>
-    <ui:attributes
-      bottom='5'
-      left='5'
-      right='5'
-      top='5'/>
-  </ui:with>
-  <!--====== BorderLayoutContainer layout data ================================================= -->
+  <!--====== BorderLayoutData ================================================================== -->
   <ui:with
     field='northData'
     type='com.sencha.gxt.widget.core.client.container.BorderLayoutContainer.BorderLayoutData'>
     <ui:attributes
-      margins='{northMargins}'
-      size='200'
+      margins='{margins_3_3_3_3}'
+      size='100'
       split='true'/>
   </ui:with>
   <ui:with
     field='westData'
     type='com.sencha.gxt.widget.core.client.container.BorderLayoutContainer.BorderLayoutData'>
     <ui:attributes
-      margins='{westMargins}'
-      size='200'
+      margins='{margins_0_3_3_0}'
+      size='50'
       split='true'/>
   </ui:with>
   <ui:with
     field='eastData'
     type='com.sencha.gxt.widget.core.client.container.BorderLayoutContainer.BorderLayoutData'>
     <ui:attributes
-      margins='{eastMargins}'
-      size='200'/>
+      margins='{margins_0_3_3_0}'
+      size='100'/>
   </ui:with>
   <ui:with
     field='southData'
     type='com.sencha.gxt.widget.core.client.container.BorderLayoutContainer.BorderLayoutData'>
     <ui:attributes
-      margins='{southMargins}'
-      size='200'/>
+      margins='{margins_3_3_3_3}'
+      size='100'/>
+  </ui:with>
+  <!--====== BoxLayoutData ===================================================================== -->
+  <ui:with
+    type="com.sencha.gxt.widget.core.client.container.BoxLayoutContainer.BoxLayoutData"
+    field="boxLayoutDataMargins_3_3_3_3">
+    <ui:attributes margins="{margins_3_3_3_3}"/>
   </ui:with>
   <!--========================================================================================== -->
   <container:Viewport>
@@ -90,27 +88,45 @@
         <gxt:ContentPanel headerVisible='false'>
           <container:HBoxLayoutContainer
             hBoxLayoutAlign='TOP'
-            pack='START'>
-            <button:TextButton
-              ui:field='recreateTablesButton'
-              text='Recreate Database Tables'/>
-            <button:TextButton
-              ui:field='reloadTestDataButton'
-              text='Reload Test Data'/>
-            <button:TextButton
-              ui:field='gaeStuffButton'
-              text='GAE Stuff'/>
-            <container:VBoxLayoutContainer>
-              <form:CheckBox
-                ui:field='inlineEditingCheckBox'
-                boxLabel='Inline Editing?'/>
-              <form:CheckBox
-                ui:field='checkBoxSelectionModelCheckBox'
-                boxLabel='Checkbox Selection Model?'/>
+            pack='START'
+            padding='{padding_3_3_3_3}'>
+            <container:child layoutData="{boxLayoutDataMargins_3_3_3_3}">
               <button:TextButton
-                ui:field='recreateGridButton'
-                text='Recreate Grid'/>
-            </container:VBoxLayoutContainer>
+                ui:field='recreateTablesButton'
+                text='Recreate Database Tables'
+                visible='false'/>
+            </container:child>
+            <container:child layoutData="{boxLayoutDataMargins_3_3_3_3}">
+              <button:TextButton
+                ui:field='reloadTestDataButton'
+                text='Reload Test Data'
+                visible='false'/>
+            </container:child>
+            <container:child layoutData="{boxLayoutDataMargins_3_3_3_3}">
+              <button:TextButton
+                ui:field='gaeStuffButton'
+                text='GAE Stuff'
+                visible='false'/>
+            </container:child>
+            <container:child layoutData="{boxLayoutDataMargins_3_3_3_3}">
+              <container:VBoxLayoutContainer borders='true'>
+                <container:child layoutData="{boxLayoutDataMargins_3_3_3_3}">
+                  <form:CheckBox
+                    ui:field='inlineEditingCheckBox'
+                    boxLabel='Inline Editing?'/>
+                </container:child>
+                <container:child layoutData="{boxLayoutDataMargins_3_3_3_3}">
+                  <form:CheckBox
+                    ui:field='checkBoxSelectionModelCheckBox'
+                    boxLabel='Checkbox Selection Model?'/>
+                </container:child>
+                <container:child layoutData="{boxLayoutDataMargins_3_3_3_3}">
+                  <button:TextButton
+                    ui:field='recreateGridButton'
+                    text='Recreate Grid'/>
+                </container:child>
+              </container:VBoxLayoutContainer>
+            </container:child>
           </container:HBoxLayoutContainer>
         </gxt:ContentPanel>
       </container:north>

@@ -19,7 +19,6 @@ import org.greatlogic.glgwt.client.core.GLRecord;
 import org.greatlogic.glgwt.client.core.GLUtil;
 import org.greatlogic.glgwt.shared.IGLColumn;
 import org.greatlogic.glgwt.shared.IGLTable;
-import org.greatlogic.gxttestbed.client.ClientFactory;
 import com.google.gwt.i18n.client.DateTimeFormat;
 import com.sencha.gxt.core.client.ValueProvider;
 
@@ -101,13 +100,11 @@ public GLForeignKeyValueProvider(final IGLTable lookupTable, final IGLColumn col
 }
 @Override
 public String getValue(final GLRecord record) {
-  return ClientFactory.Instance.getLookupTableCache().lookupDisplayValue(_lookupTable,
-                                                                         record.asInt(_column));
+  return GLUtil.getLookupTableCache().lookupDisplayValue(_lookupTable, record.asInt(_column));
 }
 @Override
 public void setValue(final GLRecord record, final String value) {
-  record.put(_column,
-             ClientFactory.Instance.getLookupTableCache().lookupKeyValue(_lookupTable, value));
+  record.put(_column, GLUtil.getLookupTableCache().lookupKeyValue(_lookupTable, value));
 }
 @Override
 public String getPath() {

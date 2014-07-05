@@ -24,9 +24,7 @@ public GLListStore() {
   super(new ModelKeyProvider<GLRecord>() {
     @Override
     public String getKey(final GLRecord record) {
-      String result;
-      result = record.getKeyValueAsString();
-      return result;
+      return record.getKeyValueAsString();
     }
   });
   addStoreUpdateHandler(new StoreUpdateHandler<GLRecord>() {

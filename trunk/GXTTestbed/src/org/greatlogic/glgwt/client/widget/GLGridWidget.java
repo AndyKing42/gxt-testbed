@@ -24,6 +24,7 @@ import org.greatlogic.glgwt.client.core.GLLog;
 import org.greatlogic.glgwt.client.core.GLRecord;
 import org.greatlogic.glgwt.client.core.GLUtil;
 import org.greatlogic.glgwt.client.core.IGLCreateNewRecordCallback;
+import org.greatlogic.glgwt.client.core.IGLGridRowEditingValidator;
 import org.greatlogic.glgwt.client.event.GLLookupTableLoadedEvent;
 import org.greatlogic.glgwt.client.event.GLLookupTableLoadedEvent.IGLLookupTableLoadedEventHandler;
 import org.greatlogic.glgwt.client.widget.GLValueProviderClasses.GLBigDecimalValueProvider;
@@ -73,8 +74,12 @@ import com.sencha.gxt.widget.core.client.box.ConfirmMessageBox;
 import com.sencha.gxt.widget.core.client.box.ProgressMessageBox;
 import com.sencha.gxt.widget.core.client.button.TextButton;
 import com.sencha.gxt.widget.core.client.container.BoxLayoutContainer.BoxLayoutPack;
+import com.sencha.gxt.widget.core.client.event.BeforeSelectEvent;
+import com.sencha.gxt.widget.core.client.event.BeforeSelectEvent.BeforeSelectHandler;
 import com.sencha.gxt.widget.core.client.event.ColumnWidthChangeEvent;
 import com.sencha.gxt.widget.core.client.event.ColumnWidthChangeEvent.ColumnWidthChangeHandler;
+import com.sencha.gxt.widget.core.client.event.CompleteEditEvent;
+import com.sencha.gxt.widget.core.client.event.CompleteEditEvent.CompleteEditHandler;
 import com.sencha.gxt.widget.core.client.event.DialogHideEvent;
 import com.sencha.gxt.widget.core.client.event.DialogHideEvent.DialogHideHandler;
 import com.sencha.gxt.widget.core.client.event.HeaderContextMenuEvent;
@@ -114,10 +119,11 @@ public abstract class GLGridWidget implements IsWidget {
 private static final String                      Zeroes = "00000000000000000000000000";
 private final HashSet<ColumnConfig<GLRecord, ?>> _checkBoxSet;
 private ContentPanel                             _contentPanel;
-private Grid<GLRecord>                           _grid;
+protected Grid<GLRecord>                         _grid;
 protected ArrayList<GLGridColumnDef>             _gridColumnDefList;
 private TreeMap<String, GLGridColumnDef>         _gridColumnDefMap;                    // column name -> GLGridColumnDef
 private GridEditing<GLRecord>                    _gridEditing;
+private IGLGridRowEditingValidator               _gridRowEditingValidator;
 private final boolean                            _inlineEditing;
 protected GLListStore                            _listStore;
 private HandlerRegistration                      _lookupTableLoadedHandlerRegistration;
@@ -169,6 +175,33 @@ private void addHeaderContextMenuHandler() {
     }
   };
   _grid.addHeaderContextMenuHandler(headerContextMenuHandler);
+}
+//--------------------------------------------------------------------------------------------------
+/**
+ * If there are lookup tables that are needed by any of the columns in the grid then the creation of
+ * the grid must be deferred until all of those lookup tables have been loaded into the cache. The
+ * lookup tables are added to the loadTableSet; when the LookupTableLoadedEvent is fired the table
+ * that's been loaded is removed from the set; when all tables have been loaded the grid is created.
+ * @param loadTableSet The set that contains the list of lookup tables that need to be loaded prior
+ * to creating the grid.
+ */
+private void addLookupTableLoadedEventHandler(final HashSet<IGLTable> loadTableSet) {
+  if (_lookupTableLoadedHandlerRegistration == null) {
+    final IGLLookupTableLoadedEventHandler handler = new IGLLookupTableLoadedEventHandler() {
+      @Override
+      public void onLookupTableLoadedEvent(final GLLookupTableLoadedEvent lookupTableLoadedEvent) {
+        loadTableSet.remove(lookupTableLoadedEvent.getTable());
+        if (loadTableSet.size() == 0) {
+          _lookupTableLoadedHandlerRegistration.removeHandler();
+          _lookupTableLoadedHandlerRegistration = null;
+          createGrid();
+        }
+      }
+    };
+    final Type<IGLLookupTableLoadedEventHandler> eventType;
+    eventType = GLLookupTableLoadedEvent.LookTableLoadedEventType;
+    _lookupTableLoadedHandlerRegistration = GLUtil.getEventBus().addHandler(eventType, handler);
+  }
 }
 //--------------------------------------------------------------------------------------------------
 @Override
@@ -441,7 +474,29 @@ private void createContentPanelNewButton() {
 //--------------------------------------------------------------------------------------------------
 @SuppressWarnings("unchecked")
 private void createEditors() {
-  _gridEditing = _inlineEditing ? new GridInlineEditing<>(_grid) : new GridRowEditing<>(_grid);
+  if (_inlineEditing) {
+    _gridEditing = new GridInlineEditing<>(_grid);
+  }
+  else {
+    final GridRowEditing<GLRecord> gridRowEditing = new GridRowEditing<>(_grid);
+    _gridEditing = gridRowEditing;
+    gridRowEditing.getSaveButton().addBeforeSelectHandler(new BeforeSelectHandler() {
+      @Override
+      public void onBeforeSelect(final BeforeSelectEvent event) {
+        if (_gridRowEditingValidator != null &&
+            !_gridRowEditingValidator.validate(new GLValidationRecord(_gridColumnDefMap,
+                                                                      _gridEditing))) {
+          event.setCancelled(true);
+        }
+      }
+    });
+  }
+  _gridEditing.addCompleteEditHandler(new CompleteEditHandler<GLRecord>() {
+    @Override
+    public void onCompleteEdit(final CompleteEditEvent<GLRecord> event) {
+      GLLog.popup(30, "CompleteEditEvent");
+    }
+  });
   for (final GLGridColumnDef gridColumnDef : _gridColumnDefList) {
     final ColumnConfig<GLRecord, ?> columnConfig = gridColumnDef.getColumnConfig();
     final IGLColumn column = gridColumnDef.getColumn();
@@ -451,9 +506,9 @@ private void createEditors() {
     else {
       switch (column.getDataType()) {
         case Boolean:
-          // no editor is needed - the checkbox can be changed in place
-          // TODO: should this be necessary?
-          _gridEditing.addEditor((ColumnConfig<GLRecord, Boolean>)columnConfig, new CheckBox());
+          if (!_inlineEditing) {
+            _gridEditing.addEditor((ColumnConfig<GLRecord, Boolean>)columnConfig, new CheckBox());
+          }
           break;
         case Currency:
           createEditorsDecimal(columnConfig, 2);
@@ -691,6 +746,10 @@ private void resizeNextColumn(final ProgressMessageBox messageBox, final int col
   });
 }
 //--------------------------------------------------------------------------------------------------
+public void setGridRowEditingValidator(final IGLGridRowEditingValidator gridRowEditingValidator) {
+  _gridRowEditingValidator = gridRowEditingValidator;
+}
+//--------------------------------------------------------------------------------------------------
 private void waitForComboBoxData() {
   final HashSet<IGLTable> loadTableSet = new HashSet<>();
   for (final GLGridColumnDef gridColumnDef : _gridColumnDefList) {
@@ -703,33 +762,6 @@ private void waitForComboBoxData() {
   }
   if (loadTableSet.size() == 0) {
     createGrid();
-  }
-}
-//--------------------------------------------------------------------------------------------------
-/**
- * If there are lookup tables that are needed by any of the columns in the grid then the creation of
- * the grid must be deferred until all of those lookup tables have been loaded into the cache. The
- * lookup tables are added to the loadTableSet; when the LookupTableLoadedEvent is fired the table
- * that's been loaded is removed from the set; when all tables have been loaded the grid is created.
- * @param loadTableSet The set that contains the list of lookup tables that need to be loaded prior
- * to creating the grid.
- */
-private void addLookupTableLoadedEventHandler(final HashSet<IGLTable> loadTableSet) {
-  if (_lookupTableLoadedHandlerRegistration == null) {
-    final IGLLookupTableLoadedEventHandler handler = new IGLLookupTableLoadedEventHandler() {
-      @Override
-      public void onLookupTableLoadedEvent(final GLLookupTableLoadedEvent lookupTableLoadedEvent) {
-        loadTableSet.remove(lookupTableLoadedEvent.getTable());
-        if (loadTableSet.size() == 0) {
-          _lookupTableLoadedHandlerRegistration.removeHandler();
-          _lookupTableLoadedHandlerRegistration = null;
-          createGrid();
-        }
-      }
-    };
-    final Type<IGLLookupTableLoadedEventHandler> eventType;
-    eventType = GLLookupTableLoadedEvent.LookTableLoadedEventType;
-    _lookupTableLoadedHandlerRegistration = GLUtil.getEventBus().addHandler(eventType, handler);
   }
 }
 //--------------------------------------------------------------------------------------------------

@@ -2,6 +2,10 @@ package org.greatlogic.glgwt.server;
 
 import org.greatlogic.glgwt.shared.IGLRemoteService;
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
+import com.greatlogic.glbase.gldb.GLColumnMetadata;
+import com.greatlogic.glbase.gldb.GLDBException;
+import com.greatlogic.glbase.gldb.GLDataSource;
+import com.greatlogic.glbase.gldb.GLResultSetMetadata;
 import com.greatlogic.glbase.gllib.GLLog;
 import com.greatlogic.glbase.gllib.IGLLibEnums.EGLLogLevel;
 
@@ -34,6 +38,31 @@ public void applyDBChanges(final String dbChanges) {
 @Override
 public int getNextId(final String tableName, final int numberOfValues) {
   return GLNextId.getNextIdValue(tableName, numberOfValues);
+}
+//--------------------------------------------------------------------------------------------------
+/**
+ * Returns metadata for the requested tables.
+ * @param tableNames A comma-delimited list of table names.
+ */
+@Override
+public String getTableMetadata(final String tableNames) {
+  for (final String tableName : tableNames.split(",")) {
+    try {
+      final GLResultSetMetadata tableMetadata;
+      tableMetadata = GLDataSource.getDefaultDataSource().getTableMetadata(tableName);
+      for (final GLColumnMetadata columnMetadata : tableMetadata.getColumnMetadataList()) {
+        columnMetadata.getName();
+        columnMetadata.getColumnDataType();
+        columnMetadata.getPrecision();
+        columnMetadata.getScale();
+        columnMetadata.getCanBeNull();
+      }
+    }
+    catch (final GLDBException e) {
+      GLLog.major("Request for metadata failed for table:" + tableName);
+    }
+  }
+  return null;
 }
 //--------------------------------------------------------------------------------------------------
 @Override

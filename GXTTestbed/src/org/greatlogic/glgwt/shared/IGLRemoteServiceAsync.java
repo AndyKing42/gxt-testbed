@@ -7,6 +7,7 @@ public interface IGLRemoteServiceAsync {
 void applyDBChanges(final String dbChanges, final AsyncCallback<Void> callback);
 void getNextId(final String tableName, final int numberOfValues,
                final AsyncCallback<Integer> callback);
+void getTableMetadata(final String tableNames, final AsyncCallback<String> callback);
 void log(final int priority, final String location, final String message,
          final AsyncCallback<Void> callback);
 void login(final String loginName, final String password, final AsyncCallback<Integer> callback);

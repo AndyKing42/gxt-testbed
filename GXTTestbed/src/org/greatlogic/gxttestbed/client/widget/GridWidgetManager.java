@@ -15,6 +15,7 @@ package org.greatlogic.gxttestbed.client.widget;
 import java.util.TreeMap;
 import org.greatlogic.glgwt.client.core.GLLog;
 import org.greatlogic.glgwt.client.widget.GLGridWidget;
+import org.greatlogic.gxttestbed.shared.IDBEnums.Pet;
 
 public class GridWidgetManager {
 //--------------------------------------------------------------------------------------------------
@@ -52,7 +53,10 @@ public static PetGridWidget getPetGrid(final String gridName, final boolean inli
   GridWidgetInfo gridWidgetInfo = _gridWidgetInfoMap.get(gridName);
   if (gridWidgetInfo == null || gridWidgetInfo._inlineEditing != inlineEditing ||
       gridWidgetInfo._useCheckBoxSelectionModel != useCheckBoxSelectionModel) {
-    result = new PetGridWidget(inlineEditing, useCheckBoxSelectionModel);
+    result = new PetGridWidget(inlineEditing, useCheckBoxSelectionModel, //
+                               Pet.PetName, Pet.PetTypeId, Pet.Sex, Pet.IntakeDate, //
+                               Pet.TrainedFlag, Pet.AdoptionFee, Pet.FosterDate, //
+                               Pet.NumberOfFosters);
     gridWidgetInfo = new GridWidgetInfo(result, inlineEditing, useCheckBoxSelectionModel);
     _gridWidgetInfoMap.put(gridName, gridWidgetInfo);
   }

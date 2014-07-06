@@ -2,6 +2,7 @@ package org.greatlogic.glgwt.shared;
 
 import java.util.ArrayList;
 import org.greatlogic.glgwt.shared.IGLEnums.EGLColumnDataType;
+import com.sencha.gxt.widget.core.client.form.Validator;
 /*
  * Copyright 2006-2014 Andy King (GreatLogic.com)
  * 
@@ -21,8 +22,10 @@ public ArrayList<String> getChoiceList();
 public EGLColumnDataType getDataType();
 public int getDefaultGridColumnWidth();
 public Object getDefaultValue();
+public boolean getNullable();
 public int getNumberOfDecimalPlaces();
 public IGLTable getParentTable();
 public String getTitle();
+public Validator<?> getValidator();
 //--------------------------------------------------------------------------------------------------
 }

@@ -16,6 +16,7 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
+import java.util.List;
 import java.util.Random;
 import org.greatlogic.glgwt.client.event.GLEventBus;
 import org.greatlogic.glgwt.client.event.GLNewRecordEvent;
@@ -25,9 +26,12 @@ import org.greatlogic.glgwt.shared.IGLTable;
 import com.google.gwt.dom.client.Document;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.Node;
+import com.google.gwt.editor.client.Editor;
+import com.google.gwt.editor.client.EditorError;
 import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.RootPanel;
+import com.sencha.gxt.widget.core.client.form.error.DefaultEditorError;
 
 public class GLUtil {
 //--------------------------------------------------------------------------------------------------
@@ -63,6 +67,12 @@ public static void createNewRecord(final GLRecordDef recordDef,
       }
     }
   });
+}
+//--------------------------------------------------------------------------------------------------
+public static List<EditorError> createValidatorResult(final Editor<?> editor, final String message) {
+  final List<EditorError> result = new ArrayList<>();
+  result.add(new DefaultEditorError(editor, message, ""));
+  return result;
 }
 //--------------------------------------------------------------------------------------------------
 @SuppressWarnings("deprecation")

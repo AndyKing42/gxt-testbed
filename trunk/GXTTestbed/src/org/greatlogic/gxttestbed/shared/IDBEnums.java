@@ -2,12 +2,17 @@ package org.greatlogic.gxttestbed.shared;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
+import java.util.List;
 import java.util.TreeMap;
 import org.greatlogic.glgwt.client.core.GLRecord;
 import org.greatlogic.glgwt.client.core.GLUtil;
 import org.greatlogic.glgwt.shared.IGLColumn;
 import org.greatlogic.glgwt.shared.IGLEnums.EGLColumnDataType;
 import org.greatlogic.glgwt.shared.IGLTable;
+import com.google.gwt.editor.client.Editor;
+import com.google.gwt.editor.client.EditorError;
+import com.sencha.gxt.widget.core.client.form.Validator;
 
 public interface IDBEnums {
 //--------------------------------------------------------------------------------------------------
@@ -86,20 +91,23 @@ public void initializeNewRecord(final GLRecord record) {
 }
 //--------------------------------------------------------------------------------------------------
 public enum NextId implements IGLColumn {
-NextId(EGLColumnDataType.Int, null, 0, "Id", 50),
-NextIdName(EGLColumnDataType.String, null, 50, "Name", 100),
-NextIdTableName(EGLColumnDataType.String, null, 50, "Table", 100),
-NextIdValue(EGLColumnDataType.Int, 100, 0, "Next Value", 10);
+NextId(EGLColumnDataType.Int, null, 0, false, "Id", 50),
+NextIdName(EGLColumnDataType.String, null, 50, false, "Name", 100),
+NextIdTableName(EGLColumnDataType.String, null, 50, true, "Table", 100),
+NextIdValue(EGLColumnDataType.Int, 100, 0, false, "Next Value", 10);
 private final EGLColumnDataType _dataType;
 private final int               _defaultGridColumnWidth;
 private final Object            _defaultValue;
+private final boolean           _nullable;
 private final int               _numberOfDecimalPlaces;
 private final String            _title;
 private NextId(final EGLColumnDataType dataType, final Object defaultValue,
-               final int numberOfDecimalPlaces, final String title, final int defaultGridColumnWidth) {
+               final int numberOfDecimalPlaces, final boolean nullable, final String title,
+               final int defaultGridColumnWidth) {
   _dataType = dataType;
   _defaultValue = defaultValue;
   _numberOfDecimalPlaces = numberOfDecimalPlaces;
+  _nullable = nullable;
   _title = title;
   _defaultGridColumnWidth = defaultGridColumnWidth;
 }
@@ -120,6 +128,10 @@ public Object getDefaultValue() {
   return _defaultValue;
 }
 @Override
+public boolean getNullable() {
+  return _nullable;
+}
+@Override
 public int getNumberOfDecimalPlaces() {
   return _numberOfDecimalPlaces;
 }
@@ -131,22 +143,46 @@ public IGLTable getParentTable() {
 public String getTitle() {
   return _title;
 }
+@Override
+public Validator<?> getValidator() {
+  return null;
+}
 }
 //--------------------------------------------------------------------------------------------------
 public enum Pet implements IGLColumn {
-AdoptionFee(EGLColumnDataType.Currency, 0, 2, "Adoption Fee", 100),
-FosterDate(EGLColumnDataType.Date, null, 0, "Foster Date", 100),
-IntakeDate(EGLColumnDataType.DateTime, null, 0, "Intake Date/Time", 125),
-NumberOfFosters(EGLColumnDataType.Int, 0, 0, "Number Of Fosters", 60),
-PetId(EGLColumnDataType.Int, null, 0, "Id", 50),
-PetName(EGLColumnDataType.String, null, 0, "Pet Name", 80),
-PetTypeId(EGLColumnDataType.Int, null, 0, "Pet Type", 80) {
+AdoptionFee(EGLColumnDataType.Currency, 0, 2, false, "Adoption Fee", 100),
+FosterDate(EGLColumnDataType.Date, null, 0, true, "Foster Date", 100) {
+@Override
+public Validator<?> getValidator() {
+  return new Validator<Date>() {
+    @SuppressWarnings("deprecation")
+    @Override
+    public List<EditorError> validate(final Editor<Date> editor, final Date date) {
+      if (date == null) {
+        return null;
+      }
+      if (date.getMonth() == 1) {
+        return GLUtil.createValidatorResult(editor, "Nothing in February");
+      }
+      if (date.getDate() == 15) {
+        return GLUtil.createValidatorResult(editor, "No ides!");
+      }
+      return null;
+    }
+  };
+}
+},
+IntakeDate(EGLColumnDataType.DateTime, null, 0, true, "Intake Date/Time", 125),
+NumberOfFosters(EGLColumnDataType.Int, 0, 0, false, "Number Of Fosters", 60),
+PetId(EGLColumnDataType.Int, null, 0, false, "Id", 50),
+PetName(EGLColumnDataType.String, null, 0, false, "Pet Name", 80),
+PetTypeId(EGLColumnDataType.Int, null, 0, false, "Pet Type", 80) {
 @Override
 public IGLTable getParentTable() {
   return EGXTTestbedTable.PetType;
 }
 },
-Sex(EGLColumnDataType.String, "U", 0, "Sex", 50) {
+Sex(EGLColumnDataType.String, "U", 0, false, "Sex", 50) {
 private ArrayList<String> _choiceList;
 @Override
 public ArrayList<String> getChoiceList() {
@@ -156,17 +192,20 @@ public ArrayList<String> getChoiceList() {
   return _choiceList;
 }
 },
-TrainedFlag(EGLColumnDataType.Boolean, "N", 0, "Trained?", 80);
+TrainedFlag(EGLColumnDataType.Boolean, "N", 0, false, "Trained?", 80);
 private final EGLColumnDataType _dataType;
 private final int               _defaultGridColumnWidth;
 private final Object            _defaultValue;
+private final boolean           _nullable;
 private final int               _numberOfDecimalPlaces;
 private final String            _title;
 private Pet(final EGLColumnDataType dataType, final Object defaultValue,
-            final int numberOfDecimalPlaces, final String title, final int defaultGridColumnWidth) {
+            final int numberOfDecimalPlaces, final boolean nullable, final String title,
+            final int defaultGridColumnWidth) {
   _dataType = dataType;
   _defaultValue = defaultValue;
   _numberOfDecimalPlaces = numberOfDecimalPlaces;
+  _nullable = nullable;
   _title = title;
   _defaultGridColumnWidth = defaultGridColumnWidth;
 }
@@ -187,6 +226,10 @@ public Object getDefaultValue() {
   return _defaultValue;
 }
 @Override
+public boolean getNullable() {
+  return _nullable;
+}
+@Override
 public int getNumberOfDecimalPlaces() {
   return _numberOfDecimalPlaces;
 }
@@ -197,24 +240,30 @@ public IGLTable getParentTable() {
 @Override
 public String getTitle() {
   return _title;
+}
+@Override
+public Validator<?> getValidator() {
+  return null;
 }
 }
 //--------------------------------------------------------------------------------------------------
 public enum PetType implements IGLColumn {
-PetTypeDesc(EGLColumnDataType.String, null, 0, "Pet Type Desc", 100),
-PetTypeId(EGLColumnDataType.Int, null, 0, "Id", 50),
-PetTypeShortDesc(EGLColumnDataType.String, null, 0, "Pet Type Short Desc", 10);
+PetTypeDesc(EGLColumnDataType.String, null, 0, false, "Pet Type Desc", 100),
+PetTypeId(EGLColumnDataType.Int, null, 0, false, "Id", 50),
+PetTypeShortDesc(EGLColumnDataType.String, null, 0, false, "Pet Type Short Desc", 10);
 private final EGLColumnDataType _dataType;
 private final int               _defaultGridColumnWidth;
 private final Object            _defaultValue;
+private final boolean           _nullable;
 private final int               _numberOfDecimalPlaces;
 private final String            _title;
 private PetType(final EGLColumnDataType dataType, final Object defaultValue,
-                final int numberOfDecimalPlaces, final String title,
+                final int numberOfDecimalPlaces, final boolean nullable, final String title,
                 final int defaultGridColumnWidth) {
   _dataType = dataType;
   _defaultValue = defaultValue;
   _numberOfDecimalPlaces = numberOfDecimalPlaces;
+  _nullable = nullable;
   _title = title;
   _defaultGridColumnWidth = defaultGridColumnWidth;
 }
@@ -235,6 +284,10 @@ public Object getDefaultValue() {
   return _defaultValue;
 }
 @Override
+public boolean getNullable() {
+  return _nullable;
+}
+@Override
 public int getNumberOfDecimalPlaces() {
   return _numberOfDecimalPlaces;
 }
@@ -245,6 +298,10 @@ public IGLTable getParentTable() {
 @Override
 public String getTitle() {
   return _title;
+}
+@Override
+public Validator<?> getValidator() {
+  return null;
 }
 }
 //--------------------------------------------------------------------------------------------------

@@ -9,12 +9,12 @@ import com.sencha.gxt.widget.core.client.grid.editing.GridEditing;
 
 public class GLValidationRecord {
 //--------------------------------------------------------------------------------------------------
-private final TreeMap<String, GLGridColumnDef> _gridColumnDefMap;
-private final GridEditing<GLRecord>            _gridEditing;
+private final TreeMap<String, GLColumnConfig<?>> _columnConfigMap; // column name -> GLColumnConfig
+private final GridEditing<GLRecord>              _gridEditing;
 //--------------------------------------------------------------------------------------------------
-GLValidationRecord(final TreeMap<String, GLGridColumnDef> gridColumnDefMap,
+GLValidationRecord(final TreeMap<String, GLColumnConfig<?>> columnConfigMap,
                    final GridEditing<GLRecord> gridEditing) {
-  _gridColumnDefMap = gridColumnDefMap;
+  _columnConfigMap = columnConfigMap;
   _gridEditing = gridEditing;
 }
 //--------------------------------------------------------------------------------------------------
@@ -23,11 +23,11 @@ public int asInt(final IGLColumn column) {
 }
 //--------------------------------------------------------------------------------------------------
 private Object asObject(final IGLColumn column) {
-  final GLGridColumnDef columnDef = _gridColumnDefMap.get(column.toString());
-  if (columnDef == null) {
+  final GLColumnConfig<?> columnConfig = _columnConfigMap.get(column.toString());
+  if (columnConfig == null) {
     return null;
   }
-  final IsField<Object> editor = _gridEditing.getEditor(columnDef.getColumnConfig());
+  final IsField<Object> editor = _gridEditing.getEditor(columnConfig);
   if (editor == null) {
     return null;
   }

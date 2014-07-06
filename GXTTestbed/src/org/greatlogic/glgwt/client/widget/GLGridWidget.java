@@ -706,7 +706,9 @@ public GLListStore getListStore() {
 }
 //--------------------------------------------------------------------------------------------------
 private void resizeColumnToFit(final int columnIndex) {
-  final GLColumnConfig<?> columnConfig = _columnConfigMap.get(_columns[columnIndex].toString());
+  final GLColumnConfig<?> columnConfig;
+  columnConfig = _columnConfigMap.get(_columns[columnIndex - //
+                                               (_useCheckBoxSelectionModel ? 1 : 0)].toString());
   final DateTimeFormat dateTimeFormat = columnConfig.getDateTimeFormat();
   final TextMetrics textMetrics = TextMetrics.get();
   textMetrics.bind(_grid.getView().getHeader().getAppearance().styles().head());

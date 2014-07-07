@@ -25,8 +25,8 @@ import org.greatlogic.glgwt.client.core.GLRecord;
 import org.greatlogic.glgwt.client.core.GLUtil;
 import org.greatlogic.glgwt.client.core.IGLCreateNewRecordCallback;
 import org.greatlogic.glgwt.client.core.IGLGridRowEditingValidator;
-import org.greatlogic.glgwt.client.event.GLLookupTableLoadedEvent;
-import org.greatlogic.glgwt.client.event.GLLookupTableLoadedEvent.IGLLookupTableLoadedEventHandler;
+import org.greatlogic.glgwt.client.event.GLLookupLoadedEvent;
+import org.greatlogic.glgwt.client.event.GLLookupLoadedEvent.IGLLookupLoadedEventHandler;
 import org.greatlogic.glgwt.client.widget.GLValueProviderClasses.GLBigDecimalValueProvider;
 import org.greatlogic.glgwt.client.widget.GLValueProviderClasses.GLBooleanValueProvider;
 import org.greatlogic.glgwt.client.widget.GLValueProviderClasses.GLDateValueProvider;
@@ -111,9 +111,11 @@ import com.sencha.gxt.widget.core.client.menu.MenuItem;
 
 public abstract class GLGridWidget implements IsWidget {
 //--------------------------------------------------------------------------------------------------
-private static final String                      Zeroes = "00000000000000000000000000";
+private static final int                         _resizeColumnExtraPadding;
+private static final TextMetrics                 _textMetrics;
+private static final String                      Zeroes;
 private final HashSet<ColumnConfig<GLRecord, ?>> _checkBoxSet;
-private final TreeMap<String, GLColumnConfig<?>> _columnConfigMap;                     // column name -> GLColumnConfig
+private final TreeMap<String, GLColumnConfig<?>> _columnConfigMap;                // column name -> GLColumnConfig
 private final IGLColumn[]                        _columns;
 private ContentPanel                             _contentPanel;
 protected Grid<GLRecord>                         _grid;
@@ -121,10 +123,16 @@ private GridEditing<GLRecord>                    _gridEditing;
 private IGLGridRowEditingValidator               _gridRowEditingValidator;
 private final boolean                            _inlineEditing;
 protected GLListStore                            _listStore;
-private HandlerRegistration                      _lookupTableLoadedHandlerRegistration;
+private HandlerRegistration                      _lookupLoadedHandlerRegistration;
 private final String                             _noRowsMessage;
 private GridSelectionModel<GLRecord>             _selectionModel;
 private final boolean                            _useCheckBoxSelectionModel;
+//--------------------------------------------------------------------------------------------------
+static {
+  _resizeColumnExtraPadding = 10;
+  _textMetrics = TextMetrics.get();
+  Zeroes = "00000000000000000000";
+}
 //--------------------------------------------------------------------------------------------------
 protected GLGridWidget(final String headingText, final String noRowsMessage,
                        final boolean inlineEditing, final boolean useCheckBoxSelectionModel,
@@ -175,27 +183,27 @@ private void addHeaderContextMenuHandler() {
 /**
  * If there are lookup tables that are needed by any of the columns in the grid then the creation of
  * the grid must be deferred until all of those lookup tables have been loaded into the cache. The
- * lookup tables are added to the loadTableSet; when the LookupTableLoadedEvent is fired the table
- * that's been loaded is removed from the set; when all tables have been loaded the grid is created.
+ * lookup tables are added to the loadTableSet; when the LookupLoadedEvent is fired the table that's
+ * been loaded is removed from the set; when all tables have been loaded the grid is created.
  * @param loadTableSet The set that contains the list of lookup tables that need to be loaded prior
  * to creating the grid.
  */
-private void addLookupTableLoadedEventHandler(final HashSet<IGLTable> loadTableSet) {
-  if (_lookupTableLoadedHandlerRegistration == null) {
-    final IGLLookupTableLoadedEventHandler handler = new IGLLookupTableLoadedEventHandler() {
+private void addLookupLoadedEventHandler(final HashSet<IGLTable> loadTableSet) {
+  if (_lookupLoadedHandlerRegistration == null) {
+    final IGLLookupLoadedEventHandler handler = new IGLLookupLoadedEventHandler() {
       @Override
-      public void onLookupTableLoadedEvent(final GLLookupTableLoadedEvent lookupTableLoadedEvent) {
-        loadTableSet.remove(lookupTableLoadedEvent.getTable());
+      public void onLookupLoadedEvent(final GLLookupLoadedEvent lookupLoadedEvent) {
+        loadTableSet.remove(lookupLoadedEvent.getTable());
         if (loadTableSet.size() == 0) {
-          _lookupTableLoadedHandlerRegistration.removeHandler();
-          _lookupTableLoadedHandlerRegistration = null;
+          _lookupLoadedHandlerRegistration.removeHandler();
+          _lookupLoadedHandlerRegistration = null;
           createGrid();
         }
       }
     };
-    final Type<IGLLookupTableLoadedEventHandler> eventType;
-    eventType = GLLookupTableLoadedEvent.LookTableLoadedEventType;
-    _lookupTableLoadedHandlerRegistration = GLUtil.getEventBus().addHandler(eventType, handler);
+    final Type<IGLLookupLoadedEventHandler> eventType;
+    eventType = GLLookupLoadedEvent.LookLoadedEventType;
+    _lookupLoadedHandlerRegistration = GLUtil.getEventBus().addHandler(eventType, handler);
   }
 }
 //--------------------------------------------------------------------------------------------------
@@ -481,10 +489,13 @@ private void createEditors() {
           field = createEditorsString(columnConfig);
           break;
       }
-      if (field != null && field instanceof ValueBaseField) {
-        final ValueBaseField<GLRecord> valueBaseField = (ValueBaseField<GLRecord>)field;
-        valueBaseField.setAllowBlank(column.getNullable());
-        valueBaseField.setClearValueOnParseError(false);
+      if (field != null) {
+        columnConfig.setField(field);
+        if (field instanceof ValueBaseField) {
+          final ValueBaseField<GLRecord> valueBaseField = (ValueBaseField<GLRecord>)field;
+          valueBaseField.setAllowBlank(column.getNullable());
+          valueBaseField.setClearValueOnParseError(false);
+        }
       }
     }
   }
@@ -665,8 +676,11 @@ private GridEditing<GLRecord> createGridRowEditing() {
   result.getSaveButton().addBeforeSelectHandler(new BeforeSelectHandler() {
     @Override
     public void onBeforeSelect(final BeforeSelectEvent event) {
+      for (final GLColumnConfig<?> columnConfig : _columnConfigMap.values()) {
+        columnConfig.clearInvalid();
+      }
       if (_gridRowEditingValidator != null &&
-          !_gridRowEditingValidator.validate(new GLValidationRecord(_columnConfigMap, _gridEditing))) {
+          !_gridRowEditingValidator.validate(new GLValidationRecord(_columnConfigMap, result))) {
         event.setCancelled(true);
       }
     }
@@ -705,35 +719,33 @@ public GLListStore getListStore() {
   return _listStore;
 }
 //--------------------------------------------------------------------------------------------------
+private int resizeColumnGetWidth(final Object value, final DateTimeFormat dateTimeFormat) {
+  if (value == null) {
+    return 0;
+  }
+  final String valueAsString = dateTimeFormat == null ? value.toString() //
+                                                     : dateTimeFormat.format((Date)value);
+  return _textMetrics.getWidth(valueAsString);
+}
+//--------------------------------------------------------------------------------------------------
 private void resizeColumnToFit(final int columnIndex) {
   final GLColumnConfig<?> columnConfig;
   columnConfig = _columnConfigMap.get(_columns[columnIndex - //
                                                (_useCheckBoxSelectionModel ? 1 : 0)].toString());
   final DateTimeFormat dateTimeFormat = columnConfig.getDateTimeFormat();
-  final TextMetrics textMetrics = TextMetrics.get();
-  textMetrics.bind(_grid.getView().getHeader().getAppearance().styles().head());
-  int maxWidth = textMetrics.getWidth(columnConfig.getHeader().asString()) + 6;
+  _textMetrics.bind(_grid.getView().getHeader().getAppearance().styles().head());
+  int maxWidth = _textMetrics.getWidth(columnConfig.getHeader().asString()) + 6;
   if (_listStore.size() > 0) {
-    final int extraPadding = 10;
     final String className = _grid.getView().getCell(1, 1).getClassName();
-    textMetrics.bind(className);
+    _textMetrics.bind(className);
     for (final GLRecord record : _listStore.getAll()) {
       final Object value = columnConfig.getValueProvider().getValue(record);
-      if (value != null) {
-        String valueAsString;
-        if (dateTimeFormat == null) {
-          valueAsString = value.toString();
-        }
-        else {
-          valueAsString = dateTimeFormat.format((Date)value);
-        }
-        final int width = textMetrics.getWidth(valueAsString) + extraPadding;
-        maxWidth = width > maxWidth ? width : maxWidth;
-      }
+      final int width = resizeColumnGetWidth(value, dateTimeFormat) + _resizeColumnExtraPadding;
+      maxWidth = width > maxWidth ? width : maxWidth;
     }
     for (final Store<GLRecord>.Record record : _listStore.getModifiedRecords()) {
-      final String valueAsString = record.getValue(columnConfig.getValueProvider()).toString();
-      final int width = textMetrics.getWidth(valueAsString) + extraPadding;
+      final Object value = record.getValue(columnConfig.getValueProvider());
+      final int width = resizeColumnGetWidth(value, dateTimeFormat) + _resizeColumnExtraPadding;
       maxWidth = width > maxWidth ? width : maxWidth;
     }
   }
@@ -770,7 +782,7 @@ private void waitForComboBoxData() {
     final IGLTable parentTable = column.getParentTable();
     if (parentTable != null) {
       loadTableSet.add(parentTable);
-      addLookupTableLoadedEventHandler(loadTableSet);
+      addLookupLoadedEventHandler(loadTableSet);
       GLUtil.getLookupTableCache().reload(parentTable, true);
     }
   }

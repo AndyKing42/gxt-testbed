@@ -1,11 +1,14 @@
 package org.greatlogic.glgwt.client.widget;
 
+import org.greatlogic.glgwt.client.core.GLLog;
 import org.greatlogic.glgwt.client.core.GLRecord;
 import org.greatlogic.glgwt.shared.IGLColumn;
 import org.greatlogic.glgwt.shared.IGLEnums.EGLColumnDataType;
 import com.google.gwt.i18n.shared.DateTimeFormat;
+import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.ui.HasHorizontalAlignment;
 import com.sencha.gxt.core.client.ValueProvider;
+import com.sencha.gxt.widget.core.client.form.Field;
 import com.sencha.gxt.widget.core.client.grid.ColumnConfig;
 
 public class GLColumnConfig<DataType> extends ColumnConfig<GLRecord, DataType> {
@@ -13,6 +16,7 @@ public class GLColumnConfig<DataType> extends ColumnConfig<GLRecord, DataType> {
 private final IGLColumn _column;
 private int             _columnIndex;
 private DateTimeFormat  _dateTimeFormat;
+private Field<?>        _field;
 //--------------------------------------------------------------------------------------------------
 public GLColumnConfig(final IGLColumn column,
                       final ValueProvider<? super GLRecord, DataType> valueProvider,
@@ -29,6 +33,12 @@ public GLColumnConfig(final IGLColumn column,
   }
   else {
     setHorizontalAlignment(HasHorizontalAlignment.ALIGN_LEFT);
+  }
+}
+//--------------------------------------------------------------------------------------------------
+public void clearInvalid() {
+  if (_field != null) {
+    _field.clearInvalid();
   }
 }
 //--------------------------------------------------------------------------------------------------
@@ -50,6 +60,25 @@ public void setColumnIndex(final int columnIndex) {
 //--------------------------------------------------------------------------------------------------
 public void setDateTimeFormat(final DateTimeFormat dateTimeFormat) {
   _dateTimeFormat = dateTimeFormat;
+}
+//--------------------------------------------------------------------------------------------------
+public void setField(final Field<?> field) {
+  _field = field;
+}
+//--------------------------------------------------------------------------------------------------
+public void setInvalid(final String message) {
+  if (_field == null) {
+    GLLog.popup(30, "Failed to find the column configuration field for column:" + _column);
+    return;
+  }
+  _field.forceInvalid(message);
+  final Timer timer = new Timer() {
+    @Override
+    public void run() {
+      _field.clearInvalid();
+    }
+  };
+  timer.schedule(5000);
 }
 //--------------------------------------------------------------------------------------------------
 @Override

@@ -3,7 +3,7 @@ package org.greatlogic.glgwt.client.core;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.TreeMap;
-import org.greatlogic.glgwt.client.event.GLLookupTableLoadedEvent;
+import org.greatlogic.glgwt.client.event.GLLookupLoadedEvent;
 import org.greatlogic.glgwt.shared.IGLTable;
 
 public class GLLookupTableCache {
@@ -96,7 +96,7 @@ public void reload(final IGLTable table, final boolean addToReloadList) {
           keyToRecordMap.put(record.asInt(table.getPrimaryKeyColumn()), record);
         }
         GLLog.popup(5, "Reload of " + table + " was successful");
-        GLUtil.getEventBus().fireEvent(new GLLookupTableLoadedEvent(table));
+        GLUtil.getEventBus().fireEvent(new GLLookupLoadedEvent(table));
       }
     });
   }

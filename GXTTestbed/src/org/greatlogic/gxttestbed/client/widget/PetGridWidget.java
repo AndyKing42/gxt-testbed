@@ -31,6 +31,7 @@ private IGLGridRowEditingValidator createGridRowEditingValidator() {
     public boolean validate(final GLValidationRecord validationRecord) {
       final int numberOfFosters = validationRecord.asInt(Pet.NumberOfFosters);
       if (numberOfFosters > 6) {
+        validationRecord.setInvalid(Pet.NumberOfFosters, "Number of fosters must be less than 7");
         return false;
       }
       return true;

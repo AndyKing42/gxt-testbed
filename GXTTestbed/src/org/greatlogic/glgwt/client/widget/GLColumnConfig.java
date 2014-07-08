@@ -24,15 +24,17 @@ public GLColumnConfig(final IGLColumn column,
   super(valueProvider, width, header);
   _column = column;
   setWidth(width < 0 ? column.getDefaultGridColumnWidth() : width);
-  final EGLColumnDataType dataType = _column.getDataType();
-  if (dataType == EGLColumnDataType.Boolean) {
-    setHorizontalAlignment(HasHorizontalAlignment.ALIGN_CENTER);
-  }
-  else if (dataType.getNumeric() && _column.getParentTable() == null) {
-    setHorizontalAlignment(HasHorizontalAlignment.ALIGN_RIGHT);
-  }
-  else {
-    setHorizontalAlignment(HasHorizontalAlignment.ALIGN_LEFT);
+  if (_column != null) {
+    final EGLColumnDataType dataType = _column.getDataType();
+    if (dataType == EGLColumnDataType.Boolean) {
+      setHorizontalAlignment(HasHorizontalAlignment.ALIGN_CENTER);
+    }
+    else if (dataType.getNumeric() && _column.getParentTable() == null) {
+      setHorizontalAlignment(HasHorizontalAlignment.ALIGN_RIGHT);
+    }
+    else {
+      setHorizontalAlignment(HasHorizontalAlignment.ALIGN_LEFT);
+    }
   }
 }
 //--------------------------------------------------------------------------------------------------
@@ -83,7 +85,7 @@ public void setInvalid(final String message) {
 //--------------------------------------------------------------------------------------------------
 @Override
 public String toString() {
-  return _column.toString() + " (" + getHeader() + ")";
+  return (_column == null ? "Select" : _column.toString()) + " (" + getHeader() + ")";
 }
 //--------------------------------------------------------------------------------------------------
 }

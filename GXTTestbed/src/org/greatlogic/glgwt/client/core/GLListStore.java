@@ -92,6 +92,21 @@ public GLRecordDef getRecordDef() {
   return _recordDef;
 }
 //--------------------------------------------------------------------------------------------------
+@Override
+public GLRecord remove(final int index) {
+  final GLRecord result = get(index);
+  remove(result);
+  return result;
+}
+//--------------------------------------------------------------------------------------------------
+@Override
+public boolean remove(final GLRecord record) {
+  final ArrayList<GLRecord> recordList = new ArrayList<>(1);
+  recordList.add(record);
+  remove(recordList);
+  return true;
+}
+//--------------------------------------------------------------------------------------------------
 public void remove(final ArrayList<GLRecord> recordList) {
   final StringBuilder sb = new StringBuilder();
   final IGLTable table = _recordDef.getTable();

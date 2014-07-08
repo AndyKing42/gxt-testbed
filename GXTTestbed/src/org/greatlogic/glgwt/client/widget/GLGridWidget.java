@@ -17,8 +17,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashSet;
-import java.util.List;
 import java.util.TreeMap;
+import java.util.TreeSet;
 import org.greatlogic.glgwt.client.core.GLListStore;
 import org.greatlogic.glgwt.client.core.GLLog;
 import org.greatlogic.glgwt.client.core.GLRecord;
@@ -40,6 +40,7 @@ import com.google.gwt.cell.client.DateCell;
 import com.google.gwt.cell.client.TextCell;
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
+import com.google.gwt.dom.client.NativeEvent;
 import com.google.gwt.event.logical.shared.SelectionEvent;
 import com.google.gwt.event.logical.shared.SelectionHandler;
 import com.google.gwt.i18n.client.NumberFormat;
@@ -57,8 +58,8 @@ import com.sencha.gxt.cell.core.client.SimpleSafeHtmlCell;
 import com.sencha.gxt.cell.core.client.form.CheckBoxCell;
 import com.sencha.gxt.cell.core.client.form.ComboBoxCell.TriggerAction;
 import com.sencha.gxt.cell.core.client.form.NumberInputCell;
-import com.sencha.gxt.core.client.IdentityValueProvider;
 import com.sencha.gxt.core.client.ValueProvider;
+import com.sencha.gxt.core.client.dom.XElement;
 import com.sencha.gxt.core.client.util.TextMetrics;
 import com.sencha.gxt.data.shared.Converter;
 import com.sencha.gxt.data.shared.LabelProvider;
@@ -79,7 +80,6 @@ import com.sencha.gxt.widget.core.client.event.DialogHideEvent;
 import com.sencha.gxt.widget.core.client.event.DialogHideEvent.DialogHideHandler;
 import com.sencha.gxt.widget.core.client.event.HeaderContextMenuEvent;
 import com.sencha.gxt.widget.core.client.event.HeaderContextMenuEvent.HeaderContextMenuHandler;
-import com.sencha.gxt.widget.core.client.event.RefreshEvent;
 import com.sencha.gxt.widget.core.client.event.RowClickEvent;
 import com.sencha.gxt.widget.core.client.event.SelectEvent;
 import com.sencha.gxt.widget.core.client.event.SelectEvent.SelectHandler;
@@ -96,12 +96,10 @@ import com.sencha.gxt.widget.core.client.form.TextField;
 import com.sencha.gxt.widget.core.client.form.Validator;
 import com.sencha.gxt.widget.core.client.form.ValueBaseField;
 import com.sencha.gxt.widget.core.client.grid.CellSelectionModel;
-import com.sencha.gxt.widget.core.client.grid.CheckBoxSelectionModel;
 import com.sencha.gxt.widget.core.client.grid.ColumnConfig;
 import com.sencha.gxt.widget.core.client.grid.ColumnModel;
 import com.sencha.gxt.widget.core.client.grid.Grid;
 import com.sencha.gxt.widget.core.client.grid.Grid.GridCell;
-import com.sencha.gxt.widget.core.client.grid.GridSelectionModel;
 import com.sencha.gxt.widget.core.client.grid.GridView;
 import com.sencha.gxt.widget.core.client.grid.editing.GridEditing;
 import com.sencha.gxt.widget.core.client.grid.editing.GridInlineEditing;
@@ -113,6 +111,7 @@ public abstract class GLGridWidget implements IsWidget {
 //--------------------------------------------------------------------------------------------------
 private static final int                         _resizeColumnExtraPadding;
 private static final TextMetrics                 _textMetrics;
+private static final String                      SelectComboboxColumnName;
 private static final String                      Zeroes;
 private final HashSet<ColumnConfig<GLRecord, ?>> _checkBoxSet;
 private final TreeMap<String, GLColumnConfig<?>> _columnConfigMap;                // column name -> GLColumnConfig
@@ -125,26 +124,29 @@ private final boolean                            _inlineEditing;
 protected GLListStore                            _listStore;
 private HandlerRegistration                      _lookupLoadedHandlerRegistration;
 private final String                             _noRowsMessage;
-private GridSelectionModel<GLRecord>             _selectionModel;
-private final boolean                            _useCheckBoxSelectionModel;
+private final TreeSet<GLRecord>                  _selectedRecordSet;
+private CellSelectionModel<GLRecord>             _selectionModel;
+private final boolean                            _useCheckBoxSelection;
 //--------------------------------------------------------------------------------------------------
 static {
   _resizeColumnExtraPadding = 10;
   _textMetrics = TextMetrics.get();
+  SelectComboboxColumnName = "SelectCombobox";
   Zeroes = "00000000000000000000";
 }
 //--------------------------------------------------------------------------------------------------
 protected GLGridWidget(final String headingText, final String noRowsMessage,
-                       final boolean inlineEditing, final boolean useCheckBoxSelectionModel,
+                       final boolean inlineEditing, final boolean useCheckBoxSelection,
                        final IGLColumn[] columns) {
   super();
   _noRowsMessage = noRowsMessage == null ? "There are no results to display" : noRowsMessage;
   _inlineEditing = inlineEditing;
-  _useCheckBoxSelectionModel = useCheckBoxSelectionModel;
+  _useCheckBoxSelection = useCheckBoxSelection;
   _columns = columns;
-  _listStore = new GLListStore();
   _checkBoxSet = new HashSet<>();
   _columnConfigMap = new TreeMap<>();
+  _listStore = new GLListStore();
+  _selectedRecordSet = new TreeSet<>();
   createContentPanel(headingText);
   waitForComboBoxData();
 }
@@ -170,8 +172,8 @@ private void addHeaderContextMenuHandler() {
                                                                        "Resizing Columns...");
           messageBox.setProgressText("Calculating...");
           messageBox.show();
-          resizeNextColumn(messageBox, _useCheckBoxSelectionModel ? 1 : 0,
-                           _grid.getColumnModel().getColumnCount() - 1);
+          resizeNextColumn(messageBox, _useCheckBoxSelection ? 1 : 0, _grid.getColumnModel()
+                                                                           .getColumnCount() - 1);
         }
       });
       headerContextMenuEvent.getMenu().add(menuItem);
@@ -301,8 +303,10 @@ private GLColumnConfig<String> createColumnConfigString(final IGLColumn column) 
 private ColumnModel<GLRecord> createColumnModel() {
   ColumnModel<GLRecord> result;
   final ArrayList<ColumnConfig<GLRecord, ?>> columnConfigList = new ArrayList<>();
-  if (_useCheckBoxSelectionModel) {
-    columnConfigList.add(((CheckBoxSelectionModel<GLRecord>)_selectionModel).getColumn());
+  if (_useCheckBoxSelection) {
+    final GLColumnConfig<Boolean> selectColumnConfig = createColumnModelSelectColumnConfig();
+    columnConfigList.add(selectColumnConfig);
+    _columnConfigMap.put(SelectComboboxColumnName, selectColumnConfig);
   }
   for (final IGLColumn column : _columns) {
     GLColumnConfig<?> columnConfig = null;
@@ -357,6 +361,42 @@ private ColumnModel<GLRecord> createColumnModel() {
   return result;
 }
 //--------------------------------------------------------------------------------------------------
+private GLColumnConfig<Boolean> createColumnModelSelectColumnConfig() {
+  final GLColumnConfig<Boolean> result;
+  final ValueProvider<GLRecord, Boolean> selectValueProvider;
+  selectValueProvider = new ValueProvider<GLRecord, Boolean>() {
+    @Override
+    public String getPath() {
+      return "SelectCheckBox";
+    }
+    @Override
+    public Boolean getValue(final GLRecord record) {
+      return _selectedRecordSet.contains(record);
+    }
+    @Override
+    public void setValue(final GLRecord record, final Boolean selected) { //
+    }
+  };
+  result = new GLColumnConfig<>(null, selectValueProvider, "", 23);
+  final CheckBoxCell checkBoxCell = new CheckBoxCell() {
+    @Override
+    protected void onClick(final XElement parent, final NativeEvent event) {
+      super.onClick(parent, event);
+      final GLRecord record = _selectionModel.getSelectedItem();
+      if (!_selectedRecordSet.remove(record)) {
+        _selectedRecordSet.add(record);
+      }
+    }
+  };
+  result.setCell(checkBoxCell);
+  result.setFixed(true);
+  result.setHideable(false);
+  result.setMenuDisabled(true);
+  result.setResizable(false);
+  result.setSortable(false);
+  return result;
+}
+//--------------------------------------------------------------------------------------------------
 private void createContentPanel(final String headingText) {
   _contentPanel = new ContentPanel();
   if (GLUtil.isBlank(headingText)) {
@@ -391,19 +431,18 @@ private TextButton createContentPanelDeleteButton() {
   return new TextButton("Delete Selected", new SelectHandler() {
     @Override
     public void onSelect(final SelectEvent selectEvent) {
-      final List<GLRecord> selectedRecordList = _selectionModel.getSelectedItems();
-      if (selectedRecordList.size() == 0) {
+      if (_selectedRecordSet.size() == 0) {
         final AlertMessageBox messageBox;
         messageBox = new AlertMessageBox("Delete Rows", "You haven't selected any rows to delete");
         messageBox.show();
         return;
       }
       final String rowMessage;
-      if (selectedRecordList.size() == 1) {
+      if (_selectedRecordSet.size() == 1) {
         rowMessage = "this row";
       }
       else {
-        rowMessage = "these " + selectedRecordList.size() + " rows";
+        rowMessage = "these " + _selectedRecordSet.size() + " rows";
       }
       final ConfirmMessageBox messageBox;
       messageBox = new ConfirmMessageBox("Delete Rows", //
@@ -412,8 +451,8 @@ private TextButton createContentPanelDeleteButton() {
         @Override
         public void onDialogHide(final DialogHideEvent hideEvent) {
           if (hideEvent.getHideButton() == PredefinedButton.YES) {
-            final ArrayList<GLRecord> recordList = new ArrayList<>(selectedRecordList.size());
-            for (final GLRecord record : selectedRecordList) {
+            final ArrayList<GLRecord> recordList = new ArrayList<>(_selectedRecordSet.size());
+            for (final GLRecord record : _selectedRecordSet) {
               recordList.add(record);
             }
             _listStore.remove(recordList);
@@ -432,7 +471,7 @@ private void createContentPanelNewButton() {
       GLUtil.createNewRecord(_listStore.getRecordDef(), new IGLCreateNewRecordCallback() {
         @Override
         public void onFailure(final Throwable t) {
-
+          // TODO: handle failure gracefully
         }
         @Override
         public void onSuccess(final GLRecord record) {
@@ -451,7 +490,12 @@ private void createEditors() {
   _gridEditing = _inlineEditing ? new GridInlineEditing<>(_grid) : createGridRowEditing();
   for (final GLColumnConfig<?> columnConfig : _columnConfigMap.values()) {
     final IGLColumn column = columnConfig.getColumn();
-    if (column.getChoiceList() != null) {
+    if (column == null) { // this is the "select" checkbox column
+      final Field<Boolean> checkBox = new CheckBox();
+      checkBox.setEnabled(false);
+      _gridEditing.addEditor((ColumnConfig<GLRecord, Boolean>)columnConfig, checkBox);
+    }
+    else if (column.getChoiceList() != null) {
       createEditorsFixedCombobox(columnConfig);
     }
     else {
@@ -647,7 +691,7 @@ private Field<String> createEditorsString(final GLColumnConfig<?> columnConfig) 
 }
 //--------------------------------------------------------------------------------------------------
 private void createGrid() {
-  createSelectionModel();
+  _selectionModel = new CellSelectionModel<>();
   final ColumnModel<GLRecord> columnModel = createColumnModel();
   _grid = new Grid<>(_listStore, columnModel);
   _grid.addRowClickHandler(new RowClickEvent.RowClickHandler() {
@@ -688,8 +732,19 @@ private GridEditing<GLRecord> createGridRowEditing() {
   deleteButton.addSelectHandler(new SelectEvent.SelectHandler() {
     @Override
     public void onSelect(final SelectEvent event) {
-      result.cancelEditing();
-      final GLRecord record = _selectionModel.getSelectedItem();
+      final ConfirmMessageBox messageBox;
+      messageBox = new ConfirmMessageBox("Delete Row", "Are you sure you want to delete this row?");
+      messageBox.addDialogHideHandler(new DialogHideHandler() {
+        @Override
+        public void onDialogHide(final DialogHideEvent hideEvent) {
+          if (hideEvent.getHideButton() == PredefinedButton.YES) {
+            final GLRecord record = _selectionModel.getSelectedItem();
+            _listStore.remove(record);
+            result.cancelEditing();
+          }
+        }
+      });
+      messageBox.show();
     }
   });
   result.getButtonBar().add(deleteButton);
@@ -703,24 +758,6 @@ private GridView<GLRecord> createGridView() {
   result.setForceFit(false);
   result.setStripeRows(true);
   return result;
-}
-//--------------------------------------------------------------------------------------------------
-private void createSelectionModel() {
-  if (_useCheckBoxSelectionModel) {
-    final IdentityValueProvider<GLRecord> identityValueProvider = new IdentityValueProvider<>();
-    _selectionModel = new CheckBoxSelectionModel<GLRecord>(identityValueProvider) {
-      @Override
-      protected void onRefresh(final RefreshEvent event) {
-        if (isSelectAllChecked()) {
-          selectAll();
-        }
-        super.onRefresh(event);
-      }
-    };
-  }
-  else {
-    _selectionModel = new CellSelectionModel<>();
-  }
 }
 //--------------------------------------------------------------------------------------------------
 public GLListStore getListStore() {
@@ -739,7 +776,7 @@ private int resizeColumnGetWidth(final Object value, final DateTimeFormat dateTi
 private void resizeColumnToFit(final int columnIndex) {
   final GLColumnConfig<?> columnConfig;
   columnConfig = _columnConfigMap.get(_columns[columnIndex - //
-                                               (_useCheckBoxSelectionModel ? 1 : 0)].toString());
+                                               (_useCheckBoxSelection ? 1 : 0)].toString());
   final DateTimeFormat dateTimeFormat = columnConfig.getDateTimeFormat();
   _textMetrics.bind(_grid.getView().getHeader().getAppearance().styles().head());
   int maxWidth = _textMetrics.getWidth(columnConfig.getHeader().asString()) + 6;

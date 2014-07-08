@@ -689,7 +689,7 @@ private GridEditing<GLRecord> createGridRowEditing() {
     @Override
     public void onSelect(final SelectEvent event) {
       result.cancelEditing();
-      final StateModel item = grid.getSelectionModel().getSelectedItem();
+      final GLRecord record = _selectionModel.getSelectedItem();
     }
   });
   result.getButtonBar().add(deleteButton);

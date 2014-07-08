@@ -385,7 +385,6 @@ private void createContentPanelButtons() {
     }
   }));
   _contentPanel.addButton(createContentPanelDeleteButton());
-  createContentPanelDeleteButton();
 }
 //--------------------------------------------------------------------------------------------------
 private TextButton createContentPanelDeleteButton() {
@@ -685,6 +684,15 @@ private GridEditing<GLRecord> createGridRowEditing() {
       }
     }
   });
+  final TextButton deleteButton = new TextButton("Delete");
+  deleteButton.addSelectHandler(new SelectEvent.SelectHandler() {
+    @Override
+    public void onSelect(final SelectEvent event) {
+      result.cancelEditing();
+      final StateModel item = grid.getSelectionModel().getSelectedItem();
+    }
+  });
+  result.getButtonBar().add(deleteButton);
   return result;
 }
 //--------------------------------------------------------------------------------------------------

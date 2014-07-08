@@ -8,7 +8,7 @@ import org.greatlogic.glgwt.shared.IGLColumn;
  * A thin wrapper around a list of field values. The objective is to provide easy access to the
  * values in the list, converting the string values to any of a number of basic data types.
  */
-public class GLRecord {
+public class GLRecord implements Comparable<GLRecord> {
 //--------------------------------------------------------------------------------------------------
 private ArrayList<String>       _changedFieldNameList;
 private boolean                 _inserted;
@@ -191,6 +191,11 @@ public String asString(final String fieldName, final String defaultValue) {
   catch (final Exception e) {
     return defaultValue;
   }
+}
+//--------------------------------------------------------------------------------------------------
+@Override
+public int compareTo(final GLRecord record) {
+  return getKeyValueAsString().compareTo(record.getKeyValueAsString());
 }
 //--------------------------------------------------------------------------------------------------
 public ArrayList<String> getChangedFieldNameList() {

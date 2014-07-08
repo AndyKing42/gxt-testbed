@@ -18,7 +18,7 @@ import org.greatlogic.glgwt.client.widget.GLGridWidget;
 import org.greatlogic.gxttestbed.client.widget.GridWidgetManager;
 import org.greatlogic.gxttestbed.client.widget.MainLayoutWidget;
 import com.google.gwt.core.client.EntryPoint;
-import com.google.gwt.user.client.ui.RootPanel;
+import com.google.gwt.user.client.ui.RootLayoutPanel;
 
 public class GXTTestbed implements EntryPoint {
 //--------------------------------------------------------------------------------------------------
@@ -36,7 +36,7 @@ public void onModuleLoad() {
     TestData.loadPetTestData(gridWidget.getListStore());
   }
   clientFactory.getCenterPanel().setWidget(gridWidget);
-  RootPanel.get().add(clientFactory.getMainLayoutWidget());
+  RootLayoutPanel.get().add(clientFactory.getMainLayoutWidget());
   DBAccess.loadPets(gridWidget.getListStore());
   //  GLUtil.login();
 }

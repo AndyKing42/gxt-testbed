@@ -94,6 +94,7 @@ public GLRecordDef getRecordDef() {
 //--------------------------------------------------------------------------------------------------
 @Override
 public GLRecord remove(final int index) {
+  this_is_called_from("ListStore#remove(GLRecord)");
   final GLRecord result = get(index);
   remove(result);
   return result;
@@ -140,7 +141,7 @@ private void sendDBChangesToServer(final StringBuilder dbChangesSB,
       }
       if (deletedRecordList != null) {
         for (final GLRecord record : deletedRecordList) {
-          remove(record);
+          GLListStore.super.remove(record);
         }
       }
       GLListStore.super.commitChanges();

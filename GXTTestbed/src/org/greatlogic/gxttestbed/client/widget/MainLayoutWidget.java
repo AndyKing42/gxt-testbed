@@ -48,6 +48,8 @@ TextButton                  recreateGridButton;
 TextButton                  recreateTablesButton;
 @UiField
 TextButton                  reloadTestDataButton;
+@UiField
+CheckBox                    rowLevelCommitsCheckBox;
 private final ClientFactory _clientFactory;
 //==================================================================================================
 interface MainLayoutWidgetUiBinder extends UiBinder<Widget, MainLayoutWidget> { //
@@ -82,7 +84,8 @@ public ContentPanel getCenterPanel() {
 public void onRecreateGridButtonClick(@SuppressWarnings("unused") final SelectEvent event) {
   final GLGridWidget gridWidget;
   gridWidget = GridWidgetManager.getPetGrid("Main", inlineEditingCheckBox.getValue(), //
-                                            checkBoxSelectionModelCheckBox.getValue());
+                                            checkBoxSelectionModelCheckBox.getValue(), //
+                                            rowLevelCommitsCheckBox.getValue());
   _clientFactory.getCenterPanel().setWidget(gridWidget);
   DBAccess.loadPets(gridWidget.getListStore());
   _clientFactory.getCenterPanel().forceLayout();

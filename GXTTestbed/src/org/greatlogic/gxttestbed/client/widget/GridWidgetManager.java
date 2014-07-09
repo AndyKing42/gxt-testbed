@@ -55,7 +55,8 @@ public static PetGridWidget getPetGrid(final String gridName, final boolean inli
   PetGridWidget result;
   GridWidgetInfo gridWidgetInfo = _gridWidgetInfoMap.get(gridName);
   if (gridWidgetInfo == null || gridWidgetInfo._inlineEditing != inlineEditing ||
-      gridWidgetInfo._useCheckBoxSelectionModel != useCheckBoxSelectionModel) {
+      gridWidgetInfo._useCheckBoxSelectionModel != useCheckBoxSelectionModel ||
+      gridWidgetInfo._rowLevelCommits != rowLevelCommits) {
     result = new PetGridWidget(inlineEditing, useCheckBoxSelectionModel, rowLevelCommits, //
                                Pet.PetName, Pet.PetTypeId, Pet.Sex, Pet.IntakeDate, //
                                Pet.TrainedFlag, Pet.AdoptionFee, Pet.FosterDate, //

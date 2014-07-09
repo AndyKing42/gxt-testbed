@@ -124,6 +124,7 @@ private final boolean                            _inlineEditing;
 protected GLListStore                            _listStore;
 private HandlerRegistration                      _lookupLoadedHandlerRegistration;
 private final String                             _noRowsMessage;
+private final boolean                            _rowLevelCommits;
 private final TreeSet<GLRecord>                  _selectedRecordSet;
 private CellSelectionModel<GLRecord>             _selectionModel;
 private final boolean                            _useCheckBoxSelection;
@@ -137,11 +138,12 @@ static {
 //--------------------------------------------------------------------------------------------------
 protected GLGridWidget(final String headingText, final String noRowsMessage,
                        final boolean inlineEditing, final boolean useCheckBoxSelection,
-                       final IGLColumn[] columns) {
+                       final boolean rowLevelCommits, final IGLColumn[] columns) {
   super();
   _noRowsMessage = noRowsMessage == null ? "There are no results to display" : noRowsMessage;
   _inlineEditing = inlineEditing;
   _useCheckBoxSelection = useCheckBoxSelection;
+  _rowLevelCommits = rowLevelCommits;
   _columns = columns;
   _checkBoxSet = new HashSet<>();
   _columnConfigMap = new TreeMap<>();
@@ -716,20 +718,14 @@ private void createGrid() {
 //--------------------------------------------------------------------------------------------------
 private GridEditing<GLRecord> createGridRowEditing() {
   final GridRowEditing<GLRecord> result = new GridRowEditing<>(_grid);
-  result.getSaveButton().addBeforeSelectHandler(new BeforeSelectHandler() {
-    @Override
-    public void onBeforeSelect(final BeforeSelectEvent event) {
-      for (final GLColumnConfig<?> columnConfig : _columnConfigMap.values()) {
-        columnConfig.clearInvalid();
-      }
-      if (_gridRowEditingValidator != null &&
-          !_gridRowEditingValidator.validate(new GLValidationRecord(_columnConfigMap, result))) {
-        event.setCancelled(true);
-      }
-    }
-  });
-  final TextButton deleteButton = new TextButton("Delete");
-  deleteButton.addSelectHandler(new SelectEvent.SelectHandler() {
+  createGridRowEditingSaveButtonHandler(result);
+  result.getButtonBar().add(createGridRowEditingDeleteButton(result));
+  return result;
+}
+//--------------------------------------------------------------------------------------------------
+private TextButton createGridRowEditingDeleteButton(final GridRowEditing<GLRecord> gridRowEditing) {
+  final TextButton result = new TextButton("Delete");
+  result.addSelectHandler(new SelectEvent.SelectHandler() {
     @Override
     public void onSelect(final SelectEvent event) {
       final ConfirmMessageBox messageBox;
@@ -740,15 +736,34 @@ private GridEditing<GLRecord> createGridRowEditing() {
           if (hideEvent.getHideButton() == PredefinedButton.YES) {
             final GLRecord record = _selectionModel.getSelectedItem();
             _listStore.remove(record);
-            result.cancelEditing();
+            gridRowEditing.cancelEditing();
           }
         }
       });
       messageBox.show();
     }
   });
-  result.getButtonBar().add(deleteButton);
   return result;
+}
+//--------------------------------------------------------------------------------------------------
+private void createGridRowEditingSaveButtonHandler(final GridRowEditing<GLRecord> gridRowEditing) {
+  gridRowEditing.getSaveButton().addBeforeSelectHandler(new BeforeSelectHandler() {
+    @Override
+    public void onBeforeSelect(final BeforeSelectEvent event) {
+      for (final GLColumnConfig<?> columnConfig : _columnConfigMap.values()) {
+        columnConfig.clearInvalid();
+      }
+      if (_gridRowEditingValidator != null &&
+          !_gridRowEditingValidator.validate(new GLValidationRecord(_columnConfigMap,
+                                                                    gridRowEditing))) {
+        event.setCancelled(true);
+      }
+      if (_rowLevelCommits) {
+        gridRowEditing.completeEditing();
+        _listStore.commitChanges();
+      }
+    }
+  });
 }
 //--------------------------------------------------------------------------------------------------
 private GridView<GLRecord> createGridView() {

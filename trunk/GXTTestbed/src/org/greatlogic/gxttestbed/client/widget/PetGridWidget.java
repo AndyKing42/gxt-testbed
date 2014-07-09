@@ -20,8 +20,9 @@ import org.greatlogic.gxttestbed.shared.IDBEnums.Pet;
 public class PetGridWidget extends GLGridWidget {
 //--------------------------------------------------------------------------------------------------
 public PetGridWidget(final boolean inlineEditing, final boolean useCheckBoxSelectionModel,
-                     final Pet... petColumns) {
-  super(null, "There are no pets", inlineEditing, useCheckBoxSelectionModel, petColumns);
+                     final boolean rowLevelCommits, final Pet... petColumns) {
+  super(null, "There are no pets", inlineEditing, useCheckBoxSelectionModel, rowLevelCommits,
+        petColumns);
   setGridRowEditingValidator(createGridRowEditingValidator());
 }
 //--------------------------------------------------------------------------------------------------

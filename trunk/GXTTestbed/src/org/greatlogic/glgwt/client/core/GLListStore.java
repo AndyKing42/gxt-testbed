@@ -93,14 +93,6 @@ public GLRecordDef getRecordDef() {
 }
 //--------------------------------------------------------------------------------------------------
 @Override
-public GLRecord remove(final int index) {
-  this_is_called_from("ListStore#remove(GLRecord)");
-  final GLRecord result = get(index);
-  remove(result);
-  return result;
-}
-//--------------------------------------------------------------------------------------------------
-@Override
 public boolean remove(final GLRecord record) {
   final ArrayList<GLRecord> recordList = new ArrayList<>(1);
   recordList.add(record);

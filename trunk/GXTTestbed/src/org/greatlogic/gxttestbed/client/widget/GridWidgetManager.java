@@ -24,12 +24,14 @@ private static TreeMap<String, GridWidgetInfo> _gridWidgetInfoMap; /* grid name 
 private static class GridWidgetInfo {
 private final GLGridWidget _gridWidget;
 private final boolean      _inlineEditing;
+private final boolean      _rowLevelCommits;
 private final boolean      _useCheckBoxSelectionModel;
 private GridWidgetInfo(final PetGridWidget gridWidget, final boolean inlineEditing,
-                       final boolean useCheckBoxSelectionModel) {
+                       final boolean useCheckBoxSelectionModel, final boolean rowLevelCommits) {
   _gridWidget = gridWidget;
   _inlineEditing = inlineEditing;
   _useCheckBoxSelectionModel = useCheckBoxSelectionModel;
+  _rowLevelCommits = rowLevelCommits;
 }
 }
 //--------------------------------------------------------------------------------------------------
@@ -44,20 +46,22 @@ public static PetGridWidget getPetGrid(final String gridName) {
     return null;
   }
   return getPetGrid(gridName, gridWidgetInfo._inlineEditing,
-                    gridWidgetInfo._useCheckBoxSelectionModel);
+                    gridWidgetInfo._useCheckBoxSelectionModel, gridWidgetInfo._rowLevelCommits);
 }
 //--------------------------------------------------------------------------------------------------
 public static PetGridWidget getPetGrid(final String gridName, final boolean inlineEditing,
-                                       final boolean useCheckBoxSelectionModel) {
+                                       final boolean useCheckBoxSelectionModel,
+                                       final boolean rowLevelCommits) {
   PetGridWidget result;
   GridWidgetInfo gridWidgetInfo = _gridWidgetInfoMap.get(gridName);
   if (gridWidgetInfo == null || gridWidgetInfo._inlineEditing != inlineEditing ||
       gridWidgetInfo._useCheckBoxSelectionModel != useCheckBoxSelectionModel) {
-    result = new PetGridWidget(inlineEditing, useCheckBoxSelectionModel, //
+    result = new PetGridWidget(inlineEditing, useCheckBoxSelectionModel, rowLevelCommits, //
                                Pet.PetName, Pet.PetTypeId, Pet.Sex, Pet.IntakeDate, //
                                Pet.TrainedFlag, Pet.AdoptionFee, Pet.FosterDate, //
                                Pet.NumberOfFosters);
-    gridWidgetInfo = new GridWidgetInfo(result, inlineEditing, useCheckBoxSelectionModel);
+    gridWidgetInfo = new GridWidgetInfo(result, inlineEditing, useCheckBoxSelectionModel, //
+                                        rowLevelCommits);
     _gridWidgetInfoMap.put(gridName, gridWidgetInfo);
   }
   return (PetGridWidget)gridWidgetInfo._gridWidget;

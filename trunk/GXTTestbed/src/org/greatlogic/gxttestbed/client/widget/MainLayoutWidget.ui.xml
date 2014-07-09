@@ -50,7 +50,7 @@
     type='com.sencha.gxt.widget.core.client.container.BorderLayoutContainer.BorderLayoutData'>
     <ui:attributes
       margins='{margins_3_3_3_3}'
-      size='100'
+      size='125'
       split='true'/>
   </ui:with>
   <ui:with
@@ -119,6 +119,11 @@
                   <form:CheckBox
                     ui:field='checkBoxSelectionModelCheckBox'
                     boxLabel='Checkbox Selection Model?'/>
+                </container:child>
+                <container:child layoutData="{boxLayoutDataMargins_3_3_3_3}">
+                  <form:CheckBox
+                    ui:field='rowLevelCommitsCheckBox'
+                    boxLabel='Row Level Commits?'/>
                 </container:child>
                 <container:child layoutData="{boxLayoutDataMargins_3_3_3_3}">
                   <button:TextButton

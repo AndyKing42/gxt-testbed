@@ -29,13 +29,14 @@ public void onModuleLoad() {
                     clientFactory.getRemoteService());
   clientFactory.setMainLayoutWidget(new MainLayoutWidget(clientFactory));
   final boolean loadTestData = false;
-  final GLGridWidget gridWidget = GridWidgetManager.getPetGrid("Main", false, false, false);
+  clientFactory.getMainLayoutWidget().onRecreateGridButtonClick(null);
+  final GLGridWidget gridWidget = GridWidgetManager.getPetGrid("Main");
   if (loadTestData) {
     final GLListStore petTypeListStore = new GLListStore();
     TestData.loadPetTypeTestData(petTypeListStore);
     TestData.loadPetTestData(gridWidget.getListStore());
   }
-  clientFactory.getCenterPanel().setWidget(gridWidget);
+  //  clientFactory.getCenterPanel().setWidget(gridWidget);
   RootLayoutPanel.get().add(clientFactory.getMainLayoutWidget());
   DBAccess.loadPets(gridWidget.getListStore());
   //  GLUtil.login();

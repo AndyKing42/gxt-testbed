@@ -118,12 +118,14 @@
                 <container:child layoutData="{boxLayoutDataMargins_3_3_3_3}">
                   <form:CheckBox
                     ui:field='checkBoxSelectionModelCheckBox'
-                    boxLabel='Checkbox Selection Model?'/>
+                    boxLabel='Checkbox Selection Model?'
+                    value='true'/>
                 </container:child>
                 <container:child layoutData="{boxLayoutDataMargins_3_3_3_3}">
                   <form:CheckBox
                     ui:field='rowLevelCommitsCheckBox'
-                    boxLabel='Row Level Commits?'/>
+                    boxLabel='Row Level Commits?'
+                    value='true'/>
                 </container:child>
                 <container:child layoutData="{boxLayoutDataMargins_3_3_3_3}">
                   <button:TextButton

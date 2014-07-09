@@ -253,7 +253,7 @@ private GLColumnConfig<Boolean> createColumnConfigBoolean(final IGLColumn column
     result.setCell(new SimpleSafeHtmlCell<Boolean>(new AbstractSafeHtmlRenderer<Boolean>() {
       @Override
       public SafeHtml render(final Boolean object) {
-        // TODO: these need to be drawn (use AbstractCell#render?)
+        // TODO: these should be drawn (use AbstractCell#render?)
         return SafeHtmlUtils.fromTrustedString(object ? "&#x2713;" : "&#x2717");
       }
     }));

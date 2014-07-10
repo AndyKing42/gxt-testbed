@@ -94,19 +94,19 @@
               <button:TextButton
                 ui:field='recreateTablesButton'
                 text='Recreate Database Tables'
-                visible='false'/>
+                visible='true'/>
             </container:child>
             <container:child layoutData="{boxLayoutDataMargins_3_3_3_3}">
               <button:TextButton
                 ui:field='reloadTestDataButton'
                 text='Reload Test Data'
-                visible='false'/>
+                visible='true'/>
             </container:child>
             <container:child layoutData="{boxLayoutDataMargins_3_3_3_3}">
               <button:TextButton
                 ui:field='gaeStuffButton'
                 text='GAE Stuff'
-                visible='false'/>
+                visible='true'/>
             </container:child>
             <container:child layoutData="{boxLayoutDataMargins_3_3_3_3}">
               <container:VBoxLayoutContainer borders='true'>

@@ -28,7 +28,11 @@ import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.Node;
 import com.google.gwt.editor.client.Editor;
 import com.google.gwt.editor.client.EditorError;
+import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.i18n.client.DateTimeFormat;
+import com.google.gwt.user.client.Event;
+import com.google.gwt.user.client.Event.NativePreviewEvent;
+import com.google.gwt.user.client.Event.NativePreviewHandler;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.RootPanel;
 import com.sencha.gxt.widget.core.client.form.error.DefaultEditorError;
@@ -80,6 +84,22 @@ public static String dateAddDays(final String originalDate, final int numberOfDa
   final Date newDate = _yyyymmddDateTimeFormat.parseStrict(originalDate);
   newDate.setDate(newDate.getDate() + numberOfDays);
   return _yyyymmddDateTimeFormat.format(newDate);
+}
+//--------------------------------------------------------------------------------------------------
+private static void disableBackspace() {
+  Event.addNativePreviewHandler(new NativePreviewHandler() {
+    @Override
+    public void onPreviewNativeEvent(final NativePreviewEvent event) {
+      if (event.getNativeEvent().getKeyCode() == KeyCodes.KEY_BACKSPACE &&
+          event.getNativeEvent().getEventTarget() != null) {
+        final String tagName = Element.as(event.getNativeEvent().getEventTarget()).getTagName();
+        if (!tagName.equalsIgnoreCase("input") && !tagName.equalsIgnoreCase("textarea")) {
+          event.getNativeEvent().stopPropagation();
+          event.getNativeEvent().preventDefault();
+        }
+      }
+    }
+  });
 }
 //--------------------------------------------------------------------------------------------------
 /**
@@ -169,6 +189,7 @@ public static void initialize(final GLEventBus eventBus, final GLLookupTableCach
   _eventBus = eventBus;
   _lookupTableCache = lookupTableCache;
   _remoteService = remoteService;
+  disableBackspace();
 }
 //--------------------------------------------------------------------------------------------------
 public static boolean isBlank(final CharSequence s) {

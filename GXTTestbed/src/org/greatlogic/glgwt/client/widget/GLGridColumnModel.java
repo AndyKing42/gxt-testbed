@@ -151,11 +151,11 @@ private void createColumnConfigs() {
         columnConfig = createBigDecimalColumnConfig(column);
         break;
       case Int:
-        if (column.getParentTable() == null) {
+        if (column.getLookupType() == null || column.getLookupType().getTable() == null) {
           columnConfig = createIntegerColumnConfig(column);
         }
         else {
-          columnConfig = createForeignKeyColumnConfig(column, column.getParentTable());
+          columnConfig = createForeignKeyColumnConfig(column, column.getLookupType().getTable());
         }
         break;
       case String:
@@ -253,6 +253,10 @@ public HashSet<GLColumnConfig<?>> getCheckBoxSet() {
   return _checkBoxSet;
 }
 //--------------------------------------------------------------------------------------------------
+public GLColumnConfig<?> getColumnConfig(final IGLColumn column) {
+  return _columnConfigMap.get(column.toString());
+}
+//--------------------------------------------------------------------------------------------------
 public GLColumnConfig<?> getColumnConfig(final String columnName) {
   return _columnConfigMap.get(columnName);
 }
@@ -263,6 +267,12 @@ public TreeMap<String, GLColumnConfig<?>> getColumnConfigMap() {
 //--------------------------------------------------------------------------------------------------
 public Collection<GLColumnConfig<?>> getColumnConfigs() {
   return _columnConfigMap.values();
+}
+//--------------------------------------------------------------------------------------------------
+@SuppressWarnings("unchecked")
+public ValueProvider<GLRecord, String> getStringValueProvider(final IGLColumn column) {
+  final GLColumnConfig<String> columnConfig = (GLColumnConfig<String>)getColumnConfig(column);
+  return (ValueProvider<GLRecord, String>)columnConfig.getValueProvider();
 }
 //--------------------------------------------------------------------------------------------------
 public boolean isCheckbox(final GLColumnConfig<?> columnConfig) {

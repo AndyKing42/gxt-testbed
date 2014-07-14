@@ -1,6 +1,5 @@
 package org.greatlogic.glgwt.shared;
 
-import java.util.ArrayList;
 import org.greatlogic.glgwt.shared.IGLEnums.EGLColumnDataType;
 import com.sencha.gxt.widget.core.client.form.Validator;
 /*
@@ -18,13 +17,14 @@ import com.sencha.gxt.widget.core.client.form.Validator;
  */
 public interface IGLColumn {
 //--------------------------------------------------------------------------------------------------
-public ArrayList<String> getChoiceList();
+public int getComboboxSeq();
 public EGLColumnDataType getDataType();
 public int getDefaultGridColumnWidth();
 public Object getDefaultValue();
+public IGLLookupType getLookupType();
 public boolean getNullable();
 public int getNumberOfDecimalPlaces();
-public IGLTable getParentTable();
+public int getPrimaryKeySeq();
 public String getTitle();
 public Validator<?> getValidator();
 //--------------------------------------------------------------------------------------------------

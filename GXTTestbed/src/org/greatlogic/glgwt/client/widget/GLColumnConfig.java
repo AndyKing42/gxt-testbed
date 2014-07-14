@@ -29,7 +29,8 @@ public GLColumnConfig(final IGLColumn column,
     if (dataType == EGLColumnDataType.Boolean) {
       setHorizontalAlignment(HasHorizontalAlignment.ALIGN_CENTER);
     }
-    else if (dataType.getNumeric() && _column.getParentTable() == null) {
+    else if (dataType.getNumeric() &&
+             (_column.getLookupType() == null || _column.getLookupType().getTable() == null)) {
       setHorizontalAlignment(HasHorizontalAlignment.ALIGN_RIGHT);
     }
     else {

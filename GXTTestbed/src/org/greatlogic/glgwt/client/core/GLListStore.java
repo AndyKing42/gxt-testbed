@@ -40,7 +40,7 @@ public void commitChanges() {
   final StringBuilder sb = new StringBuilder();
   final ArrayList<GLRecord> insertedRecordList = new ArrayList<>();
   final IGLTable table = _recordDef.getTable();
-  final String primaryKeyColumnName = table.getPrimaryKeyColumn().toString();
+  final String primaryKeyColumnName = table.getPrimaryKeyColumnMap().get(1).toString();
   for (final Record record : getModifiedRecords()) {
     final GLRecord glRecord = record.getModel();
     final boolean insert = glRecord.getInserted();
@@ -79,8 +79,14 @@ private boolean commitChangesAddChange(final StringBuilder sb, final IGLTable ta
   final IGLColumn column = table.findColumnUsingColumnName(columnName);
   updatedColumnSet.add(column);
   sb.append(firstChange ? "" : ";").append(columnName).append("=");
-  if (column.getParentTable() != null) {
-    sb.append(GLUtil.getLookupTableCache().lookupKeyValue(column.getParentTable(), value));
+  if (column.getLookupType() != null) {
+    final IGLTable lookupTable = column.getLookupType().getTable();
+    if (lookupTable == null) {
+      sb.append(value);
+    }
+    else {
+      sb.append(GLUtil.getLookupCache().lookupKeyValue(lookupTable, value));
+    }
   }
   else {
     sb.append(value);
@@ -104,7 +110,7 @@ public void remove(final ArrayList<GLRecord> recordList) {
   final StringBuilder sb = new StringBuilder();
   final IGLTable table = _recordDef.getTable();
   sb.append("D-").append(table.toString()).append("/");
-  sb.append(table.getPrimaryKeyColumn()).append("=");
+  sb.append(table.getPrimaryKeyColumnMap().get(1)).append("=");
   boolean firstRecord = true;
   for (final GLRecord record : recordList) {
     sb.append(firstRecord ? "" : ",").append(record.getKeyValueAsString());

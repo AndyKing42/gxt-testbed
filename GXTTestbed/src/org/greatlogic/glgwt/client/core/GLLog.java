@@ -32,12 +32,14 @@ public static void infoSummary(final String location, final String message) {
 }
 //--------------------------------------------------------------------------------------------------
 public static void log(final EGLLogLevel logLevel, final String location, final String message) {
-  _remoteService.log(logLevel.getPriority(), location, message, new AsyncCallback<Void>() {
-    @Override
-    public void onSuccess(final Void result) {/**/}
-    @Override
-    public void onFailure(final Throwable caught) {/**/}
-  });
+  if (_remoteService != null) {
+    _remoteService.log(logLevel.getPriority(), location, message, new AsyncCallback<Void>() {
+      @Override
+      public void onSuccess(final Void result) {/**/}
+      @Override
+      public void onFailure(final Throwable caught) {/**/}
+    });
+  }
 }
 //--------------------------------------------------------------------------------------------------
 public static void major(final String location, final String message) {

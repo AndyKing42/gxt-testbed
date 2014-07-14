@@ -1,13 +1,11 @@
 package org.greatlogic.gxttestbed.client;
 
-import org.greatlogic.glgwt.client.core.GLLookupTableCache;
 import org.greatlogic.gxttestbed.client.widget.MainLayoutWidget;
 
 public class ClientFactoryUI extends ClientFactory {
 //--------------------------------------------------------------------------------------------------
 public ClientFactoryUI() {
   super();
-  _lookupTableCache = new GLLookupTableCache();
 }
 //--------------------------------------------------------------------------------------------------
 @Override

@@ -57,12 +57,12 @@ GLGridEditingWrapper(final GLGridWidget gridWidget, final boolean inlineEditing)
   createGridEditing(inlineEditing);
   for (final GLColumnConfig<?> columnConfig : _gridWidget.getColumnModel().getColumnConfigs()) {
     final IGLColumn column = columnConfig.getColumn();
-    if (column == null) { // this is the "select" checkbox column
+    if (column == null) { // if column == null then this is the "select" checkbox column
       final Field<Boolean> checkBox = new CheckBox();
       checkBox.setEnabled(false);
       _gridEditing.addEditor((ColumnConfig<GLRecord, Boolean>)columnConfig, checkBox);
     }
-    else if (column.getChoiceList() != null) {
+    else if (column.getLookupType() != null && column.getLookupType().getTable() == null) {
       createFixedComboboxEditor(columnConfig);
     }
     else {
@@ -88,7 +88,7 @@ GLGridEditingWrapper(final GLGridWidget gridWidget, final boolean inlineEditing)
           field = createDecimalEditor(columnConfig, column.getNumberOfDecimalPlaces());
           break;
         case Int:
-          if (column.getParentTable() == null) {
+          if (column.getLookupType() == null || column.getLookupType().getTable() == null) {
             field = createIntegerEditor(columnConfig);
           }
           else {
@@ -187,7 +187,7 @@ private void createFixedComboboxEditor(final GLColumnConfig<?> columnConfig) {
   final SimpleComboBox<String> combobox = new SimpleComboBox<>(new StringLabelProvider<>());
   combobox.setClearValueOnParseError(false);
   combobox.setTriggerAction(TriggerAction.ALL);
-  combobox.add(columnConfig.getColumn().getChoiceList());
+  combobox.add(GLUtil.getLookupCache().getAbbrevList(columnConfig.getColumn().getLookupType()));
   combobox.setForceSelection(true);
   final Validator<String> validator = (Validator<String>)columnConfig.getColumn().getValidator();
   if (validator != null) {
@@ -200,8 +200,8 @@ private void createFixedComboboxEditor(final GLColumnConfig<?> columnConfig) {
 private ComboBox<GLRecord> createForeignKeyComboboxEditor(final GLColumnConfig<?> columnConfig) {
   final ComboBox<GLRecord> result;
   final IGLColumn column = columnConfig.getColumn();
-  final IGLTable parentTable = column.getParentTable();
-  final GLListStore lookupListStore = GLUtil.getLookupTableCache().getListStore(parentTable);
+  final IGLTable parentTable = column.getLookupType().getTable();
+  final GLListStore lookupListStore = GLUtil.getLookupCache().getListStore(parentTable);
   if (lookupListStore == null) {
     GLLog.popup(10, "Lookup list store not found for column:" + column);
     return null;
@@ -228,7 +228,7 @@ private ComboBox<GLRecord> createForeignKeyComboboxEditor(final GLColumnConfig<?
     }
     @Override
     public GLRecord convertModelValue(final String displayValue) {
-      return GLUtil.getLookupTableCache().lookupRecord(parentTable, displayValue);
+      return GLUtil.getLookupCache().lookupRecord(parentTable, displayValue);
     }
   };
   _gridEditing.addEditor((ColumnConfig<GLRecord, String>)columnConfig, converter, result);

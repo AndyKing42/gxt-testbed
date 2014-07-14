@@ -1,6 +1,7 @@
 package org.greatlogic.glgwt.shared;
 
 import java.util.Collection;
+import java.util.TreeMap;
 import org.greatlogic.glgwt.client.core.GLRecord;
 /*
  * Copyright 2006-2014 Andy King (GreatLogic.com)
@@ -19,8 +20,8 @@ public interface IGLTable {
 //--------------------------------------------------------------------------------------------------
 public IGLColumn findColumnUsingColumnName(final String columnName);
 public Collection<IGLColumn> getColumns();
-public IGLColumn getComboboxDisplayColumn();
-public IGLColumn getPrimaryKeyColumn();
+public TreeMap<Integer, IGLColumn> getComboboxColumnMap();
+public TreeMap<Integer, IGLColumn> getPrimaryKeyColumnMap();
 public void initializeNewRecord(final GLRecord record);
 //--------------------------------------------------------------------------------------------------
 }

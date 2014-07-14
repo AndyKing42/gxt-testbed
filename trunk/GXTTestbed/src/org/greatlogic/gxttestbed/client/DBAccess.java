@@ -46,7 +46,7 @@ public static void recreateTables() {
     public void onSuccess(final Void result) {
       GLLog.popup(10, "Database table creation is complete");
       final PetGridWidget petGrid = GridWidgetManager.getPetGrid("Main");
-      ClientFactory.Instance.getLookupTableCache().reloadAll();
+      ClientFactory.Instance.getLookupCache().reloadAll();
       loadPets(petGrid.getListStore());
     }
   });
@@ -63,7 +63,7 @@ public static void reloadTestData() {
     public void onSuccess(final Void result) {
       GLLog.popup(10, "Test data reload is complete");
       final PetGridWidget petGrid = GridWidgetManager.getPetGrid("Main");
-      ClientFactory.Instance.getLookupTableCache().reloadAll();
+      ClientFactory.Instance.getLookupCache().reloadAll();
       loadPets(petGrid.getListStore());
     }
   });

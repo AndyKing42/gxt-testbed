@@ -78,7 +78,7 @@ public static void addIds() throws GLDBException {
   for (final EGXTTestbedId id : EGXTTestbedId.values()) {
     int nextIdValue = 0;
     if (id.getTable() != null) {
-      final String primaryKeyColumnName = id.getTable().getPrimaryKeyColumn().toString();
+      final String primaryKeyColumnName = id.getTable().getPrimaryKeyColumnMap().get(1).toString();
       final GLSQL sql = GLSQL.select();
       sql.from(id.getTable().name());
       final Map<String, String> maxMap = Maps.newHashMap();

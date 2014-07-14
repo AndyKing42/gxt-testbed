@@ -23,6 +23,7 @@ import org.greatlogic.glgwt.client.event.GLNewRecordEvent;
 import org.greatlogic.glgwt.client.widget.LoginDialogBox;
 import org.greatlogic.glgwt.shared.IGLRemoteServiceAsync;
 import org.greatlogic.glgwt.shared.IGLTable;
+import org.greatlogic.gxttestbed.shared.RecordValidators;
 import com.google.gwt.dom.client.Document;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.Node;
@@ -41,7 +42,7 @@ public class GLUtil {
 //--------------------------------------------------------------------------------------------------
 private static GLEventBus            _eventBus;
 private static LoginDialogBox        _loginDialogBox;
-private static GLLookupTableCache    _lookupTableCache;
+private static GLLookupCache         _lookupCache;
 private static Random                _random;
 private static IGLRemoteServiceAsync _remoteService;
 private static DateTimeFormat        _yyyymmddDateTimeFormat;
@@ -146,8 +147,8 @@ public static GLEventBus getEventBus() {
   return _eventBus;
 }
 //--------------------------------------------------------------------------------------------------
-public static GLLookupTableCache getLookupTableCache() {
-  return _lookupTableCache;
+public static GLLookupCache getLookupCache() {
+  return _lookupCache;
 }
 //--------------------------------------------------------------------------------------------------
 public static String getLowestLevelCSSClassName(final Element element, final String attributeName) {
@@ -184,11 +185,12 @@ public static IGLRemoteServiceAsync getRemoteService() {
   return _remoteService;
 }
 //--------------------------------------------------------------------------------------------------
-public static void initialize(final GLEventBus eventBus, final GLLookupTableCache lookupTableCache,
+public static void initialize(final GLEventBus eventBus, final GLLookupCache lookupCache,
                               final IGLRemoteServiceAsync remoteService) {
   _eventBus = eventBus;
-  _lookupTableCache = lookupTableCache;
+  _lookupCache = lookupCache;
   _remoteService = remoteService;
+  RecordValidators.createValidators();
   disableBackspace();
 }
 //--------------------------------------------------------------------------------------------------

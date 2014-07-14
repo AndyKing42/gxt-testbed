@@ -1,35 +1,35 @@
 package org.greatlogic.glgwt.client.event;
 
-import org.greatlogic.glgwt.client.event.GLLookupLoadedEvent.IGLLookupLoadedEventHandler;
+import org.greatlogic.glgwt.client.event.GLLookupTableLoadedEvent.IGLLookupTableLoadedEventHandler;
 import org.greatlogic.glgwt.shared.IGLTable;
 import com.google.gwt.event.shared.EventHandler;
 import com.google.web.bindery.event.shared.Event;
 
-public class GLLookupLoadedEvent extends Event<IGLLookupLoadedEventHandler> {
+public class GLLookupTableLoadedEvent extends Event<IGLLookupTableLoadedEventHandler> {
 //--------------------------------------------------------------------------------------------------
-public static final Type<IGLLookupLoadedEventHandler> LookLoadedEventType;
-private final IGLTable                                _table;
+public static final Type<IGLLookupTableLoadedEventHandler> LookupTableLoadedEventType;
+private final IGLTable                                     _table;
 //==================================================================================================
-public interface IGLLookupLoadedEventHandler extends EventHandler {
-public void onLookupLoadedEvent(final GLLookupLoadedEvent lookupLoadedEvent);
+public interface IGLLookupTableLoadedEventHandler extends EventHandler {
+public void onLookupTableLoadedEvent(final GLLookupTableLoadedEvent lookupTableLoadedEvent);
 }
 //==================================================================================================
 static {
-  LookLoadedEventType = new Type<IGLLookupLoadedEventHandler>();
+  LookupTableLoadedEventType = new Type<IGLLookupTableLoadedEventHandler>();
 }
 //--------------------------------------------------------------------------------------------------
-public GLLookupLoadedEvent(final IGLTable table) {
+public GLLookupTableLoadedEvent(final IGLTable table) {
   _table = table;
 }
 //--------------------------------------------------------------------------------------------------
 @Override
-protected void dispatch(final IGLLookupLoadedEventHandler handler) {
-  handler.onLookupLoadedEvent(this);
+protected void dispatch(final IGLLookupTableLoadedEventHandler handler) {
+  handler.onLookupTableLoadedEvent(this);
 }
 //--------------------------------------------------------------------------------------------------
 @Override
-public Type<IGLLookupLoadedEventHandler> getAssociatedType() {
-  return LookLoadedEventType;
+public Type<IGLLookupTableLoadedEventHandler> getAssociatedType() {
+  return LookupTableLoadedEventType;
 }
 //--------------------------------------------------------------------------------------------------
 public IGLTable getTable() {
@@ -38,7 +38,7 @@ public IGLTable getTable() {
 //--------------------------------------------------------------------------------------------------
 @Override
 public String toString() {
-  return "LookupLoadedEvent - table:" + _table;
+  return "LookupTableLoadedEvent - table:" + _table;
 }
 //--------------------------------------------------------------------------------------------------
 }

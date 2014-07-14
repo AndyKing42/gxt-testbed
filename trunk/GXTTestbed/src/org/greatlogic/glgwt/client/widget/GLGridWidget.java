@@ -20,10 +20,12 @@ import org.greatlogic.glgwt.client.core.GLListStore;
 import org.greatlogic.glgwt.client.core.GLRecord;
 import org.greatlogic.glgwt.client.core.GLUtil;
 import org.greatlogic.glgwt.client.core.IGLGridRowEditingValidator;
-import org.greatlogic.glgwt.client.event.GLLookupLoadedEvent;
-import org.greatlogic.glgwt.client.event.GLLookupLoadedEvent.IGLLookupLoadedEventHandler;
+import org.greatlogic.glgwt.client.event.GLLookupTableLoadedEvent;
+import org.greatlogic.glgwt.client.event.GLLookupTableLoadedEvent.IGLLookupTableLoadedEventHandler;
 import org.greatlogic.glgwt.shared.IGLColumn;
+import org.greatlogic.glgwt.shared.IGLLookupType;
 import org.greatlogic.glgwt.shared.IGLTable;
+import org.greatlogic.gxttestbed.shared.IDBEnums.Pet;
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.event.logical.shared.SelectionEvent;
@@ -33,6 +35,7 @@ import com.google.gwt.user.client.ui.IsWidget;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.web.bindery.event.shared.Event.Type;
 import com.google.web.bindery.event.shared.HandlerRegistration;
+import com.sencha.gxt.core.client.ValueProvider;
 import com.sencha.gxt.core.client.util.TextMetrics;
 import com.sencha.gxt.data.shared.Store;
 import com.sencha.gxt.widget.core.client.box.ProgressMessageBox;
@@ -42,6 +45,8 @@ import com.sencha.gxt.widget.core.client.event.RowClickEvent;
 import com.sencha.gxt.widget.core.client.grid.CellSelectionModel;
 import com.sencha.gxt.widget.core.client.grid.Grid;
 import com.sencha.gxt.widget.core.client.grid.GridView;
+import com.sencha.gxt.widget.core.client.grid.filters.GridFilters;
+import com.sencha.gxt.widget.core.client.grid.filters.StringFilter;
 import com.sencha.gxt.widget.core.client.menu.Item;
 import com.sencha.gxt.widget.core.client.menu.MenuItem;
 
@@ -57,7 +62,7 @@ private GLGridEditingWrapper         _gridEditingWrapper;
 private IGLGridRowEditingValidator   _gridRowEditingValidator;
 private final boolean                _inlineEditing;
 protected GLListStore                _listStore;
-private HandlerRegistration          _lookupLoadedHandlerRegistration;
+private HandlerRegistration          _lookupTableLoadedHandlerRegistration;
 private final String                 _noRowsMessage;
 private final boolean                _rowLevelCommits;
 private final TreeSet<GLRecord>      _selectedRecordSet;
@@ -118,27 +123,27 @@ private void addHeaderContextMenuHandler() {
 /**
  * If there are lookup tables that are needed by any of the columns in the grid then the creation of
  * the grid must be deferred until all of those lookup tables have been loaded into the cache. The
- * lookup tables are added to the loadTableSet; when the LookupLoadedEvent is fired the table that's
- * been loaded is removed from the set; when all tables have been loaded the grid is created.
- * @param loadTableSet The set that contains the list of lookup tables that need to be loaded prior
- * to creating the grid.
+ * lookup tables are added to the lookupTableSet; when the LookupLoadedEvent is fired the table
+ * that's been loaded is removed from the set; when all tables have been loaded the grid is created.
+ * @param lookupTableSet The set that contains the list of tables that need to be loaded prior to
+ * creating the grid.
  */
-private void addLookupLoadedEventHandler(final HashSet<IGLTable> loadTableSet) {
-  if (_lookupLoadedHandlerRegistration == null) {
-    final IGLLookupLoadedEventHandler handler = new IGLLookupLoadedEventHandler() {
+private void addLookupLoadedEventHandler(final HashSet<IGLTable> lookupTableSet) {
+  if (_lookupTableLoadedHandlerRegistration == null) {
+    final IGLLookupTableLoadedEventHandler handler = new IGLLookupTableLoadedEventHandler() {
       @Override
-      public void onLookupLoadedEvent(final GLLookupLoadedEvent lookupLoadedEvent) {
-        loadTableSet.remove(lookupLoadedEvent.getTable());
-        if (loadTableSet.size() == 0) {
-          _lookupLoadedHandlerRegistration.removeHandler();
-          _lookupLoadedHandlerRegistration = null;
+      public void onLookupTableLoadedEvent(final GLLookupTableLoadedEvent lookupTableLoadedEvent) {
+        lookupTableSet.remove(lookupTableLoadedEvent.getTable());
+        if (lookupTableSet.size() == 0) {
+          _lookupTableLoadedHandlerRegistration.removeHandler();
+          _lookupTableLoadedHandlerRegistration = null;
           createGrid();
         }
       }
     };
-    final Type<IGLLookupLoadedEventHandler> eventType;
-    eventType = GLLookupLoadedEvent.LookLoadedEventType;
-    _lookupLoadedHandlerRegistration = GLUtil.getEventBus().addHandler(eventType, handler);
+    final Type<IGLLookupTableLoadedEventHandler> eventType;
+    eventType = GLLookupTableLoadedEvent.LookupTableLoadedEventType;
+    _lookupTableLoadedHandlerRegistration = GLUtil.getEventBus().addHandler(eventType, handler);
   }
 }
 //--------------------------------------------------------------------------------------------------
@@ -166,9 +171,28 @@ private void createGrid() {
   _grid.setSelectionModel(_selectionModel);
   _grid.setView(createGridView());
   addHeaderContextMenuHandler();
+  addFilters();
   _gridEditingWrapper = new GLGridEditingWrapper(this, _inlineEditing);
   _contentPanel.add(_grid);
   _contentPanel.forceLayout();
+}
+//--------------------------------------------------------------------------------------------------
+private void addFilters() {
+  //  NumericFilter<GLRecord, Double> lastFilter = new NumericFilter<GLRecord, Double>(props.last(), new DoublePropertyEditor());
+  final ValueProvider<GLRecord, String> valueProvider;
+  valueProvider = _columnModel.getStringValueProvider(Pet.PetName);
+  final StringFilter<GLRecord> stringFilter = new StringFilter<GLRecord>(valueProvider);
+  //  DateFilter<GLRecord> dateFilter = new DateFilter<GLRecord>(props.lastTrans());
+  //  dateFilter.setMinDate(new DateWrapper().addDays(-5).asDate());
+  //  dateFilter.setMaxDate(new DateWrapper().addMonths(2).asDate());
+  //
+  //  BooleanFilter<GLRecord> booleanFilter = new BooleanFilter<GLRecord>(props.split());
+  //  ListFilter<GLRecord, String> listFilter = new ListFilter<GLRecord, String>(props.industry(), typeStore);
+  //
+  final GridFilters<GLRecord> gridFilters = new GridFilters<GLRecord>();
+  gridFilters.initPlugin(_grid);
+  gridFilters.setLocal(true);
+  gridFilters.addFilter(stringFilter);
 }
 //--------------------------------------------------------------------------------------------------
 private GridView<GLRecord> createGridView() {
@@ -273,16 +297,19 @@ public void setGridRowEditingValidator(final IGLGridRowEditingValidator gridRowE
 }
 //--------------------------------------------------------------------------------------------------
 private void waitForComboBoxData() {
-  final HashSet<IGLTable> loadTableSet = new HashSet<>();
+  final HashSet<IGLTable> lookupTableSet = new HashSet<>();
   for (final IGLColumn column : _columns) {
-    final IGLTable parentTable = column.getParentTable();
-    if (parentTable != null) {
-      loadTableSet.add(parentTable);
-      addLookupLoadedEventHandler(loadTableSet);
-      GLUtil.getLookupTableCache().reload(parentTable, true);
+    final IGLLookupType lookupType = column.getLookupType();
+    if (lookupType != null) {
+      final IGLTable table = lookupType.getTable();
+      if (table != null) {
+        lookupTableSet.add(table);
+        addLookupLoadedEventHandler(lookupTableSet);
+        GLUtil.getLookupCache().reload(table, true);
+      }
     }
   }
-  if (loadTableSet.size() == 0) {
+  if (lookupTableSet.size() == 0) {
     createGrid();
   }
 }

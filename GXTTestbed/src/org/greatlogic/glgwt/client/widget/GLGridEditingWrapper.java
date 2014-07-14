@@ -209,7 +209,7 @@ private ComboBox<GLRecord> createForeignKeyComboboxEditor(final GLColumnConfig<?
   final LabelProvider<GLRecord> labelProvider = new LabelProvider<GLRecord>() {
     @Override
     public String getLabel(final GLRecord record) {
-      return record.asString(parentTable.getComboboxDisplayColumn());
+      return record.asString(parentTable.getComboboxColumnMap().get(1));
     }
   };
   result = new ComboBox<>(lookupListStore, labelProvider);
@@ -224,7 +224,7 @@ private ComboBox<GLRecord> createForeignKeyComboboxEditor(final GLColumnConfig<?
   final Converter<String, GLRecord> converter = new Converter<String, GLRecord>() {
     @Override
     public String convertFieldValue(final GLRecord record) {
-      return record == null ? "" : record.asString(parentTable.getComboboxDisplayColumn());
+      return record == null ? "" : record.asString(parentTable.getComboboxColumnMap().get(1));
     }
     @Override
     public GLRecord convertModelValue(final String displayValue) {

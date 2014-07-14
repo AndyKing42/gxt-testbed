@@ -111,7 +111,7 @@ public String lookupDisplayValue(final IGLTable lookupTable, final int key) {
     return "?";
   }
   final GLRecord record = keyToRecordMap.get(key);
-  return record == null ? "?" : record.asString(lookupTable.getComboboxColumn());
+  return record == null ? "?" : record.asString(lookupTable.getComboboxColumnMap().get(1));
 }
 //--------------------------------------------------------------------------------------------------
 public int lookupKeyValue(final IGLTable lookupTable, final String displayValue) {
@@ -119,7 +119,7 @@ public int lookupKeyValue(final IGLTable lookupTable, final String displayValue)
   if (record == null) {
     return 0;
   }
-  return record.asInt(lookupTable.getPrimaryKeyColumn());
+  return record.asInt(lookupTable.getPrimaryKeyColumnMap().get(1));
 }
 //--------------------------------------------------------------------------------------------------
 public GLRecord lookupRecord(final IGLTable lookupTable, final String displayValue) {
@@ -162,8 +162,8 @@ public void reload(final IGLTable table, final boolean addToReloadList) {
         keyToRecordMap.clear();
         for (int recordIndex = 0; recordIndex < listStore.size(); ++recordIndex) {
           final GLRecord record = listStore.get(recordIndex);
-          displayValueToRecordMap.put(record.asString(table.getComboboxDisplayColumn()), record);
-          keyToRecordMap.put(record.asInt(table.getPrimaryKeyColumn()), record);
+          displayValueToRecordMap.put(record.asString(table.getComboboxColumnMap().get(1)), record);
+          keyToRecordMap.put(record.asInt(table.getPrimaryKeyColumnMap().get(1)), record);
         }
         GLLog.popup(5, "Reload of " + table + " was successful");
         GLUtil.getEventBus().fireEvent(new GLLookupTableLoadedEvent(table));

@@ -210,7 +210,7 @@ public boolean getInserted() {
 }
 //--------------------------------------------------------------------------------------------------
 public String getKeyValueAsString() {
-  return asString(_recordDef.getTable().getPrimaryKeyColumn());
+  return asString(_recordDef.getTable().getPrimaryKeyColumnMap().get(1));
 }
 //--------------------------------------------------------------------------------------------------
 public GLRecordDef getRecordDef() {

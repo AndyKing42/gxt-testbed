@@ -2,7 +2,6 @@ package org.greatlogic.gxttestbed.shared;
 
 import java.util.Collection;
 import java.util.TreeMap;
-import org.greatlogic.glgwt.client.core.GLLog;
 import org.greatlogic.glgwt.client.core.GLRecord;
 import org.greatlogic.glgwt.shared.IGLColumn;
 import org.greatlogic.glgwt.shared.IGLEnums.EGLColumnDataType;
@@ -196,7 +195,6 @@ private Pet(final EGLColumnDataType dataType, final Object defaultValue,
   _lookupType = lookupType;
   _title = title;
   _defaultGridColumnWidth = defaultGridColumnWidth;
-  GLLog.popup(20, "_lookupType:" + _lookupType + " PetType:" + ELookupType.PetType);
 }
 @Override
 public int getComboboxSeq() {

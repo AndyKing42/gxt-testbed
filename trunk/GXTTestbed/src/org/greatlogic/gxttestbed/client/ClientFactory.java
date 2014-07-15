@@ -6,6 +6,7 @@ import org.greatlogic.gxttestbed.client.widget.MainLayoutWidget;
 import org.greatlogic.gxttestbed.shared.IRemoteService;
 import org.greatlogic.gxttestbed.shared.IRemoteServiceAsync;
 import org.greatlogic.gxttestbed.shared.LookupCacheLoader;
+import org.greatlogic.gxttestbed.shared.Validators;
 import com.google.gwt.core.client.GWT;
 import com.sencha.gxt.widget.core.client.ContentPanel;
 
@@ -17,6 +18,7 @@ private final GLEventBus      _eventBus;
 protected GLLookupCache       _lookupCache;
 protected MainLayoutWidget    _mainLayoutWidget;
 protected IRemoteServiceAsync _remoteService;
+protected Validators          _validators;
 //--------------------------------------------------------------------------------------------------
 protected ClientFactory() {
   Instance = this;
@@ -24,6 +26,7 @@ protected ClientFactory() {
   _remoteService = GWT.create(IRemoteService.class);
   _lookupCache = new GLLookupCache();
   LookupCacheLoader.load(_lookupCache);
+  _validators = new Validators();
 }
 //--------------------------------------------------------------------------------------------------
 public ContentPanel getCenterPanel() {
@@ -44,6 +47,10 @@ public MainLayoutWidget getMainLayoutWidget() {
 //--------------------------------------------------------------------------------------------------
 public IRemoteServiceAsync getRemoteService() {
   return _remoteService;
+}
+//--------------------------------------------------------------------------------------------------
+public Validators getValidators() {
+  return _validators;
 }
 //--------------------------------------------------------------------------------------------------
 public abstract void hidePleaseWait();

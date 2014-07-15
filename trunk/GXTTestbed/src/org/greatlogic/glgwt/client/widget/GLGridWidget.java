@@ -19,11 +19,11 @@ import java.util.TreeSet;
 import org.greatlogic.glgwt.client.core.GLListStore;
 import org.greatlogic.glgwt.client.core.GLRecord;
 import org.greatlogic.glgwt.client.core.GLUtil;
-import org.greatlogic.glgwt.client.core.IGLGridRowEditingValidator;
 import org.greatlogic.glgwt.client.event.GLLookupTableLoadedEvent;
 import org.greatlogic.glgwt.client.event.GLLookupTableLoadedEvent.IGLLookupTableLoadedEventHandler;
 import org.greatlogic.glgwt.shared.IGLColumn;
 import org.greatlogic.glgwt.shared.IGLLookupType;
+import org.greatlogic.glgwt.shared.IGLRecordValidator;
 import org.greatlogic.glgwt.shared.IGLTable;
 import org.greatlogic.gxttestbed.shared.IDBEnums.Pet;
 import com.google.gwt.core.client.Scheduler;
@@ -59,11 +59,11 @@ private final IGLColumn[]            _columns;
 private final GLGridContentPanel     _contentPanel;
 protected Grid<GLRecord>             _grid;
 private GLGridEditingWrapper         _gridEditingWrapper;
-private IGLGridRowEditingValidator   _gridRowEditingValidator;
 private final boolean                _inlineEditing;
 protected GLListStore                _listStore;
 private HandlerRegistration          _lookupTableLoadedHandlerRegistration;
 private final String                 _noRowsMessage;
+private final IGLRecordValidator     _recordValidator;
 private final boolean                _rowLevelCommits;
 private final TreeSet<GLRecord>      _selectedRecordSet;
 private CellSelectionModel<GLRecord> _selectionModel;
@@ -75,10 +75,12 @@ static {
 }
 //--------------------------------------------------------------------------------------------------
 protected GLGridWidget(final String headingText, final String noRowsMessage,
-                       final boolean inlineEditing, final boolean useCheckBoxSelection,
-                       final boolean rowLevelCommits, final IGLColumn[] columns) {
+                       final IGLRecordValidator recordValidator, final boolean inlineEditing,
+                       final boolean useCheckBoxSelection, final boolean rowLevelCommits,
+                       final IGLColumn[] columns) {
   super();
   _noRowsMessage = noRowsMessage == null ? "There are no results to display" : noRowsMessage;
+  _recordValidator = recordValidator;
   _inlineEditing = inlineEditing;
   _useCheckBoxSelection = useCheckBoxSelection;
   _rowLevelCommits = rowLevelCommits;
@@ -172,7 +174,7 @@ private void createGrid() {
   _grid.setView(createGridView());
   addHeaderContextMenuHandler();
   addFilters();
-  _gridEditingWrapper = new GLGridEditingWrapper(this, _inlineEditing);
+  _gridEditingWrapper = new GLGridEditingWrapper(this, _inlineEditing, _recordValidator);
   _contentPanel.add(_grid);
   _contentPanel.forceLayout();
 }
@@ -218,10 +220,6 @@ Grid<GLRecord> getGrid() {
 //--------------------------------------------------------------------------------------------------
 GLGridEditingWrapper getGridEditingWrapper() {
   return _gridEditingWrapper;
-}
-//--------------------------------------------------------------------------------------------------
-IGLGridRowEditingValidator getGridRowEditingValidator() {
-  return _gridRowEditingValidator;
 }
 //--------------------------------------------------------------------------------------------------
 public GLListStore getListStore() {
@@ -290,10 +288,6 @@ private void resizeNextColumn(final ProgressMessageBox messageBox, final int col
       resizeNextColumn(messageBox, columnIndex + 1, lastColumnIndex);
     }
   });
-}
-//--------------------------------------------------------------------------------------------------
-public void setGridRowEditingValidator(final IGLGridRowEditingValidator gridRowEditingValidator) {
-  _gridRowEditingValidator = gridRowEditingValidator;
 }
 //--------------------------------------------------------------------------------------------------
 private void waitForComboBoxData() {

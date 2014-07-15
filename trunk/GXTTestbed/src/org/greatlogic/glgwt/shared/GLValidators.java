@@ -2,21 +2,20 @@ package org.greatlogic.glgwt.shared;
 
 import java.util.TreeMap;
 
-public class GLValidatorManager {
+public abstract class GLValidators {
 //--------------------------------------------------------------------------------------------------
-public static final GLValidatorManager              Instance;
 private final TreeMap<IGLTable, IGLRecordValidator> _recordValidatorMap;
 //--------------------------------------------------------------------------------------------------
-static {
-  Instance = new GLValidatorManager();
-}
-//--------------------------------------------------------------------------------------------------
-private GLValidatorManager() {
+protected GLValidators() {
   _recordValidatorMap = new TreeMap<>();
 }
 //--------------------------------------------------------------------------------------------------
 public void addRecordValidator(final IGLTable table, final IGLRecordValidator recordValidator) {
   _recordValidatorMap.put(table, recordValidator);
+}
+//--------------------------------------------------------------------------------------------------
+public IGLRecordValidator getRecordValidator(final IGLTable table) {
+  return _recordValidatorMap.get(table);
 }
 //--------------------------------------------------------------------------------------------------
 }

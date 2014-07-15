@@ -82,6 +82,7 @@ public ContentPanel getCenterPanel() {
 //--------------------------------------------------------------------------------------------------
 @UiHandler({"recreateGridButton"})
 public void onRecreateGridButtonClick(@SuppressWarnings("unused") final SelectEvent event) {
+  GLLog.popup(10, "Recreating grid ...");
   final GLGridWidget gridWidget;
   gridWidget = GridWidgetManager.getPetGrid("Main", inlineEditingCheckBox.getValue(), //
                                             checkBoxSelectionModelCheckBox.getValue(), //

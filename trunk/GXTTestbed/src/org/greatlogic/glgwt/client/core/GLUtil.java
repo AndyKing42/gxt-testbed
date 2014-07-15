@@ -21,9 +21,9 @@ import java.util.Random;
 import org.greatlogic.glgwt.client.event.GLEventBus;
 import org.greatlogic.glgwt.client.event.GLNewRecordEvent;
 import org.greatlogic.glgwt.client.widget.LoginDialogBox;
+import org.greatlogic.glgwt.shared.GLValidators;
 import org.greatlogic.glgwt.shared.IGLRemoteServiceAsync;
 import org.greatlogic.glgwt.shared.IGLTable;
-import org.greatlogic.gxttestbed.shared.RecordValidators;
 import com.google.gwt.dom.client.Document;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.Node;
@@ -45,6 +45,7 @@ private static LoginDialogBox        _loginDialogBox;
 private static GLLookupCache         _lookupCache;
 private static Random                _random;
 private static IGLRemoteServiceAsync _remoteService;
+private static GLValidators          _validators;
 private static DateTimeFormat        _yyyymmddDateTimeFormat;
 //--------------------------------------------------------------------------------------------------
 static {
@@ -185,12 +186,17 @@ public static IGLRemoteServiceAsync getRemoteService() {
   return _remoteService;
 }
 //--------------------------------------------------------------------------------------------------
+public static GLValidators getValidators() {
+  return _validators;
+}
+//--------------------------------------------------------------------------------------------------
 public static void initialize(final GLEventBus eventBus, final GLLookupCache lookupCache,
-                              final IGLRemoteServiceAsync remoteService) {
+                              final IGLRemoteServiceAsync remoteService,
+                              final GLValidators validators) {
   _eventBus = eventBus;
   _lookupCache = lookupCache;
   _remoteService = remoteService;
-  RecordValidators.createValidators();
+  _validators = validators;
   disableBackspace();
 }
 //--------------------------------------------------------------------------------------------------

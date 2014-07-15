@@ -1,13 +1,16 @@
 package org.greatlogic.glgwt.client.widget;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.TreeMap;
 import org.greatlogic.glgwt.client.core.GLListStore;
 import org.greatlogic.glgwt.client.core.GLLog;
 import org.greatlogic.glgwt.client.core.GLRecord;
 import org.greatlogic.glgwt.client.core.GLUtil;
+import org.greatlogic.glgwt.shared.GLValidationError;
 import org.greatlogic.glgwt.shared.IGLColumn;
+import org.greatlogic.glgwt.shared.IGLRecordValidator;
 import org.greatlogic.glgwt.shared.IGLTable;
 import com.google.gwt.i18n.client.NumberFormat;
 import com.google.gwt.i18n.shared.DateTimeFormat;
@@ -43,17 +46,20 @@ import com.sencha.gxt.widget.core.client.grid.editing.GridRowEditing;
 
 class GLGridEditingWrapper {
 //--------------------------------------------------------------------------------------------------
-private static final String   Zeroes;
+private static final String      Zeroes;
 
-private GridEditing<GLRecord> _gridEditing;
-private final GLGridWidget    _gridWidget;
+private GridEditing<GLRecord>    _gridEditing;
+private final GLGridWidget       _gridWidget;
+private final IGLRecordValidator _recordValidator;
 //--------------------------------------------------------------------------------------------------
 static {
   Zeroes = "0000000000000000000000000000000000000000";
 }
 //--------------------------------------------------------------------------------------------------
-GLGridEditingWrapper(final GLGridWidget gridWidget, final boolean inlineEditing) {
+GLGridEditingWrapper(final GLGridWidget gridWidget, final boolean inlineEditing,
+                     final IGLRecordValidator recordValidator) {
   _gridWidget = gridWidget;
+  _recordValidator = recordValidator;
   createGridEditing(inlineEditing);
   for (final GLColumnConfig<?> columnConfig : _gridWidget.getColumnModel().getColumnConfigs()) {
     final IGLColumn column = columnConfig.getColumn();
@@ -299,12 +305,18 @@ private void createGridRowEditingSaveButtonHandler(final GridRowEditing<GLRecord
       for (final GLColumnConfig<?> columnConfig : _gridWidget.getColumnModel().getColumnConfigs()) {
         columnConfig.clearInvalid();
       }
-      if (_gridWidget.getGridRowEditingValidator() != null) {
+      if (_recordValidator != null) {
         final TreeMap<String, GLColumnConfig<?>> columnConfigMap;
         columnConfigMap = _gridWidget.getColumnModel().getColumnConfigMap();
-        if (!_gridWidget.getGridRowEditingValidator()
-                        .validate(new GLValidationRecord(columnConfigMap, gridRowEditing))) {
+        final ArrayList<GLValidationError> validationErrorList;
+        validationErrorList = _recordValidator.validate(new GLValidationRecord(columnConfigMap, //
+                                                                               gridRowEditing));
+        if (validationErrorList != null) {
+          for (final GLValidationError validationError : validationErrorList) {
+            GLLog.popup(10, validationError.getMessage());
+          }
           event.setCancelled(true);
+          return;
         }
       }
       if (_gridWidget.getRowLevelCommits()) {

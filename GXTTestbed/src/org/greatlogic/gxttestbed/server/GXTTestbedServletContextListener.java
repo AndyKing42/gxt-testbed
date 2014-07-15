@@ -2,7 +2,6 @@ package org.greatlogic.gxttestbed.server;
 
 import javax.servlet.ServletContextEvent;
 import org.greatlogic.glgwt.server.GLServletContextListener;
-import org.greatlogic.gxttestbed.shared.RecordValidators;
 import com.google.appengine.api.utils.SystemProperty;
 import com.greatlogic.glbase.gldb.GLDBType;
 import com.greatlogic.glbase.gldb.GLDataSource;
@@ -40,7 +39,6 @@ public void contextInitialized(final ServletContextEvent event) {
   }
   GLLog.debug(dsElement.toString());
   GLDataSource.initialize(dsElement);
-  RecordValidators.createValidators();
   GLLog.infoSummary("Context initialized");
 }
 //--------------------------------------------------------------------------------------------------

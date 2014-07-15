@@ -14,7 +14,10 @@ package org.greatlogic.gxttestbed.client.widget;
  */
 import java.util.TreeMap;
 import org.greatlogic.glgwt.client.core.GLLog;
+import org.greatlogic.glgwt.client.core.GLUtil;
 import org.greatlogic.glgwt.client.widget.GLGridWidget;
+import org.greatlogic.glgwt.shared.IGLRecordValidator;
+import org.greatlogic.gxttestbed.shared.IDBEnums.EGXTTestbedTable;
 import org.greatlogic.gxttestbed.shared.IDBEnums.Pet;
 
 public class GridWidgetManager {
@@ -52,14 +55,16 @@ public static PetGridWidget getPetGrid(final String gridName) {
 public static PetGridWidget getPetGrid(final String gridName, final boolean inlineEditing,
                                        final boolean useCheckBoxSelectionModel,
                                        final boolean rowLevelCommits) {
-  PetGridWidget result;
+  final PetGridWidget result;
   GridWidgetInfo gridWidgetInfo = _gridWidgetInfoMap.get(gridName);
   if (gridWidgetInfo == null || gridWidgetInfo._inlineEditing != inlineEditing ||
       gridWidgetInfo._useCheckBoxSelectionModel != useCheckBoxSelectionModel ||
       gridWidgetInfo._rowLevelCommits != rowLevelCommits) {
-    result = new PetGridWidget(inlineEditing, useCheckBoxSelectionModel, rowLevelCommits, //
-                               Pet.PetName, Pet.PetTypeId, Pet.Sex, Pet.IntakeDate, //
-                               Pet.TrainedFlag, Pet.AdoptionFee, Pet.FosterDate, //
+    final IGLRecordValidator validator;
+    validator = GLUtil.getValidators().getRecordValidator(EGXTTestbedTable.Pet);
+    result = new PetGridWidget(validator, inlineEditing, useCheckBoxSelectionModel, //
+                               rowLevelCommits, Pet.PetName, Pet.PetTypeId, Pet.Sex, //
+                               Pet.IntakeDate, Pet.TrainedFlag, Pet.AdoptionFee, Pet.FosterDate, //
                                Pet.NumberOfFosters);
     gridWidgetInfo = new GridWidgetInfo(result, inlineEditing, useCheckBoxSelectionModel, //
                                         rowLevelCommits);

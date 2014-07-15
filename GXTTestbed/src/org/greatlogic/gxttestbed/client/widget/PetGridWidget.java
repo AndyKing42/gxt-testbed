@@ -13,12 +13,12 @@ package org.greatlogic.gxttestbed.client.widget;
  * the License.
  */
 import org.greatlogic.glgwt.client.widget.GLGridWidget;
-import org.greatlogic.glgwt.shared.IGLRecordValidator;
+import org.greatlogic.glgwt.shared.GLRecordValidator;
 import org.greatlogic.gxttestbed.shared.IDBEnums.Pet;
 
 public class PetGridWidget extends GLGridWidget {
 //--------------------------------------------------------------------------------------------------
-public PetGridWidget(final IGLRecordValidator recordValidator, final boolean inlineEditing,
+public PetGridWidget(final GLRecordValidator recordValidator, final boolean inlineEditing,
                      final boolean useCheckBoxSelectionModel, final boolean rowLevelCommits,
                      final Pet... petColumns) {
   super(null, "There are no pets", recordValidator, inlineEditing, useCheckBoxSelectionModel,

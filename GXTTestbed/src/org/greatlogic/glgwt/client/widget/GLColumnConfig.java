@@ -2,6 +2,7 @@ package org.greatlogic.glgwt.client.widget;
 
 import org.greatlogic.glgwt.client.core.GLLog;
 import org.greatlogic.glgwt.client.core.GLRecord;
+import org.greatlogic.glgwt.client.core.GLUtil;
 import org.greatlogic.glgwt.shared.IGLColumn;
 import org.greatlogic.glgwt.shared.IGLEnums.EGLColumnDataType;
 import com.google.gwt.i18n.shared.DateTimeFormat;
@@ -9,6 +10,7 @@ import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.ui.HasHorizontalAlignment;
 import com.sencha.gxt.core.client.ValueProvider;
 import com.sencha.gxt.widget.core.client.form.Field;
+import com.sencha.gxt.widget.core.client.form.Validator;
 import com.sencha.gxt.widget.core.client.grid.ColumnConfig;
 
 public class GLColumnConfig<DataType> extends ColumnConfig<GLRecord, DataType> {
@@ -17,6 +19,7 @@ private final IGLColumn _column;
 private int             _columnIndex;
 private DateTimeFormat  _dateTimeFormat;
 private Field<?>        _field;
+private Validator<?>    _validator;
 //--------------------------------------------------------------------------------------------------
 public GLColumnConfig(final IGLColumn column,
                       final ValueProvider<? super GLRecord, DataType> valueProvider,
@@ -25,6 +28,7 @@ public GLColumnConfig(final IGLColumn column,
   _column = column;
   setWidth(width < 0 ? column.getDefaultGridColumnWidth() : width);
   if (_column != null) {
+    _validator = GLUtil.getValidators().getColumnValidator(_column);
     final EGLColumnDataType dataType = _column.getDataType();
     if (dataType == EGLColumnDataType.Boolean) {
       setHorizontalAlignment(HasHorizontalAlignment.ALIGN_CENTER);
@@ -55,6 +59,10 @@ public int getColumnIndex() {
 //--------------------------------------------------------------------------------------------------
 public DateTimeFormat getDateTimeFormat() {
   return _dateTimeFormat;
+}
+//--------------------------------------------------------------------------------------------------
+public Validator<?> getValidator() {
+  return _validator;
 }
 //--------------------------------------------------------------------------------------------------
 public void setColumnIndex(final int columnIndex) {

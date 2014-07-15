@@ -8,7 +8,6 @@ import org.greatlogic.glgwt.shared.IGLEnums.EGLColumnDataType;
 import org.greatlogic.glgwt.shared.IGLLookupType;
 import org.greatlogic.glgwt.shared.IGLTable;
 import org.greatlogic.gxttestbed.shared.IGXTTestbedEnums.ELookupType;
-import com.sencha.gxt.widget.core.client.form.Validator;
 
 public interface IDBEnums {
 //--------------------------------------------------------------------------------------------------
@@ -157,10 +156,6 @@ public int getPrimaryKeySeq() {
 public String getTitle() {
   return _title;
 }
-@Override
-public Validator<?> getValidator() {
-  return null;
-}
 }
 //--------------------------------------------------------------------------------------------------
 public enum Pet implements IGLColumn {
@@ -232,10 +227,6 @@ public int getPrimaryKeySeq() {
 public String getTitle() {
   return _title;
 }
-@Override
-public Validator<?> getValidator() {
-  return null;
-}
 }
 //--------------------------------------------------------------------------------------------------
 public enum PetType implements IGLColumn {
@@ -300,10 +291,6 @@ public int getPrimaryKeySeq() {
 @Override
 public String getTitle() {
   return _title;
-}
-@Override
-public Validator<?> getValidator() {
-  return null;
 }
 }
 //--------------------------------------------------------------------------------------------------

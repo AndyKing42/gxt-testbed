@@ -8,9 +8,9 @@ import org.greatlogic.glgwt.client.core.GLListStore;
 import org.greatlogic.glgwt.client.core.GLLog;
 import org.greatlogic.glgwt.client.core.GLRecord;
 import org.greatlogic.glgwt.client.core.GLUtil;
+import org.greatlogic.glgwt.shared.GLRecordValidator;
 import org.greatlogic.glgwt.shared.GLValidationError;
 import org.greatlogic.glgwt.shared.IGLColumn;
-import org.greatlogic.glgwt.shared.IGLRecordValidator;
 import org.greatlogic.glgwt.shared.IGLTable;
 import com.google.gwt.i18n.client.NumberFormat;
 import com.google.gwt.i18n.shared.DateTimeFormat;
@@ -46,18 +46,19 @@ import com.sencha.gxt.widget.core.client.grid.editing.GridRowEditing;
 
 class GLGridEditingWrapper {
 //--------------------------------------------------------------------------------------------------
-private static final String      Zeroes;
+private static final String     Zeroes;
 
-private GridEditing<GLRecord>    _gridEditing;
-private final GLGridWidget       _gridWidget;
-private final IGLRecordValidator _recordValidator;
+private GridEditing<GLRecord>   _gridEditing;
+private final GLGridWidget      _gridWidget;
+private final GLRecordValidator _recordValidator;
 //--------------------------------------------------------------------------------------------------
 static {
   Zeroes = "0000000000000000000000000000000000000000";
 }
 //--------------------------------------------------------------------------------------------------
+@SuppressWarnings("unchecked")
 GLGridEditingWrapper(final GLGridWidget gridWidget, final boolean inlineEditing,
-                     final IGLRecordValidator recordValidator) {
+                     final GLRecordValidator recordValidator) {
   _gridWidget = gridWidget;
   _recordValidator = recordValidator;
   createGridEditing(inlineEditing);
@@ -120,9 +121,8 @@ GLGridEditingWrapper(final GLGridWidget gridWidget, final boolean inlineEditing,
 @SuppressWarnings("unchecked")
 private Field<Boolean> createBooleanEditor(final GLColumnConfig<?> columnConfig) {
   final Field<Boolean> result = new CheckBox();
-  final Validator<Boolean> validator = (Validator<Boolean>)columnConfig.getColumn().getValidator();
-  if (validator != null) {
-    result.addValidator(validator);
+  if (columnConfig.getValidator() != null) {
+    result.addValidator((Validator<Boolean>)columnConfig.getValidator());
   }
   _gridEditing.addEditor((ColumnConfig<GLRecord, Boolean>)columnConfig, result);
   return result;
@@ -134,9 +134,8 @@ private Field<Date> createDateEditor(final GLColumnConfig<?> columnConfig) {
   final DateTimeFormat dateTimeFormat = DateTimeFormat.getFormat("MM/dd/yy");
   final DateTimePropertyEditor propertyEditor = new DateTimePropertyEditor(dateTimeFormat);
   result = new DateField(propertyEditor);
-  final Validator<Date> validator = (Validator<Date>)columnConfig.getColumn().getValidator();
-  if (validator != null) {
-    result.addValidator(validator);
+  if (columnConfig.getValidator() != null) {
+    result.addValidator((Validator<Date>)columnConfig.getValidator());
   }
   _gridEditing.addEditor((ColumnConfig<GLRecord, Date>)columnConfig, result);
   return result;
@@ -160,9 +159,8 @@ private DateField createDateTimeEditor(final GLColumnConfig<?> columnConfig) {
   final DateTimeFormat dateTimeFormat = DateTimeFormat.getFormat("MM/dd/yy hh:mma");
   final DateTimePropertyEditor propertyEditor = new DateTimePropertyEditor(dateTimeFormat);
   result = new DateField(propertyEditor);
-  final Validator<Date> validator = (Validator<Date>)columnConfig.getColumn().getValidator();
-  if (validator != null) {
-    result.addValidator(validator);
+  if (columnConfig.getValidator() != null) {
+    result.addValidator((Validator<Date>)columnConfig.getValidator());
   }
   _gridEditing.addEditor((ColumnConfig<GLRecord, Date>)columnConfig, result);
   return result;
@@ -179,10 +177,8 @@ private BigDecimalField createDecimalEditor(final GLColumnConfig<?> columnConfig
   final NumberInputCell<BigDecimal> cell = new NumberInputCell<>(propertyEditor);
   result = new BigDecimalField(cell);
   result.setFormat(format);
-  final Validator<BigDecimal> validator;
-  validator = (Validator<BigDecimal>)columnConfig.getColumn().getValidator();
-  if (validator != null) {
-    result.addValidator(validator);
+  if (columnConfig.getValidator() != null) {
+    result.addValidator((Validator<BigDecimal>)columnConfig.getValidator());
   }
   _gridEditing.addEditor((ColumnConfig<GLRecord, BigDecimal>)columnConfig, result);
   return result;
@@ -195,9 +191,8 @@ private void createFixedComboboxEditor(final GLColumnConfig<?> columnConfig) {
   combobox.setTriggerAction(TriggerAction.ALL);
   combobox.add(GLUtil.getLookupCache().getAbbrevList(columnConfig.getColumn().getLookupType()));
   combobox.setForceSelection(true);
-  final Validator<String> validator = (Validator<String>)columnConfig.getColumn().getValidator();
-  if (validator != null) {
-    combobox.addValidator(validator);
+  if (columnConfig.getValidator() != null) {
+    combobox.addValidator((Validator<String>)columnConfig.getValidator());
   }
   _gridEditing.addEditor((ColumnConfig<GLRecord, String>)columnConfig, combobox);
 }
@@ -222,10 +217,8 @@ private ComboBox<GLRecord> createForeignKeyComboboxEditor(final GLColumnConfig<?
   result.setForceSelection(true);
   result.setTriggerAction(TriggerAction.ALL);
   result.setTypeAhead(true);
-  final Validator<GLRecord> validator;
-  validator = (Validator<GLRecord>)columnConfig.getColumn().getValidator();
-  if (validator != null) {
-    result.addValidator(validator);
+  if (columnConfig.getValidator() != null) {
+    result.addValidator((Validator<GLRecord>)columnConfig.getValidator());
   }
   final Converter<String, GLRecord> converter = new Converter<String, GLRecord>() {
     @Override
@@ -256,9 +249,8 @@ private void createGridEditing(final boolean inlineEditing) {
 @SuppressWarnings("unchecked")
 private Field<?> createIntegerEditor(final GLColumnConfig<?> columnConfig) {
   final IntegerField result = new IntegerField();
-  final Validator<Integer> validator = (Validator<Integer>)columnConfig.getColumn().getValidator();
-  if (validator != null) {
-    result.addValidator(validator);
+  if (columnConfig.getValidator() != null) {
+    result.addValidator((Validator<Integer>)columnConfig.getValidator());
   }
   _gridEditing.addEditor((ColumnConfig<GLRecord, Integer>)columnConfig, result);
   return result;
@@ -267,9 +259,8 @@ private Field<?> createIntegerEditor(final GLColumnConfig<?> columnConfig) {
 @SuppressWarnings("unchecked")
 private Field<String> createStringEditor(final GLColumnConfig<?> columnConfig) {
   final Field<String> result = new TextField();
-  final Validator<String> validator = (Validator<String>)columnConfig.getColumn().getValidator();
-  if (validator != null) {
-    result.addValidator(validator);
+  if (columnConfig.getValidator() != null) {
+    result.addValidator((Validator<String>)columnConfig.getValidator());
   }
   _gridEditing.addEditor((ColumnConfig<GLRecord, String>)columnConfig, result);
   return result;
@@ -302,18 +293,17 @@ private void createGridRowEditingSaveButtonHandler(final GridRowEditing<GLRecord
   gridRowEditing.getSaveButton().addBeforeSelectHandler(new BeforeSelectHandler() {
     @Override
     public void onBeforeSelect(final BeforeSelectEvent event) {
-      for (final GLColumnConfig<?> columnConfig : _gridWidget.getColumnModel().getColumnConfigs()) {
-        columnConfig.clearInvalid();
-      }
+      _gridWidget.getColumnModel().clearInvalidColumnConfigs();
       if (_recordValidator != null) {
         final TreeMap<String, GLColumnConfig<?>> columnConfigMap;
         columnConfigMap = _gridWidget.getColumnModel().getColumnConfigMap();
-        final ArrayList<GLValidationError> validationErrorList;
-        validationErrorList = _recordValidator.validate(new GLValidationRecord(columnConfigMap, //
-                                                                               gridRowEditing));
-        if (validationErrorList != null) {
-          for (final GLValidationError validationError : validationErrorList) {
-            GLLog.popup(10, validationError.getMessage());
+        final GLValidationRecord validationRecord = new GLValidationRecord(columnConfigMap, //
+                                                                           gridRowEditing);
+        final ArrayList<GLValidationError> errorList = _recordValidator.validate(validationRecord);
+        if (errorList != null && errorList.size() > 0) {
+          for (final GLValidationError validationError : errorList) {
+            final IGLColumn column = validationError.getColumn();
+            validationRecord.setInvalid(column, validationError.getMessage());
           }
           event.setCancelled(true);
           return;

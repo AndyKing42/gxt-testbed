@@ -23,7 +23,7 @@ import org.greatlogic.glgwt.client.event.GLLookupTableLoadedEvent;
 import org.greatlogic.glgwt.client.event.GLLookupTableLoadedEvent.IGLLookupTableLoadedEventHandler;
 import org.greatlogic.glgwt.shared.IGLColumn;
 import org.greatlogic.glgwt.shared.IGLLookupType;
-import org.greatlogic.glgwt.shared.IGLRecordValidator;
+import org.greatlogic.glgwt.shared.GLRecordValidator;
 import org.greatlogic.glgwt.shared.IGLTable;
 import org.greatlogic.gxttestbed.shared.IDBEnums.Pet;
 import com.google.gwt.core.client.Scheduler;
@@ -63,7 +63,7 @@ private final boolean                _inlineEditing;
 protected GLListStore                _listStore;
 private HandlerRegistration          _lookupTableLoadedHandlerRegistration;
 private final String                 _noRowsMessage;
-private final IGLRecordValidator     _recordValidator;
+private final GLRecordValidator     _recordValidator;
 private final boolean                _rowLevelCommits;
 private final TreeSet<GLRecord>      _selectedRecordSet;
 private CellSelectionModel<GLRecord> _selectionModel;
@@ -75,7 +75,7 @@ static {
 }
 //--------------------------------------------------------------------------------------------------
 protected GLGridWidget(final String headingText, final String noRowsMessage,
-                       final IGLRecordValidator recordValidator, final boolean inlineEditing,
+                       final GLRecordValidator recordValidator, final boolean inlineEditing,
                        final boolean useCheckBoxSelection, final boolean rowLevelCommits,
                        final IGLColumn[] columns) {
   super();

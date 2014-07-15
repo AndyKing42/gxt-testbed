@@ -89,6 +89,12 @@ void centerCheckBox(final ColumnConfig<GLRecord, ?> columnConfig) {
   }
 }
 //--------------------------------------------------------------------------------------------------
+void clearInvalidColumnConfigs() {
+  for (final GLColumnConfig<?> columnConfig : _columnConfigMap.values()) {
+    columnConfig.clearInvalid();
+  }
+}
+//--------------------------------------------------------------------------------------------------
 private GLColumnConfig<BigDecimal> createBigDecimalColumnConfig(final IGLColumn column) {
   final GLColumnConfig<BigDecimal> result;
   final ValueProvider<GLRecord, BigDecimal> valueProvider;

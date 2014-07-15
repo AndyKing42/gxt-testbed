@@ -1,7 +1,6 @@
 package org.greatlogic.glgwt.shared;
 
 import org.greatlogic.glgwt.shared.IGLEnums.EGLColumnDataType;
-import com.sencha.gxt.widget.core.client.form.Validator;
 /*
  * Copyright 2006-2014 Andy King (GreatLogic.com)
  * 
@@ -26,6 +25,5 @@ public boolean getNullable();
 public int getNumberOfDecimalPlaces();
 public int getPrimaryKeySeq();
 public String getTitle();
-public Validator<?> getValidator();
 //--------------------------------------------------------------------------------------------------
 }

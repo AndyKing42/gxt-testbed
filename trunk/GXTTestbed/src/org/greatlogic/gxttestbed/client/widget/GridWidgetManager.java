@@ -16,7 +16,7 @@ import java.util.TreeMap;
 import org.greatlogic.glgwt.client.core.GLLog;
 import org.greatlogic.glgwt.client.core.GLUtil;
 import org.greatlogic.glgwt.client.widget.GLGridWidget;
-import org.greatlogic.glgwt.shared.IGLRecordValidator;
+import org.greatlogic.glgwt.shared.GLRecordValidator;
 import org.greatlogic.gxttestbed.shared.IDBEnums.EGXTTestbedTable;
 import org.greatlogic.gxttestbed.shared.IDBEnums.Pet;
 
@@ -60,7 +60,7 @@ public static PetGridWidget getPetGrid(final String gridName, final boolean inli
   if (gridWidgetInfo == null || gridWidgetInfo._inlineEditing != inlineEditing ||
       gridWidgetInfo._useCheckBoxSelectionModel != useCheckBoxSelectionModel ||
       gridWidgetInfo._rowLevelCommits != rowLevelCommits) {
-    final IGLRecordValidator validator;
+    final GLRecordValidator validator;
     validator = GLUtil.getValidators().getRecordValidator(EGXTTestbedTable.Pet);
     result = new PetGridWidget(validator, inlineEditing, useCheckBoxSelectionModel, //
                                rowLevelCommits, Pet.PetName, Pet.PetTypeId, Pet.Sex, //

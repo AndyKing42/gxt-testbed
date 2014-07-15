@@ -1,5 +1,6 @@
 package org.greatlogic.glgwt.client.widget;
 
+import java.math.BigDecimal;
 import java.util.TreeMap;
 import org.greatlogic.glgwt.client.core.GLLog;
 import org.greatlogic.glgwt.client.core.GLRecord;
@@ -17,6 +18,10 @@ GLValidationRecord(final TreeMap<String, GLColumnConfig<?>> columnConfigMap,
                    final GridRowEditing<GLRecord> gridEditing) {
   _columnConfigMap = columnConfigMap;
   _gridEditing = gridEditing;
+}
+//--------------------------------------------------------------------------------------------------
+public BigDecimal asDec(final IGLColumn column) {
+  return GLUtil.stringToDec(asString(column));
 }
 //--------------------------------------------------------------------------------------------------
 public int asInt(final IGLColumn column) {

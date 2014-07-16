@@ -12,6 +12,7 @@ package org.greatlogic.glgwt.client.widget;
  * or implied. See the License for the specific language governing permissions and limitations under
  * the License.
  */
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashSet;
@@ -25,7 +26,6 @@ import org.greatlogic.glgwt.shared.GLRecordValidator;
 import org.greatlogic.glgwt.shared.IGLColumn;
 import org.greatlogic.glgwt.shared.IGLLookupType;
 import org.greatlogic.glgwt.shared.IGLTable;
-import org.greatlogic.gxttestbed.shared.IDBEnums.Pet;
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.event.logical.shared.SelectionEvent;
@@ -37,15 +37,24 @@ import com.google.web.bindery.event.shared.Event.Type;
 import com.google.web.bindery.event.shared.HandlerRegistration;
 import com.sencha.gxt.core.client.ValueProvider;
 import com.sencha.gxt.core.client.util.TextMetrics;
+import com.sencha.gxt.data.shared.ListStore;
+import com.sencha.gxt.data.shared.ModelKeyProvider;
 import com.sencha.gxt.data.shared.Store;
 import com.sencha.gxt.widget.core.client.box.ProgressMessageBox;
 import com.sencha.gxt.widget.core.client.event.HeaderContextMenuEvent;
 import com.sencha.gxt.widget.core.client.event.HeaderContextMenuEvent.HeaderContextMenuHandler;
 import com.sencha.gxt.widget.core.client.event.RowClickEvent;
+import com.sencha.gxt.widget.core.client.form.NumberPropertyEditor.DoublePropertyEditor;
+import com.sencha.gxt.widget.core.client.form.NumberPropertyEditor.IntegerPropertyEditor;
 import com.sencha.gxt.widget.core.client.grid.CellSelectionModel;
 import com.sencha.gxt.widget.core.client.grid.Grid;
 import com.sencha.gxt.widget.core.client.grid.GridView;
+import com.sencha.gxt.widget.core.client.grid.filters.BooleanFilter;
+import com.sencha.gxt.widget.core.client.grid.filters.DateFilter;
+import com.sencha.gxt.widget.core.client.grid.filters.Filter;
 import com.sencha.gxt.widget.core.client.grid.filters.GridFilters;
+import com.sencha.gxt.widget.core.client.grid.filters.ListFilter;
+import com.sencha.gxt.widget.core.client.grid.filters.NumericFilter;
 import com.sencha.gxt.widget.core.client.grid.filters.StringFilter;
 import com.sencha.gxt.widget.core.client.menu.Item;
 import com.sencha.gxt.widget.core.client.menu.MenuItem;
@@ -54,11 +63,13 @@ public abstract class GLGridWidget implements IsWidget {
 //--------------------------------------------------------------------------------------------------
 private static final int             _resizeColumnExtraPadding;
 private static final TextMetrics     _textMetrics;
+
 private GLGridColumnModel            _columnModel;
 private final IGLColumn[]            _columns;
 private final GLGridContentPanel     _contentPanel;
 protected Grid<GLRecord>             _grid;
 private GLGridEditingWrapper         _gridEditingWrapper;
+private GridFilters<GLRecord>        _gridFilters;
 private final boolean                _inlineEditing;
 protected GLListStore                _listStore;
 private HandlerRegistration          _lookupTableLoadedHandlerRegistration;
@@ -89,6 +100,79 @@ protected GLGridWidget(final String headingText, final String noRowsMessage,
   _selectedRecordSet = new TreeSet<>();
   _contentPanel = new GLGridContentPanel(this, headingText);
   waitForComboBoxData();
+}
+//--------------------------------------------------------------------------------------------------
+protected void addFilter(final IGLColumn column) {
+  addFilter(column, null, null);
+}
+//--------------------------------------------------------------------------------------------------
+@SuppressWarnings("unchecked")
+protected void addFilter(final IGLColumn column, final Date minDate, final Date maxDate) {
+  final ValueProvider<GLRecord, ?> vp = _columnModel.getValueProvider(column);
+  Filter<GLRecord, ?> filter = null;
+  if (column.getLookupType() != null && column.getLookupType().getTable() == null) {
+    filter = createListFilter(column, vp);
+  }
+  else {
+    switch (column.getDataType()) {
+      case Boolean:
+        filter = new BooleanFilter<GLRecord>((ValueProvider<GLRecord, Boolean>)vp);
+        break;
+      case Currency:
+        filter = new NumericFilter<GLRecord, Double>((ValueProvider<GLRecord, Double>)vp, //
+                                                     new DoublePropertyEditor());
+        break;
+      case Date:
+        filter = new DateFilter<GLRecord>((ValueProvider<GLRecord, Date>)vp);
+        if (minDate != null) {
+          ((DateFilter<GLRecord>)filter).setMinDate(minDate);
+        }
+        if (maxDate != null) {
+          ((DateFilter<GLRecord>)filter).setMaxDate(maxDate);
+        }
+        break;
+      case DateTime:
+        filter = new DateFilter<GLRecord>((ValueProvider<GLRecord, Date>)vp);
+        if (minDate != null) {
+          ((DateFilter<GLRecord>)filter).setMinDate(minDate);
+        }
+        if (maxDate != null) {
+          ((DateFilter<GLRecord>)filter).setMaxDate(maxDate);
+        }
+        break;
+      case Decimal:
+        filter = new NumericFilter<GLRecord, Double>((ValueProvider<GLRecord, Double>)vp, //
+                                                     new DoublePropertyEditor());
+        break;
+      case Int:
+        if (column.getLookupType() == null || column.getLookupType().getTable() == null) {
+          filter = new NumericFilter<GLRecord, Integer>((ValueProvider<GLRecord, Integer>)vp, //
+                                                        new IntegerPropertyEditor());
+        }
+        else {
+          filter = createListFilter(column, vp);
+        }
+        break;
+      case String:
+        filter = new StringFilter<GLRecord>((ValueProvider<GLRecord, String>)vp);
+        break;
+    }
+  }
+  addFilter(filter);
+}
+//--------------------------------------------------------------------------------------------------
+protected void addFilter(final Filter<GLRecord, ?> filter) {
+  if (filter != null) {
+    if (_gridFilters == null) {
+      _gridFilters = new GridFilters<GLRecord>();
+      _gridFilters.setLocal(true);
+    }
+    _gridFilters.addFilter(filter);
+  }
+}
+//--------------------------------------------------------------------------------------------------
+protected void addFilters() {
+  //
 }
 //--------------------------------------------------------------------------------------------------
 private void addHeaderContextMenuHandler() {
@@ -173,50 +257,13 @@ private void createGrid() {
   _grid.setSelectionModel(_selectionModel);
   _grid.setView(createGridView());
   addHeaderContextMenuHandler();
-  addFilters();
   _gridEditingWrapper = new GLGridEditingWrapper(this, _inlineEditing, _recordValidator);
+  addFilters();
+  if (_gridFilters != null) {
+    _gridFilters.initPlugin(_grid);
+  }
   _contentPanel.add(_grid);
   _contentPanel.forceLayout();
-}
-//--------------------------------------------------------------------------------------------------
-private void addFilters() {
-  //  typeStore.add("Auto");
-  //  typeStore.add("Media");
-  //  typeStore.add("Medical");
-  //  typeStore.add("Tech");
-  //
-  //  NumericFilter<Stock, Double> lastFilter = new NumericFilter<Stock, Double>(props.last(), new DoublePropertyEditor());
-  //  StringFilter<Stock> nameFilter = new StringFilter<Stock>(props.name());
-  //  DateFilter<Stock> dateFilter = new DateFilter<Stock>(props.lastTrans());
-  //  dateFilter.setMinDate(new DateWrapper().addDays(-5).asDate());
-  //  dateFilter.setMaxDate(new DateWrapper().addMonths(2).asDate());
-  //
-  //  BooleanFilter<Stock> booleanFilter = new BooleanFilter<Stock>(props.split());
-  //  ListFilter<Stock, String> listFilter = new ListFilter<Stock, String>(props.industry(), typeStore);
-  //
-  //  GridFilters<Stock> filters = new GridFilters<Stock>();
-  //  filters.initPlugin(grid);
-  //  filters.setLocal(true);
-  //  filters.addFilter(lastFilter);
-  //  filters.addFilter(nameFilter);
-  //  filters.addFilter(dateFilter);
-  //  filters.addFilter(booleanFilter);
-  //  filters.addFilter(listFilter);
-  //  NumericFilter<GLRecord, Double> lastFilter = new NumericFilter<GLRecord, Double>(props.last(), new DoublePropertyEditor());
-  final ValueProvider<GLRecord, String> valueProvider;
-  valueProvider = _columnModel.getStringValueProvider(Pet.PetName);
-  final StringFilter<GLRecord> stringFilter = new StringFilter<GLRecord>(valueProvider);
-  //  DateFilter<GLRecord> dateFilter = new DateFilter<GLRecord>(props.lastTrans());
-  //  dateFilter.setMinDate(new DateWrapper().addDays(-5).asDate());
-  //  dateFilter.setMaxDate(new DateWrapper().addMonths(2).asDate());
-  //
-  //  BooleanFilter<GLRecord> booleanFilter = new BooleanFilter<GLRecord>(props.split());
-  //  ListFilter<GLRecord, String> listFilter = new ListFilter<GLRecord, String>(props.industry(), typeStore);
-  //
-  final GridFilters<GLRecord> gridFilters = new GridFilters<GLRecord>();
-  gridFilters.initPlugin(_grid);
-  gridFilters.setLocal(true);
-  gridFilters.addFilter(stringFilter);
 }
 //--------------------------------------------------------------------------------------------------
 private GridView<GLRecord> createGridView() {
@@ -226,6 +273,31 @@ private GridView<GLRecord> createGridView() {
   result.setForceFit(false);
   result.setStripeRows(true);
   return result;
+}
+//--------------------------------------------------------------------------------------------------
+@SuppressWarnings("unchecked")
+private Filter<GLRecord, ?> createListFilter(final IGLColumn column,
+                                             final ValueProvider<GLRecord, ?> vp) {
+  final ListStore<String> listStore = new ListStore<String>(new ModelKeyProvider<String>() {
+    @Override
+    public String getKey(final String item) {
+      return item;
+    }
+  });
+  final IGLTable table = column.getLookupType().getTable();
+  if (table == null) {
+    final ArrayList<String> list = GLUtil.getLookupCache().getAbbrevList(column.getLookupType());
+    for (final String listEntry : list) {
+      listStore.add(listEntry);
+    }
+  }
+  else {
+    final GLListStore recordListStore = GLUtil.getLookupCache().getListStore(table);
+    for (int recordIndex = 0; recordIndex < recordListStore.size(); ++recordIndex) {
+      listStore.add(recordListStore.get(recordIndex).asString(table.getComboboxColumnMap().get(1)));
+    }
+  }
+  return new ListFilter<GLRecord, String>((ValueProvider<GLRecord, String>)vp, listStore);
 }
 //--------------------------------------------------------------------------------------------------
 GLGridColumnModel getColumnModel() {

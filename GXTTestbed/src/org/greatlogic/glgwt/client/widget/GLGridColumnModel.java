@@ -276,9 +276,8 @@ public Collection<GLColumnConfig<?>> getColumnConfigs() {
 }
 //--------------------------------------------------------------------------------------------------
 @SuppressWarnings("unchecked")
-public ValueProvider<GLRecord, String> getStringValueProvider(final IGLColumn column) {
-  final GLColumnConfig<String> columnConfig = (GLColumnConfig<String>)getColumnConfig(column);
-  return (ValueProvider<GLRecord, String>)columnConfig.getValueProvider();
+public ValueProvider<GLRecord, ?> getValueProvider(final IGLColumn column) {
+  return (ValueProvider<GLRecord, ?>)getColumnConfig(column).getValueProvider();
 }
 //--------------------------------------------------------------------------------------------------
 public boolean isCheckbox(final GLColumnConfig<?> columnConfig) {

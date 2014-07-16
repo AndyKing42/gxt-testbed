@@ -22,8 +22,8 @@ private Field<?>        _field;
 private Validator<?>    _validator;
 //--------------------------------------------------------------------------------------------------
 public GLColumnConfig(final IGLColumn column,
-                      final ValueProvider<? super GLRecord, DataType> valueProvider,
-                      final String header, final int width) {
+                      final ValueProvider<GLRecord, DataType> valueProvider, final String header,
+                      final int width) {
   super(valueProvider, width, header);
   _column = column;
   setWidth(width < 0 ? column.getDefaultGridColumnWidth() : width);

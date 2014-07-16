@@ -21,9 +21,9 @@ import org.greatlogic.glgwt.client.core.GLRecord;
 import org.greatlogic.glgwt.client.core.GLUtil;
 import org.greatlogic.glgwt.client.event.GLLookupTableLoadedEvent;
 import org.greatlogic.glgwt.client.event.GLLookupTableLoadedEvent.IGLLookupTableLoadedEventHandler;
+import org.greatlogic.glgwt.shared.GLRecordValidator;
 import org.greatlogic.glgwt.shared.IGLColumn;
 import org.greatlogic.glgwt.shared.IGLLookupType;
-import org.greatlogic.glgwt.shared.GLRecordValidator;
 import org.greatlogic.glgwt.shared.IGLTable;
 import org.greatlogic.gxttestbed.shared.IDBEnums.Pet;
 import com.google.gwt.core.client.Scheduler;
@@ -63,7 +63,7 @@ private final boolean                _inlineEditing;
 protected GLListStore                _listStore;
 private HandlerRegistration          _lookupTableLoadedHandlerRegistration;
 private final String                 _noRowsMessage;
-private final GLRecordValidator     _recordValidator;
+private final GLRecordValidator      _recordValidator;
 private final boolean                _rowLevelCommits;
 private final TreeSet<GLRecord>      _selectedRecordSet;
 private CellSelectionModel<GLRecord> _selectionModel;
@@ -180,6 +180,28 @@ private void createGrid() {
 }
 //--------------------------------------------------------------------------------------------------
 private void addFilters() {
+  //  typeStore.add("Auto");
+  //  typeStore.add("Media");
+  //  typeStore.add("Medical");
+  //  typeStore.add("Tech");
+  //
+  //  NumericFilter<Stock, Double> lastFilter = new NumericFilter<Stock, Double>(props.last(), new DoublePropertyEditor());
+  //  StringFilter<Stock> nameFilter = new StringFilter<Stock>(props.name());
+  //  DateFilter<Stock> dateFilter = new DateFilter<Stock>(props.lastTrans());
+  //  dateFilter.setMinDate(new DateWrapper().addDays(-5).asDate());
+  //  dateFilter.setMaxDate(new DateWrapper().addMonths(2).asDate());
+  //
+  //  BooleanFilter<Stock> booleanFilter = new BooleanFilter<Stock>(props.split());
+  //  ListFilter<Stock, String> listFilter = new ListFilter<Stock, String>(props.industry(), typeStore);
+  //
+  //  GridFilters<Stock> filters = new GridFilters<Stock>();
+  //  filters.initPlugin(grid);
+  //  filters.setLocal(true);
+  //  filters.addFilter(lastFilter);
+  //  filters.addFilter(nameFilter);
+  //  filters.addFilter(dateFilter);
+  //  filters.addFilter(booleanFilter);
+  //  filters.addFilter(listFilter);
   //  NumericFilter<GLRecord, Double> lastFilter = new NumericFilter<GLRecord, Double>(props.last(), new DoublePropertyEditor());
   final ValueProvider<GLRecord, String> valueProvider;
   valueProvider = _columnModel.getStringValueProvider(Pet.PetName);
